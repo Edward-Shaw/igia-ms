@@ -10,19 +10,17 @@
 		style="width: 1024px; margin-bottom: 60px;">
 		<div class="form-inline" >
 			<div class="form-group form-group-sm">
-					<label class="control-label">盘库单状态</label> <select
+					<label class="control-label">用户状态</label> <select
 						class="form-control" id="filter_state"
 						onchange="document.getElementById('btn_filter').click();">
 						<option value="default">状态筛选</option>
-						<option value="init">待盘库</option>
-						<option value="ing">正在盘库</option>
-						<option value="exception">盘库异常</option>
-						<option value="finished">盘库完成</option>
-						<option value="deleted">已作废</option>
+						<option value="init">已注册</option>
+						<option value="ing">未注册</option>
+						<option value="exception">全部</option>
 					</select>
 			</div>
 				<div class="form-group form-group-sm">
-					<label class="control-label">创建时间</label> <select class="form-control"
+					<label class="control-label">注册时间</label> <select class="form-control"
 						id="filter_time"
 						onchange="document.getElementById('btn_filter').click();">
 						<option value="default">全部</option>
@@ -36,10 +34,7 @@
 				<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">新增盘库</button>
-			<button class="btn btn-sm btn-primary" id="batch"
-				style="float: right; position: relative; margin-right: 5px;" data-toggle="modal"
-				data-target="#excel_batch">导入Excel</button>
+				data-target="#modal_create">新增用户</button>
 		</div>
 
 		<!-- 表格 -->
@@ -48,12 +43,12 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">业务单类型</td>
-					<td class="cell">编号</td>
-					<td class="cell">创建时间</td>
-					<td class="cell">完成时间</td>
-					<!-- <td class="cell">完成时间</td>  -->
-					<td class="cell">状态</td>
+					<td class="cell">用户ID</td>
+					<td style="text-align: left" class="cell">用户类型</td>
+					<td class="cell">用户姓名</td>
+					<td class="cell">用户手机</td>
+					<td class="cell">用户地址</td>
+					<td class="cell">用户状态</td>
 					<td align="right" style="width: 7%;">操作</td>
 				</tr>
 			</thead>
