@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+  <head></head>
+  <body>
+  	<nav class="navbar navbar-default navbar-fixed-top" th:fragment="navbar">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<!-- <img alt="" src="images/tm-logo.png" style="width:30px; height:30px; margin-top:10px;"/>  -->
+				<!-- <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span></a>  -->
+			</div>
+	
+			<div id="navbar" class="navbar-collapse collapse" style="width: 1050px; font-size: 17px;">
+				<ul class="nav navbar-nav">
+					<li class="nav-item"><a href="#" style="font-size: 18px;"><strong>逸伽用户管理系统</strong></a></li>
+					<!-- 
+					<li class="nav-item">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							货架管理<span class="caret"></span>
+						</a>
+				        <ul class="dropdown-menu">
+				        	<li class="nav-item">
+								<a href="#" th:href="@{/racks}">货架</a>
+							</li>
+							<li class="nav-item">
+								<a href="#" th:href="@{/rack-model}">货架型号</a>
+							</li>
+				        </ul>
+					</li>
+					 -->
+					<li class="nav-item">
+						<a href="#" th:href="@{/user}">用户管理</a>
+					</li>
+					<li class="nav-item">
+						<a href="#" th:href="@{/subscribe}">预约管理</a>
+					</li>
+					<li class="nav-item">
+						<a href="#" th:href="@{/class}">课程管理</a>
+					</li>
+				</ul>
+                
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item">
+	                    <a sec:authorize="!isAuthenticated()" href="#" th:href="@{/login}" id="btn_login">登录</a>
+					</li>
+					<li class="nav-item">
+						<a href="#" class="navbar-link" sec:authorize="isAuthenticated()"  sec:authentication="name" id="login_user" onclick="showAccount()">你好</a>
+					</li>
+					<li class="nav-item">
+	                    <a href="./logout" class="navbar-link" sec:authorize="isAuthenticated()" style="margin-left:10px;"><strong>注销</strong></a>
+					</li>
+                </ul>
+
+			</div>
+		</div>
+	</nav>
+  </body>
+</html>

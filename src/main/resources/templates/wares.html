@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="fragments/head :: head (title='货品管理')">
+</head>
+
+<body>
+	<nav th:replace="fragments/navbar :: navbar"></nav>
+	<div class="container table-responsive"
+		style="width: 1024px; margin-bottom: 60px;">
+		<div class="form-inline">
+			<div class="form-group form-group-sm">
+				<label class="control-label">库存状态</label> <select
+					class="form-control" id="filter_stock_state"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">状态筛选</option>
+					<option value="have">有库存</option>
+					<option value="havenot">没有库存</option>
+				</select>
+			</div>
+			<div class="form-group form-group-sm">
+				<label class="control-label">入库时间</label> <select class="form-control"
+					id="filter_time"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">时间筛选</option>
+					<option value="today">今天</option>
+					<option value="yesterday">昨天</option>
+					<option value="this_week">本周</option>
+					<option value="this_month">本月</option>
+					
+				</select>
+			</div>
+			<div class="form-group form-group-sm">
+				<input type="text" class="form-control" id="search_input" onkeypress="getKey()"
+					placeholder="输入货品编号或货品名称" />
+			</div>
+			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
+			<button class="btn btn-sm btn-success btn-primary" id="new"
+				style="float: right; position: relative;" data-toggle="modal"
+				data-target="#modal_create">添加货品</button>
+		</div>
+
+		<!-- 表格 -->
+		<input type="hidden" id="maxPage" th:attr="value=${maxPage}" />
+		<table class="table table-condensed  table-hover"
+			style="margin-top: 10px;">
+			<thead>
+				<tr class="active">
+					<td style="text-align: left" class="cell">货品编码</td>
+					<td class="cell">货品名称</td>
+					<td class="cell">库存</td>
+					<td class="cell">堆码数</td>
+					<td class="cell">重量</td>
+					<td class="cell">缩略图</td>
+					<td class="cell">录入日期</td>
+					<td class="cell">货品批次</td>
+					<td class="cell">托盘编码</td>
+					<td align="right" style="width: 20%;">操作</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="ware : ${wares}">
+					<td style="text-align: left" class="cell" th:text="${ware.productCode}" data-toggle="tooltip" th:title="${ware.productCode}">20151028001</td>
+					<td class="cell" th:text="${ware.name}" data-toggle="tooltip" th:title="${ware.name}">电阻器</td>
+					<td class="cell" th:text="${ware.amount}" data-toggle="tooltip" th:title="${ware.amount}">在库</td>
+					<td class="cell" th:text="${ware.stackNumber}" data-toggle="tooltip" th:title="${ware.stackNumber}">待检测</td>
+					<td class="cell" th:text="${ware.weight}" data-toggle="tooltip" th:title="${ware.weight}">待检测</td>
+					<td class="cell">
+					
+					<img th:if="${ware.picture!=null}" th:src="@{/upload/get/}+${ware.picture}"
+										style="height:50px;width:50px" alt="通用的占位符缩略图" ></img>
+					</td>
+					<!-- <td class="cell" th:text="${ware.unitName}" data-toggle="tooltip" th:title="${ware.unitName}">待检测</td> -->
+					<td class="cell" 
+						th:text="${#calendars.format(ware.createdTime, 'yyyy-MM-dd HH:mm:ss')}" data-toggle="tooltip" th:title="${#calendars.format(ware.createdTime, 'yyyy-MM-dd HH:mm:ss')}">2015-10-28
+						10：00</td>
+					<td class="cell" th:text="${ware.batchNumber}" data-toggle="tooltip" th:title="${ware.batchNumber}">电阻器</td>
+					<td class="cell" th:text="${ware.palletTagsNumber}" data-toggle="tooltip" th:title="${ware.palletTagsNumber}">电阻器</td>
+					<td align="right">
+						<div class="btn-group">
+							<button type="button" class="btn btn-success btn-xs"
+								th:attr="data-id=${ware.id}" data-toggle="modal"
+								data-target="#modal_detail">详情</button>
+							<button type="button" class="btn btn-default btn-xs"
+								th:attr="data-id=${ware.id}" data-toggle="modal"
+								data-target="#modal_modify">修改</button>
+							<button type="button" class="btn btn-info btn-xs"
+								th:attr="data-id=${ware.productCode}" data-toggle="modal"
+								data-target="#modal_stock">货架</button>
+							<button type="button" class="btn btn-danger btn-xs"
+								th:attr="data-id=${ware.id}" data-toggle="modal"
+								data-target="#modal_delete">作废</button>
+						</div>
+					</td>
+				</tr>
+				<tr th:if="${#lists.isEmpty(wares)}">
+					<td colspan="10">
+						<div class="alert alert-info" role="alert">
+							不存在任何货品记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在创建</strong></a>?
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div th:if="${not#lists.isEmpty(wares)}" style="text-align: center;">
+			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
+				data-trigger="focus" data-placement="left" data-toggle="popover"
+				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
+			<label id="totalPage">总页数</label> <a tabindex="0" role="button"
+				class="btn btn-success" id="page_down" data-trigger="focus"
+				data-placement="right" data-toggle="popover" data-content="没有下一页了">下一页</a>
+		</div>
+	</div>
+
+	<!-- 新建货品 -->
+	<div class="modal fade" id="modal_create" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel"
+						style="margin-top: 0px; text-align: center;">
+						<strong>新建货品</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" id="form_create" method="POST" action="./ware">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="product_code">编码:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="product_code" name="product_code"
+									placeholder="请输入货品编码" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="name">名称:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="name" name="name"
+									placeholder="请输入货品名称" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contract">批号:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="batch_number"
+									name="batch_number" placeholder="请输入货品批号" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contract">堆码数:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="stack_number"
+									name="stack_number" placeholder="请输入货品堆码数" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contract">重量:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="weight"
+									name="weight" placeholder="请输入货品重量，单位为kg" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="contract">单位名:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="unit_name"
+									name="unit_name" placeholder="请输入货品单位名" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="production_date">生产日期:</label>
+							<div class="col-sm-10">
+								<div class='input-group' id='datetimepicker'>
+									<input class="form-control" type="text" id="production_date"
+										name="production_date" placeholder="请选择货品生产日期" /> 
+									<span class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span></span> 
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="picture">图片上传:</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="fileupload" type="file" 
+								name="files[]" data-url="/upload" onchange="PreviewImg(this,'newPreview')" /> 	
+								<input type="hidden" name="picture" id="picture" />
+								<label class="label label-warning">请不要上传超过10M的图片</label>
+							</div>
+							<label class="col-sm-2 control-label"></label>
+							<div class="col-sm-10">
+								<img id="newPreview"></img>
+							</div>
+						</div>
+						<div align="right">
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">取消</button>
+							<button type="submit" class="btn btn-success" id="btn_create"
+								data-dismiss="modal" data-loading-text="提交中...">确定</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 货品详情 -->
+	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">货品详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_detail" class="form-horizontal">
+						<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%; table-layout:fixed; word-break:break-all;">
+								<tbody>
+								</tbody>
+							</table>
+							<div class="col-sm-10">
+								<img class="form-control-static" id="detail_id"></img>
+							</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 修改货品信息 -->
+	<div class="modal fade" id="modal_modify" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">货品修改</h4>
+				</div>
+
+				<div class="modal-body">
+					<form id="form_modify" class="form-horizontal">
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">编号</label>
+							<div class="col-sm-10">
+								<input id="modify_code" name="product_code" type="text" class="form-control" placeholder="货品编号"  disabled="disabled"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">名称</label>
+							<div class="col-sm-10">
+								<input id="modify_name" name="name" type="text" class="form-control" placeholder="货品名称"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-descrityion" class="col-sm-2 control-label">库存状态</label>
+							<div class="col-sm-10">
+								<input id="modify_stock_state" name="stock_state" type="text" class="form-control" placeholder="库存状态"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">堆码数</label>
+							<div class="col-sm-10">
+								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="堆码数"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">重量</label>
+							<div class="col-sm-10">
+								<input id="modify_weight" name="weight" type="text" class="form-control" placeholder="重量"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">单位名</label>
+							<div class="col-sm-10">
+								<input id="modify_unit_name" name="unit_name" type="text" class="form-control" placeholder="单位名"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">生产日期</label>
+							<div class="col-sm-10">
+								<input id="modify_production_date" name="created_time" type="text" class="form-control" placeholder="生产日期" disabled="disabled"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">货品批次</label>
+							<div class="col-sm-10">
+								<input id="modify_batch_number" name="batch_number" type="text" class="form-control" placeholder="货品批次"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">存放位置</label>
+							<div class="col-sm-10">
+								<input id="modify_pallet_tags_number" name="pallet_tags_number" type="text" class="form-control" placeholder="存放位置"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="picture">图片上传:</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="modify_fileupload" type="file" 
+								name="files[]" data-url="/upload" onchange="PreviewImg(this,'editPreview')" /> 	
+								<input type="hidden" name="picture" id="modify_picture" />
+								<label class="label label-warning">请不要上传超过10M的图片</label>
+							</div>
+							<label class="col-sm-2 control-label"></label>
+							<div class="col-sm-10">
+								<img id="editPreview"></img>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-success" id="btn_update">修改</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 货品所在货架列表信息 -->
+	<div class="modal fade" id="modal_stock" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">货品货架分布列表</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_stock" class="form-horizontal">															
+						<div class="tab-pane" id="tab" style="text-align:left">							
+							<!-- <label>货位详情</label>  -->
+							<table border="1" id="stock_detail" style="border-collapse:collapse;  width: 100%;">
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default"
+						data-dismiss="modal">关闭</button>
+					<button type="submit" class="btn btn-success"
+						id="btn_print">打印</button>
+				</div>
+			</div>	
+		</div>
+	</div>
+	
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='货品添加成功', style='success',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='货品添加失败，请重新提交或者联系客服处理！', style='warning',url='')"></div>
+	<nav th:replace="fragments/footer :: footer"></nav>
+	
+	<script type="text/javascript">
+		function GetQueryString(name) {
+			/*<![CDATA[*/
+			/*使用inline js, 否则thymeleaf无法解析'&'、'<'等运算符*/
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg); //获取url中"?"符号后的字符串并正则匹配
+			var context = "";
+			if (r != null) {
+				context = r[2];
+			}
+			reg = null;
+			r = null;
+			return context == null || context == "" || context == "undefined" ? "" : context;
+			/*]]>*/
+		}
+		
+		var currentPage = GetQueryString("page") == "" ? "0" :GetQueryString("page").split(",")[0];
+		var defaultSize = 20;
+		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
+		
+		function PreviewImg(imgFile,id)
+	    {    
+	    	var url; 
+	    	if (navigator.userAgent.indexOf("MSIE")>=1) { // IE 
+	    	url = document.getElementById(imgFile.id).value; 
+	    	} else if(navigator.userAgent.indexOf("Firefox")>0) { // Firefox 
+	    	url = window.URL.createObjectURL(document.getElementById(imgFile.id).files.item(0)); 
+	    	} else if(navigator.userAgent.indexOf("Chrome")>0) { // Chrome 
+	    	url = window.URL.createObjectURL(document.getElementById(imgFile.id).files.item(0)); 
+	    	} 
+	     	var newPreview = document.getElementById(id);
+	     	newPreview.src = url;
+	     	newPreview.style.height = '150px';
+	     	newPreview.style.width = '200px';
+	    }
+		
+		$(function() {
+			if(document.getElementById('currentPage'))
+				document.getElementById('currentPage').innerText = Number(currentPage) + 1;
+			if(document.getElementById('totalPage'))
+				document.getElementById('totalPage').innerText = Number(maxPage) + 1;
+			
+			$("#filter_stock_state").val(
+					GetQueryString('state') == "" ? "default"
+							: GetQueryString('state'));
+			
+			$("#filter_time").val(
+					GetQueryString('time') == "" ? "default"
+							: GetQueryString('time'));
+			
+			//下一页
+			$("#page_down").click( function() {
+				currentPage = ++currentPage;
+				if (maxPage >= currentPage) {
+					var $btn = $(this).button('loading');
+					/*<![CDATA[*/
+					location.href = 'wares?page=' + currentPage + ',' + defaultSize + "&time="
+					+ $("#filter_time").val() + "&stock_state="+ $("#filter_state").val();
+					/*]]>*/
+				$btn.button('reset');
+				} else {
+					currentPage = --currentPage;
+					$("#page_down").popover('show');
+					return;
+				}
+			});
+			//上一页
+			$("#page_up").click( function(){
+				currentPage = --currentPage;
+				if (Math.max(currentPage, 0) == currentPage) {
+					var $btn = $(this).button('loading');
+					/*<![CDATA[*/
+					location.href = 'wares?page=' + currentPage + ',' + defaultSize + "&time="
+					+ $("#filter_time").val() + "&stock_state="+ $("#filter_state").val();
+					/*]]>*/
+					$btn.button('reset');
+				} else {
+					currentPage = ++currentPage;
+					$("#page_up").popover('show');
+					return;
+				}
+			});
+			
+			$("#btn_filter").click(
+					function() {
+						/*<![CDATA[*/
+						location.href = 'wares?page=0' + ',' + defaultSize + "&time="
+						+ $("#filter_time").val() + "&state="+ $("#filter_stock_state").val()
+								
+						/*]]>*/
+					});
+			
+			//添加货品
+			$('#btn_create').click(function() {
+				/*<![CDATA[*/
+				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+	               var data = $("#form_create").serializeObject();
+	               var $btn = $(this).button('loading');
+	               
+	               var files = document.getElementById("fileupload").files;
+					if(files.length!=0)
+					{
+						var type = files[0].type.toUpperCase();
+						if(files[0].size < 10485760&&(type=="IMAGE/JPG"||type=="IMAGE/JPEG"||type=="IMAGE/PNG"))
+						{
+							$('#fileupload').fileupload().fileupload('add', {
+								files : files,
+								url : CONSTS.BASE_URL + "/upload"
+							}).bind('fileuploaddone', function (e,result) {
+								data.picture =  files[0].name;					
+								$.ajax({
+									type : "post",
+									url : CONSTS.BASE_API + '/ware/',
+									async : false,
+									data : JSON.stringify(data),
+									contentType : "application/json; charset=utf-8",
+									success : function(data) {
+										 if(data.message != "good"){
+												$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+						                        $("#modal_failure").modal("show");
+											}
+											else {
+												$("#modal_success").modal('show');
+						                    	 $("#modal_success").on('hide.bs.modal', function() {
+						                         location.reload();
+						                     });
+											}
+									},
+									fail : function(data) {
+										$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+				                        $("#modal_failure").modal("show");
+									}
+								}); 
+					    	});
+						}
+						else{
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息：错误的图片格式或大小!";
+	                        $("#modal_failure").modal("show");
+						}
+					}
+					else{
+              	 $.ajax({
+	                   type : "post",
+	                   url : CONSTS.BASE_API + 'ware',
+	                   async : false,
+	                   data : JSON.stringify(data),
+	                   contentType : "application/json; charset=utf-8",
+	                   success : function(data) {
+	                	   if(data.message != "good"){
+								$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+		                        $("#modal_failure").modal("show");
+							}
+							else {
+								$("#modal_success").modal('show');
+		                    	 $("#modal_success").on('hide.bs.modal', function() {
+		                         location.reload();
+		                     });
+							}
+	                   },
+	                   fail : function(data) {
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+	                        $("#modal_failure").modal("show");
+						}
+	               });
+					}
+	               $btn.button('reset');
+	               /*]]>*/
+	           });
+			
+		 //查看货品详情
+		 $('#modal_detail').on('show.bs.modal', function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+
+				///获取货品详细信息
+				var url = CONSTS.BASE_API + '/ware/'
+						+ target.data('id');
+				$.get(url, function(data, status) {
+					if (data.code == 0) {
+						var ware = data.result;
+						var table = document.getElementById("ware_detail");								
+			        	var body = table.tBodies[0];
+			        	reset(body);
+			        	var rowIndex = body.childElementCount;
+			        	body.insertRow(rowIndex);
+			        	
+			        	
+			        	body.rows[rowIndex].insertCell(0)
+			        	var e = document.createElement("img")
+			        	var a = CONSTS.BASE_URL+'upload/get/'+ ware.picture
+			        	e.setAttribute("src", a )
+			        	e.setAttribute("style", "height:165px; width:165px")
+					    body.rows[rowIndex].cells[0].appendChild(e);
+			        	body.rows[rowIndex].cells[0].setAttribute("rowspan", "3")
+			        	body.rows[rowIndex].insertCell(1)
+			        	body.rows[rowIndex].cells[1].innerText = "库存状态：" + ware.stock_state;
+			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
+			        	body.rows[rowIndex].insertCell(2)
+			        	body.rows[rowIndex].cells[2].innerText = "ID：" + ware.id;
+			        	body.rows[rowIndex].cells[2].width = "40%"
+			        	
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "名称：" + ware.name;
+			        	body.rows[rowIndex].insertCell(1)
+			        	body.rows[rowIndex].cells[1].innerText = "编码：" + ware.product_code;
+			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
+			        	
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "重量：" + ware.weight;
+			        	body.rows[rowIndex].cells[0].setAttribute("style", "height:60px;")
+			        	body.rows[rowIndex].insertCell(1)
+			        	body.rows[rowIndex].cells[1].innerText = "单位：" + ware.unit_name;
+			        	
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "堆码数：" + ware.stack_number;
+			        	body.rows[rowIndex].insertCell(1)
+			        	body.rows[rowIndex].cells[1].innerText = "货品批次：" + ware.batch_number;
+			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
+			        	body.rows[rowIndex].insertCell(2)
+			        	body.rows[rowIndex].cells[2].innerText = "存放位置：" + ware.pallet_tags_number;
+			        	
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "创建时间：" + dateformat(ware.created_time);
+			        	body.rows[rowIndex].cells[0].setAttribute("style", "height:60px;")
+			        	body.rows[rowIndex].cells[0].setAttribute("colspan", "3")
+					}
+				}, 'json');
+			});
+		 
+			//货品所在货架的列表详情			  
+			$('#modal_stock').on('show.bs.modal',function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+				var url =  CONSTS.AGVS_URL + '/ui/data/pod?product='  + target.data('id');
+				$.get(url, function(data, status) {
+					if (data.code == 0) {
+			        	var table = document.getElementById("stock_detail");
+			        	var body = table.tBodies[0];
+			        	reset(body);
+			        	var rowIndex = body.childElementCount;
+			        	var racks = data.result;
+			        	for(i = racks.length-1; i >= 0; i--){
+			        		if(racks[i].count == 0){
+			        			continue;
+			        		}
+							body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "货架编号：" + racks[i].id;
+				        	body.rows[rowIndex].cells[0].width = "50%" ;
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "存放数量：" + racks[i].count;
+				        	rowIndex += 1;
+				        	body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "堆码数：" + racks[i].stackNumber;
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "层数：" + racks[i].level;
+				        	rowIndex += 1;
+				        	body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "列：" + racks[i].colum;
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "朝向：" + racks[i].faceName;
+				        	rowIndex += 1;
+				        	body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "----";
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "----";
+				        	rowIndex += 1;
+			        	}
+					}}, 'json');
+				});
+		 
+		 	//修改货品信息
+		 	$('#modal_modify').on('show.bs.modal', function(event) {
+		 		var target = $(event.relatedTarget);
+		 		$(this).data('id', target.data('id'));
+		 		//获取货品信息
+		 		/*<![CDATA[*/
+						/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+		 		var url = CONSTS.BASE_API + '/ware/' + target.data('id');
+		 		$.get(url, function(data, status) {
+		 			if (data.code == 0) {
+		 				var ware = data.result;
+		 				$("#modify_code").val(ware.product_code);
+		 				$("#modify_name").val(ware.name);
+		 				$("#modify_stock_state").val(ware.stock_state);
+		 				$("#modify_stack_number").val(ware.stack_number);
+		 				$("#modify_weight").val(ware.weight);
+		 				$("#modify_unit_name").val(ware.unit_name);
+		 				$("#modify_production_date").val(dateformat(ware.created_time));
+		 				$("#modify_batch_number").val(ware.batch_number);
+		 				$("#modify_pallet_tags_number").val(ware.pallet_tags_number);
+		 				
+		 				$("#modify_picture").val('');
+						$("#editPreview").attr('src','');
+						$("#editPreview").attr('height','');
+						$("#editPreview").attr('width','');
+						if(ware.picture!=null && ware.picture!=''){
+							$("#editPreview").attr('src',CONSTS.BASE_URL+'upload/get/'+ware.picture); 
+							$("#editPreview").attr('height','150px');
+							$("#editPreview").attr('width','200px');
+							$("#modify_picture").val(ware.picture);
+						}
+		 			}
+		 		}, 'json');
+		 		/*]]>*/
+		 	});
+		 	
+		 	//修改货品信息
+		 	$("#btn_update").click(function() {
+		 		/*<![CDATA[*/
+				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+		 		var id = $("#modal_modify").data('id');
+		 		var url = CONSTS.BASE_API + '/ware/' + id;
+		 		var data = $("#form_modify").serializeObject();
+		 		var files = document.getElementById("modify_fileupload").files;
+				var picId = $("#modify_picture").val();
+				if(files.length!=0)
+				{
+					var type = files[0].type.toUpperCase();
+					if(files[0].size < 10485760&&(type=="IMAGE/JPG"||type=="IMAGE/JPEG"||type=="IMAGE/PNG"))
+					{
+						$('#fileupload').fileupload().fileupload('add', {
+							formData : {"id":picId},
+							files : files,
+							url : CONSTS.BASE_URL +"/upload"
+						}).bind('fileuploaddone', function (e,result) {
+							data.picture = files[0].name;
+							$.ajax({
+								type : "post",
+								url : url,
+								async : false,
+								data : JSON.stringify(data),
+								contentType : "application/json; charset=utf-8",
+								success : function(data) {
+									 $("#modal_success").modal('show');
+				                     $("#modal_success").on('hide.bs.modal', function() {
+				                         location.reload();
+				                     });
+								},
+								fail : function(data) {
+									$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+			                        $("#modal_failure").modal("show");
+								}
+							}); 
+				    	});
+					}
+					else{
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息：错误的图片格式或大小!";
+                        $("#modal_failure").modal("show");
+					}
+				}
+				else{
+					$.ajax({
+				
+		 			type : "post",
+		 			url : url,
+		 			async : false,
+		 			data : JSON.stringify(data),
+		 			contentType : "application/json; charset=utf-8",
+		 			success : function(data) {
+		 				location.reload();
+		 			},
+		 			fail : function(data) {
+		 				alert(data);
+		 			}
+		 		});
+				}
+				/*]]>*/
+		 	});
+		 	
+		 	//删除货品
+		 	//传参数
+		 	$('#modal_delete').on('show.bs.modal', function(event) {
+		 		$(this).find(".warning-message").addClass('hidden').html('');
+		 		$(this).data('id', $(event.relatedTarget).data('id'));
+		 	});
+		 	//处理删除
+		 	var modal = $("#modal_delete");
+		 	modal.find(".btn-submit").click( function(event) {
+		 		var submit = $(event.currentTarget).button('loading');
+		 		$.ajax({
+		 			type : "delete",
+		 			url : CONSTS.BASE_API + '/ware/' + modal.data('id'),
+		 			contentType : "application/json; charset=utf-8",
+		 			success : function(data) {
+		 				location.reload();
+		 			},
+		 			error : function(data) {
+		 				modal.find(".warning-message").html('删除失败请稍后再试，或者联系管理员.').removeClass('hidden');
+		 			},
+		 			complete : function() {
+		 				submit.button('reset');
+		 			}
+		 		});
+		 	}); 	
+			
+			//货品生产日期
+			$('#datetimepicker').datetimepicker({
+				format : 'YYYY-MM-DD HH:mm',
+				locale: 'zh-cn'
+			});
+			$("#production_date").click(	
+				function() {
+					$('#datetimepicker').data("DateTimePicker").show();
+			});
+		});
+		
+		$('#btn_print').click(function () {
+			var modal = $('#modal_stock');
+			/* document.getElementById(id).value =  */
+			var url = [location.protocol, 
+			           '//', location.host, 
+			           location.pathname.indexOf("missions") >= 0 ? '/mission' : '', 
+			           '/printer'].join('');
+			var printWindow = window.open(url);
+			printWindow.onload = function () {
+			var table = modal.find('.tab-pane').html();
+			printWindow.document.body.innerHTML = table;// + "<p></p><p></p>" + table; ///
+			printWindow.print();
+			};
+		});
+		
+		//格式化日期
+		Date.prototype.format = function(f) {
+			var o = {
+				"M+" : this.getMonth() + 1, //month
+				"d+" : this.getDate(), //day
+				"h+" : this.getHours(), //hour
+				"m+" : this.getMinutes(), //minute
+				"s+" : this.getSeconds(), //second
+				"q+" : Math.floor((this.getMonth() + 3) / 3), //quarter
+				"S" : this.getMilliseconds()
+			//millisecond
+			}
+			if (/(y+)/.test(f))
+				f = f.replace(RegExp.$1, (this.getFullYear() + "")
+						.substr(4 - RegExp.$1.length));
+			for ( var k in o)
+				if (new RegExp("(" + k + ")").test(f))
+					f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
+							: ("00" + o[k]).substr(("" + o[k]).length));
+			return f
+		}
+
+		function dateformat(time) {
+			var d = new Date();
+			d.setTime(time);
+			var date = d.format('yyyy-MM-dd hh:mm:ss');
+			return date;
+		}
+		
+		$(function() {
+			/*<![CDATA[*/
+			/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+			//$(function () { $("[data-toggle='tooltip']").tooltip(); });
+			// 获取到当前IMG对象
+			var obj = document.getElementsByClassName("bgimg");
+			for(var i=0;i<obj.length;i++){
+				// 获取到IMG对象的直接父级对象元素
+					var parentEl = obj[i].parentElement;
+					obj[i].style.height=parentEl.offsetHeight-10+"px";
+					obj[i].style.width=parentEl.offsetWidth-10+"px";
+				}
+			/*]]>*/
+		});
+		
+		function reset(body) {
+			var rowIndex = body.childElementCount;
+				if (rowIndex > 0)
+					for (var i = rowIndex - 1; i >= 0; i--)
+						body.deleteRow(i);
+		}
+	</script>
+</body>
+</html>

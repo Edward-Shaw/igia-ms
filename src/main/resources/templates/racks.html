@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="fragments/head :: head (title='货架管理')">
+</head>
+
+<body>
+	<nav th:replace="fragments/navbar :: navbar"></nav>
+	<div class="container table-responsive"
+		style="width: 1024px; margin-bottom: 60px;">
+		<div class="form-inline">
+			<div class="form-group form-group-sm">
+				<label class="control-label">货架类型</label> <select
+					class="form-control" id="filter_contract"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">点击筛选</option>
+					<option value="1">电器类货架</option>
+					<option value="2">食品类货架</option>
+				</select>
+			</div>
+			<div class="form-group form-group-sm">
+				<label class="control-label">货架型号</label>
+				 <select class="form-control" id="filter_code"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">点击筛选</option>
+					<option value="1">A</option>
+					<option value="2">B</option>
+				</select>
+			</div>
+			<div class="form-group form-group-sm">
+				<input type="text" class="form-control" id="search_input" onkeypress="getKey()"
+					placeholder="输入货架类型或者型号进行搜索" />
+			</div>
+			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
+			<button sec:authorize="${hasPermission('sample', 'new')}" class="btn btn-sm btn-success btn-primary" id="new"
+				style="float: right; position: relative;" data-toggle="modal"
+				data-target="#myModal">新增货架</button>
+		</div>
+
+		<!-- 表格 -->
+		<input type="hidden" id="maxPage" th:attr="value=${maxPage}" />
+		<table class="table table-condensed  table-hover"
+			style="margin-top: 10px;">
+			<thead>
+				<tr class="active">
+					<td class="cell">货架编号</td>
+					<td class="cell">货架类型</td>
+					<td class="cell">货架型号</td>
+					<td class="cell">货架位置</td>
+					<td align="center" style="width: 20%;">操作</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="rack : ${racks}">
+					<td class="cell" th:text="${rack.code}" data-toggle="tooltip" th:title="${rack.code}">20151028001</td>
+					<td class="cell" th:text="${rack.type}" data-toggle="tooltip" th:title="${rack.type}">电阻器</td>
+					<td class="cell jump" th:text="${rack.version}" data-toggle="tooltip" th:title="${rack.version}" th:attr="name=${rack.version}">在库</td>
+					<td class="cell" th:text="${rack.location}" data-toggle="tooltip" th:title="${rack.location}">待检测</td>
+					<td align="center">
+						<div class="btn-group">
+							<button type="button" class="btn btn-success btn-xs"
+								th:attr="data-id=${rack.id}" data-toggle="modal"
+								data-target="#modal_detail">详情</button>
+							<button type="button" class="btn btn-default btn-xs"
+								th:attr="data-id=${rack.id}" data-toggle="modal"
+								data-target="#modal_modify">修改</button>
+							<button type="button" class="btn btn-danger btn-xs"
+								th:attr="data-id=${rack.id}" data-toggle="modal"
+								data-target="#modal_delete">作废</button>
+						</div>
+					</td>
+				</tr>
+				<tr th:if="${#lists.isEmpty(racks)}">
+					<td colspan="5">
+						<div class="alert alert-info" role="alert">
+							不存在任何货架记录, <a data-toggle="modal" data-target="#myModal"><strong>现在创建</strong></a>?
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div th:if="${not#lists.isEmpty(racks)}" style="text-align: center;">
+			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
+				data-trigger="focus" data-placement="left" data-toggle="popover"
+				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
+			<label id="totalPage">总页数</label> <a tabindex="0" role="button"
+				class="btn btn-success" id="page_down" data-trigger="focus"
+				data-placement="right" data-toggle="popover" data-content="没有下一页了">下一页</a>
+		</div>
+	</div>
+
+	<!-- 新增货架 -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel"
+						style="margin-top: 0px; text-align: center;">
+						<strong>新建货架</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" id="form_create" method="POST"
+						action="./code">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="code">货架编号:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="code" name="code"
+									placeholder="请输入货架编号" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="type">货架类型:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="type"
+									name="type" placeholder="请输入货架类型" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="version">货架型号:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="version"
+									name="version" placeholder="请输入货架型号" /> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="location">货架位置:</label>
+							<div class="col-sm-10">
+								<input class="form-control" type="text" id="location"
+									name="location" placeholder="请输入货架位置" /> 
+							</div>
+						</div>
+						<div align="right">
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">取消</button>
+							<button type="submit" class="btn btn-success" id="btn_create"
+								data-dismiss="modal" data-loading-text="提交中...">确定</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 样品详情 -->
+	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">样品详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_detail" class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">货架编号</label>
+							<div class="col-sm-10">
+								<p class="form-control-static" id="detail_code"></p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">货架类型</label>
+							<div class="col-sm-10">
+								<p class="form-control-static" id="detail_type"></p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">货架型号</label>
+							<div class="col-sm-10">
+								<p class="form-control-static" id="detail_version"></p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">货架位置</label>
+							<div class="col-sm-10">
+								<p class="form-control-static" id="detail_location"></p>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 样品修改 -->
+	<div class="modal fade" id="modal_modify" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">样品修改</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_modify" class="form-horizontal">
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">货架编号</label>
+							<div class="col-sm-10">
+								<input id="modify_code" name="code" type="text"
+									class="form-control" placeholder="货架编号" ></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">货架类型</label>
+							<div class="col-sm-10">
+								<input id="modify_type" name="type" type="text"
+									class="form-control" placeholder="货架类型"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">货架型号</label>
+							<div class="col-sm-10">
+								<input id="modify_version" name="version" type="text"
+									class="form-control" placeholder="货架型号"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="modify-description" class="col-sm-2 control-label">货架位置</label>
+							<div class="col-sm-10">
+								<input id="modify_location" name="location" type="text"
+									class="form-control" placeholder="货架位置"></input>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="submit" class="btn btn-success" id="btn_update">修改</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 库存状态 -->
+	<div class="modal fade" id="modal_stock" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog" style="width: 500px;">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-body">
+
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">请选择样品库存状态</h4>
+					<form class="form-horizontal" id="form_create" method="post">
+						<div class="form-group form-group-sm" align="center">
+							<select class="form-control" id="stockingState"
+								name="stockingState" style="margin-top: 30px; width: 200px;">
+								<option>在库</option>
+								<option>出库检测</option>
+								<option>封存</option>
+								<option>返样</option>
+							</select>
+						</div>
+						<div style="text-align: right; margin-top: 50px;">
+							<button type="button" class="btn btn-default btn-sm"
+								data-dismiss="modal">取消</button>
+							<button type="button" class="btn btn-success btn-sm"
+								id="state_update">修改</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 合同详情 -->
+	<div class="modal fade" id="contract_details" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">合同详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_details" class="form-horizontal">																	
+						<div class="tab-pane" id="tab" style="text-align:left">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">合同编号</label>
+									<div class="col-sm-10">
+										<p class="form-control-static" id="contract_code"></p>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">委托单号</label>
+									<div class="col-sm-10">
+										<p class="form-control-static" id="contract_orderId"></p>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">合同状态</label>
+									<div class="col-sm-10">
+										<p class="form-control-static" id="contract_state"></p>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">支付状态</label>
+									<div class="col-sm-10">
+										<p class="form-control-static" id="contract_payState"></p>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">创建时间</label>
+									<div class="col-sm-10">
+										<p class="form-control-static" id="contract_time"></p>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">附件</label>
+									<div class="col-sm-10" id="contract_attach">
+										<!-- <p class="form-control-static" id="detail_attach"></p> -->
+									</div>
+								</div>
+							</div>
+					</form>
+				</div>				
+			</div>			
+		</div>
+	</div>
+
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
+	<nav th:replace="fragments/footer :: footer"></nav>
+	<script type="text/javascript">
+		function GetQueryString(name) {
+			/*<![CDATA[*/
+			/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg); //获取url中"?"符后的字符串并正则匹配
+			var context = "";
+			if (r != null) {
+				context = r[2];
+			}
+			reg = null;
+			r = null;
+			return context == null || context == "" || context == "undefined" ? ""
+					: context;
+			/*]]>*/
+		}
+
+		var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString(
+				"page").split(",")[0];
+		var defaultSize = 20;
+		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
+
+		/* 页面文档结构加载完成执行下面： */
+		$(function() {
+			if (document.getElementById('currentPage'))
+				document.getElementById('currentPage').innerText = Number(currentPage) + 1;
+			if (document.getElementById('totalPage'))
+				document.getElementById('totalPage').innerText = Number(maxPage) + 1;
+
+			$("#page_down").click(
+					function() {
+						currentPage = ++currentPage;
+						if (maxPage >= currentPage) {
+							var $btn = $(this).button('loading');
+							/*<![CDATA[*/
+							location.href = 'racks?page=' + currentPage + ',' + defaultSize; 
+							/*]]>*/
+							$btn.button('reset');
+						} else {
+							currentPage = --currentPage;
+							$("#page_down").popover('show');
+							return;
+						}
+					});
+
+			$("#page_up").click(
+					function() {
+						currentPage = --currentPage;
+						if (Math.max(currentPage, 0) == currentPage) {
+							var $btn = $(this).button('loading');
+							/*<![CDATA[*/
+							location.href = 'racks?page=' + currentPage + ',' + defaultSize;
+							/*]]>*/
+							$btn.button('reset');
+						} else {
+							currentPage = ++currentPage;
+							$("#page_up").popover('show');
+							return;
+						}
+					});
+
+			$('#form_create')
+					.formValidation(
+							{
+								framework : 'bootstrap',
+								icon : {
+									/*   valid: 'glyphicon glyphicon-ok', */
+									invalid : 'glyphicon glyphicon-remove',
+									validating : 'glyphicon glyphicon-refresh'
+								},
+								fields : {
+									code : {
+										validators : {
+											notEmpty : {
+												message : '请输入货架编号'
+											},
+
+										}
+									},
+									type : {
+										validators : {
+											notEmpty : {
+												message : '请输入货架类型'
+											},
+
+										}
+									},
+									version : {
+										validators : {
+											notEmpty : {
+												message : '请输入货架型号'
+											},
+
+										}
+									},
+									location : {
+										validators : {
+											notEmpty : {
+												message : '请输入货架位置'
+											},
+
+										}
+									},
+								}
+							});
+			
+			function inArray(array,value)
+		    {
+		        var len=array.length;
+		        for(var i=len-1;i>=0;i--)
+		        {
+		            if(array[i]==value)
+		                return true;
+		        }
+		        return false;
+		    }
+				
+			$("#btn_filter").click(
+					function() {
+						/*<![CDATA[*/
+						location.href = 'racks?page=0' + ',' + defaultSize
+								+ "&version="
+								+ $("#filter_code").val()
+								
+						/*]]>*/
+					});
+			
+			$("#filter_code").val(
+					GetQueryString('version') == "" ? "default"
+							: GetQueryString('version'));
+			
+			var url2 = CONSTS.BASE_API + '/rack/list'
+ 			$.get(url2, function(data, status) {
+ 				if (data.code == 0) {
+ 					var rack = data.result;
+ 					var counts;
+ 					counts=rack.length
+ 					
+ 					var i;  
+ 					for (i=counts-1;i >=0; i--) { 
+ 						$('#filter_code').append($("<option/>").val(rack[i].code).text(rack[i].code));
+ 						};
+ 				}
+				$("#filter_code").val(
+ 		 	 				GetQueryString('version') == "" ? "default"
+ 		 	 						: GetQueryString('version'));
+ 	 			
+ 		    }, 'json');
+			
+			$('#btn_create').click(function() {
+				$('#form_create').data('formValidation').validate();
+				var fv = $('#form_create').data('formValidation');
+				var data = $("#form_create").serializeObject();
+				if (fv.isValid()) {
+					var $btn = $(this).button('loading');
+					$.ajax({
+						type : "post",
+						url : CONSTS.BASE_API + '/rack/',
+						async : false,
+						data : JSON.stringify(data),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							location.reload();
+						}
+					});
+					$btn.button('reset');
+				}
+			});
+
+			//查看货架详情
+			 $('#modal_detail').on('show.bs.modal', function(event) {
+					var target = $(event.relatedTarget);
+					$(this).data('id', target.data('id'));
+
+					///获取货品详细信息
+					var url = CONSTS.BASE_API + '/rack/'
+							+ target.data('id');
+					$.get(url, function(data, status) {
+						if (data.code == 0) {
+							var rack = data.result;
+							$("#detail_code").text(rack.code);
+							$("#detail_type").text(rack.type);
+							$("#detail_version").text(rack.version);
+							$("#detail_location").text(rack.location);
+						}
+					}, 'json');
+				});
+			
+			 /*自动填充方法*/
+			$('#version').autocomplete({
+		         	 source: function(request, response) {
+		         			$.ajax({
+		       	            	type : "post",
+		       	                url: "api/rack/autocomplete",
+		       	                dataType: "json",
+		       	                data: {search:request.term,field:"code"},
+		       	                success: function(data) {
+		       	                	var array = new Array();
+		       	                    response($.map(data.result, function(item) {
+		       	                    	if(inArray(array,item.code))
+		       	                    		return;
+		       	                        array.push(item.code);
+		       	                     console.log(item)
+		        	                    	return {
+		   	                           			value: item.code
+		        	                        }
+		        	                }));
+		        	           }
+		        	     });
+		        	},
+		        });
+			 
+			function inArray(array,value)
+		    {
+		        var len=array.length;
+		        for(var i=len-1;i>=0;i--)
+		        {
+		            if(array[i]==value)
+		                return true;
+		        }
+		        return false;
+		    }
+			 
+			 	//修改货架信息
+			 	$('#modal_modify').on('show.bs.modal', function(event) {
+			 		var target = $(event.relatedTarget);
+			 		$(this).data('id', target.data('id'));
+			 		//获取货品信息
+			 		var url = CONSTS.BASE_API + '/rack/' + target.data('id');
+			 		$.get(url, function(data, status) {
+			 			if (data.code == 0) {
+			 				var rack = data.result;
+			 				$("#modify_code").val(rack.code);
+			 				$("#modify_type").val(rack.type);
+			 				$("#modify_version").val(rack.version);
+			 				$("#modify_location").val(rack.location);
+			 				
+			 			}
+			 		}, 'json');
+			 	});
+			 	
+			 	//修改货品信息
+			 	$("#btn_update").click(function() {
+			 		var id = $("#modal_modify").data('id');
+			 		var url = CONSTS.BASE_API + '/rack/' + id;
+			 		var data = $("#form_modify").serializeObject();
+			 		$.ajax({
+			 			type : "post",
+			 			url : url,
+			 			async : false,
+			 			data : JSON.stringify(data),
+			 			contentType : "application/json; charset=utf-8",
+			 			success : function(data) {
+			 				location.reload();
+			 			},
+			 			fail : function(data) {
+			 				alert(data);
+			 			}
+			 		});
+			 	});
+			 	
+			 	//删除货品
+			 	//传参数
+			 	$('#modal_delete').on('show.bs.modal', function(event) {
+			 		$(this).find(".warning-message").addClass('hidden').html('');
+			 		$(this).data('id', $(event.relatedTarget).data('id'));
+			 	});
+			 	//处理删除
+			 	var modal = $("#modal_delete");
+			 	modal.find(".btn-submit").click( function(event) {
+			 		var submit = $(event.currentTarget).button('loading');
+			 		$.ajax({
+			 			type : "delete",
+			 			url : CONSTS.BASE_API + '/rack/' + modal.data('id'),
+			 			contentType : "application/json; charset=utf-8",
+			 			success : function(data) {
+			 				location.reload();
+			 			},
+			 			error : function(data) {
+			 				modal.find(".warning-message").html('删除失败请稍后再试，或者联系管理员.').removeClass('hidden');
+			 			},
+			 			complete : function() {
+			 				submit.button('reset');
+			 			}
+			 		});
+			 	}); 	
+				
+				//货品生产日期
+				$('#datetimepicker').datetimepicker({
+					format : 'YYYY-MM-DD HH:mm',
+					locale: 'zh-cn'
+				});
+				$("#production_date").click(	
+					function() {
+						$('#datetimepicker').data("DateTimePicker").show();
+				});
+			});
+		
+		 	$('.jump').click(function() {
+		 		alert($(this).attr("name"))
+		 		var url =  CONSTS.BASE_API  + '/rack/jump/' + $(this).attr("name");
+		 		$.get(url, function(data, status){
+					if(data.code == 0){
+						var rack = data.result;
+						window.location.href='level.html?id='+ rack.id;
+					}
+				}, 'json');
+				
+			 });
+			
+			//格式化日期
+			Date.prototype.format = function(f) {
+				var o = {
+					"M+" : this.getMonth() + 1, //month
+					"d+" : this.getDate(), //day
+					"h+" : this.getHours(), //hour
+					"m+" : this.getMinutes(), //minute
+					"s+" : this.getSeconds(), //second
+					"q+" : Math.floor((this.getMonth() + 3) / 3), //quarter
+					"S" : this.getMilliseconds()
+				//millisecond
+				}
+				if (/(y+)/.test(f))
+					f = f.replace(RegExp.$1, (this.getFullYear() + "")
+							.substr(4 - RegExp.$1.length));
+				for ( var k in o)
+					if (new RegExp("(" + k + ")").test(f))
+						f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
+								: ("00" + o[k]).substr(("" + o[k]).length));
+				return f
+			}
+
+			function dateformat(time) {
+				var d = new Date();
+				d.setTime(time);
+				var date = d.format('yyyy-MM-dd hh:mm:ss');
+				return date;
+			}
+	</script>
+</body>
+</html>

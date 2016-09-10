@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="fragments/head :: head (title='盘货')">
+</head>
+
+<body>
+	<nav th:replace="fragments/navbar :: navbar"></nav>
+	<div class="container table-responsive"
+		style="width: 1024px; margin-bottom: 60px;">
+		<div class="form-inline" >
+			<div class="form-group form-group-sm">
+					<label class="control-label">盘库单状态</label> <select
+						class="form-control" id="filter_state"
+						onchange="document.getElementById('btn_filter').click();">
+						<option value="default">状态筛选</option>
+						<option value="init">待盘库</option>
+						<option value="ing">正在盘库</option>
+						<option value="exception">盘库异常</option>
+						<option value="finished">盘库完成</option>
+						<option value="deleted">已作废</option>
+					</select>
+			</div>
+				<div class="form-group form-group-sm">
+					<label class="control-label">创建时间</label> <select class="form-control"
+						id="filter_time"
+						onchange="document.getElementById('btn_filter').click();">
+						<option value="default">全部</option>
+						<option value="today">今天</option>
+						<option value="yesterday">昨天</option>
+						<option value="this_week">本周</option>
+						<option value="this_month">本月</option>
+						
+					</select>
+				</div>
+				<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
+			<button class="btn btn-sm btn-success btn-primary" id="new"
+				style="float: right; position: relative;" data-toggle="modal"
+				data-target="#modal_create">新增盘库</button>
+			<button class="btn btn-sm btn-primary" id="batch"
+				style="float: right; position: relative; margin-right: 5px;" data-toggle="modal"
+				data-target="#excel_batch">导入Excel</button>
+		</div>
+
+		<!-- 表格 -->
+		<input type="hidden" id="maxPage" th:attr="value=${maxPage}" />
+		<table class="table table-condensed  table-hover"
+			style="margin-top: 10px;">
+			<thead>
+				<tr class="active">
+					<td style="text-align: left" class="cell">业务单类型</td>
+					<td class="cell">编号</td>
+					<td class="cell">创建时间</td>
+					<td class="cell">完成时间</td>
+					<!-- <td class="cell">完成时间</td>  -->
+					<td class="cell">状态</td>
+					<td align="right" style="width: 7%;">操作</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="check : ${checks}">
+					<td style="text-align: left" class="cell" th:text="${check.type}" data-toggle="tooltip" th:title="${check.type}">20151028001</td>
+					<td class="cell" th:text="${check.number}" data-toggle="tooltip" th:title="${check.number}">在库</td>
+					<td class="cell" th:text="${#calendars.format(check.createTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(check.createTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
+					<td class="cell" th:if="${check.finishTime != 0}" th:text="${#calendars.format(check.finishTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(check.finishTime, 'yyyy-MM-dd HH:mm:ss ')}">电阻器</td>
+					<td class="cell" th:if="${check.finishTime == 0}" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
+					<td class="cell" th:text="${check.state}" data-toggle="tooltip" th:title="${check.state}">待检测</td>
+					<td align="right">
+						<div class="btn-group">
+							<button type="button" class="btn btn-success btn-xs"
+								th:attr="data-id=${check.id}" data-toggle="modal"
+								data-target="#modal_detail">详情</button>
+							<!-- <button type="button" class="btn btn-default btn-xs"
+								th:attr="data-id=${check.id}" data-toggle="modal"
+								data-target="#modal_modify">修改</button>  -->
+							<button type="button" class="btn btn-danger btn-xs"
+								th:attr="data-id=${check.id}" data-toggle="modal"
+								data-target="#modal_delete">作废</button>
+						</div>
+					</td>
+				</tr>
+				<tr th:if="${#lists.isEmpty(checks)}">
+					<td colspan="6">
+						<div class="alert alert-info" role="alert">
+							还没有进行过盘库, <a data-toggle="modal" data-target="#modal_create"><strong>点此开始盘库</strong></a>?
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div th:if="${not#lists.isEmpty(checks)}" style="text-align: center;">
+			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
+				data-trigger="focus" data-placement="left" data-toggle="popover"
+				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
+			<label id="totalPage">总页数</label> <a tabindex="0" role="button"
+				class="btn btn-success" id="page_down" data-trigger="focus"
+				data-placement="right" data-toggle="popover" data-content="没有下一页了">下一页</a>
+		</div>
+	</div>
+
+	<!-- 新建盘库单 -->
+	<div class="modal fade " id="modal_create" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal_create"
+						style="margin-top: 0px; text-align: center;">
+						<strong>新建盘库单</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+				        <div class="control-group" id="fields">
+				            <div class="controls">
+				                <form role="form" autocomplete="off" id="form_create" class="form-inline form-horizontal">
+				                	<div class="form-group col-sm-12" >
+				                    	<label for="input_ware" class="col-sm-2 form-label control-label" style="width: 12%">货品:</label>
+				                        <input type="text" style="width: 30%;" class=" col-sm-2 form-control" id="input_ware" name="item[0].id" placeholder="请输入货品"></input>
+				                        <label for="input_quality" class="control-label form-label col-sm-2" style="width: 12%;display:none">数量:</label>
+				                        <input type="number" min="1" style="width: 12%;display:none" class=" col-sm-2 form-control" id="input_number" name="item[0].number" placeholder="请输入货品数量"></input>		                                
+				                        <label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%">库位:</label>
+				                        <select style="width: 20%;" class="col-sm-4  selectpicker" multiple="multiple" title="请选择库位" id="input_location" name="item[0].location" ></select>
+				                        <!-- <span class="input-group-btn btn-group-vertical col-sm-2 form-control" style="border:0"> -->
+			                                <span style="white-space:pre">   </span>
+			                                <button class="btn btn-success btn-add" type="button" style="height: 35px; width: 35px; text-align:center" >
+			                                    <span class="glyphicon-plus" style="font-size: 18px; text-align:center;"></span>
+			                                </button>
+				                        <!-- </span> -->
+				                    </div>
+				                    <div class="form-group col-sm-12 hide" id="itemTemplate" style="margin-top:15px">
+				                        <label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%">货品:</label>
+		                            	<input type="text" style="width: 30%;" class="col-sm-2 form-control" id="input_ware" name="id" placeholder="请输入货品"></input>
+		                            	<label for="input_quality" class="col-sm-2 control-label form-label" style="width: 12%;display:none">数量:</label>
+		                            	<input type="number" style="width: 12%;display:none" min="1" class="col-sm-2 form-control" id="input_number" name="number" placeholder="请输入货品数量"></input>		                                
+		                            	<label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%"  name = "label_location">库位:</label>
+		                            	<select style="width: 20%;" data-width="fit" class="col-sm-4 form-control " multiple="multiple" id="input_location" title="请选择库位" name="location" ><option>请选择库位</option></select>
+		                            	<span style="white-space:pre">   </span>
+		                            	<button class="btn btn-danger btn-remove" type="button" style="height: 35px; width: 35px">
+				                            <span class="glyphicon-minus" style="font-size: 18px;"></span>
+				                        </button>
+				                    </div>
+				                </form>
+				            </div>
+				        </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div align="center">
+						<button type="button" class="btn btn-default"
+							data-dismiss="modal">取消</button>
+						<button type="submit" class="btn btn-success" id="btn_create"
+							data-dismiss="modal" data-loading-text="提交中...">提交盘库单</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 盘库单详情 -->
+	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">盘库单详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_details" class="form-horizontal">																	
+						<div class="tab-pane" id="tab" style="text-align:left">
+							
+							<label>盘库单信息</label>
+							<table border="1" id="check_detail" style="border-collapse:collapse;  width: 100%;">
+								<tbody>
+								</tbody>
+							</table>
+							<label>货品盘库详情</label>
+							<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%;">
+								<tbody>
+								</tbody>
+							</table>
+							
+							</div>
+					</form>
+				</div>		
+				<div class="modal-footer" style="text-align:center">
+					<button type="submit" class="btn btn-success"
+						id="btn_print">打印</button>
+				</div>				
+			</div>			
+		</div>
+	</div>
+
+	<!-- 上传Excel表格盘库单列表 -->
+	<div class="modal fade" id="excel_batch" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel"
+						style="margin-top: 0px; text-align: center;">
+						<strong>批量导入盘库单</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" id="form_batch">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="state">是否立即执行盘库:</label>
+							<div class="col-sm-10">
+								<select class="form-control" id="state" name="state">
+									<option value="未审核">导入成功后即刻执行盘库</option>
+									<option value="审核中">手动触发盘库</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="attachment">盘库单:</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="fileupload" type="file"
+									name="files[]" data-url="/upload" multiple="multiple" /> <input
+									type="hidden" name="attachment_names" id="attachment_names" /> <label
+									class="label label-warning">请不要上传超过10M的附件(仅支持单个Excel文件上传)</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="attachment"></label>
+								<a href="/docs/check.xlsx">点此下载盘库单模板</a>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<div align="center">
+						<button type="button" class="btn btn-default"
+							data-dismiss="modal">取消</button>
+						<button type="submit" class="btn btn-success" id="btn_batch"
+							data-dismiss="modal" data-loading-text="提交中...">提交盘库单</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='盘库单提交成功', style='success',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='盘库单提交失败，请重新提交或者联系客服处理！', style='warning',url='')"></div>
+	<nav th:replace="fragments/footer :: footer"></nav>
+	<script type="text/javascript">
+	var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString(
+	"page").split(",")[0];
+	var defaultSize = 20;
+	var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
+	var autocompleteFlag = 0;
+	var map = {}
+	var itemIndex=0;
+	/* 页面文档结构加载完成执行下面： */
+	$(function() {
+		if (document.getElementById('currentPage'))
+			document.getElementById('currentPage').innerText = Number(currentPage) + 1;
+		if (document.getElementById('totalPage'))
+			document.getElementById('totalPage').innerText = Number(maxPage) + 1;
+		
+		$("#page_down").click( function() {
+			currentPage = ++currentPage;
+			if (maxPage >= currentPage) {
+				var $btn = $(this).button('loading');
+				/*<![CDATA[*/
+				location.href = 'check?page=' + currentPage + ',' + defaultSize + "&time="
+				+ $("#filter_time").val() + "&state="+ $("#filter_state").val(); 
+				/*]]>*/
+			$btn.button('reset');
+			} else {
+				currentPage = --currentPage;
+				$("#page_down").popover('show');
+				return;
+			}
+		});
+		//上一页
+		$("#page_up").click( function(){
+			currentPage = --currentPage;
+			if (Math.max(currentPage, 0) == currentPage) {
+				var $btn = $(this).button('loading');
+				/*<![CDATA[*/
+				location.href = 'check?page=' + currentPage + ',' + defaultSize + "&time="
+				+ $("#filter_time").val() + "&state="+ $("#filter_state").val();
+				/*]]>*/
+				$btn.button('reset');
+			} else {
+				currentPage = ++currentPage;
+				$("#page_up").popover('show');
+				return;
+			}
+		});
+	});
+	
+		var array3 = new Array();
+		var j=-1;
+		array3.push(0)
+			$(function(){
+				$('#btn_create').click(function() {
+					var itemNum = array3.length
+					for(i=array3.length-1;i>=0;i--){
+						document.getElementsByName('item[' + array3[i] + '].id')[0].name='item[' + i + '].id'
+						document.getElementsByName('item[' + array3[i] + '].id')[0].id='id'+ i +''
+						document.getElementsByName('item[' + array3[i] + '].location')[0].name='item[' + i + '].location'
+						document.getElementsByName('item[' + array3[i] + '].location')[0].id='input'+ i +''
+						document.getElementsByName('item[' + array3[i] + '].number')[0].name='item[' + i + '].number'
+						document.getElementsByName('item[' + array3[i] + '].number')[0].id='num'+ i +''
+					}
+					
+					for(m=array3.length-1; m>=0; m--){
+						if($("#input" + m + "").val().length > 1){
+							var oldNum = $("#num" + m + "").val()
+							var oldId = $("#id" + m + "").val()
+							var oldValue = $("#input" + m + "").val()
+							var newValue = $("#input" + m + "").val()[0]
+							
+							for(var k = $("#input" + m + "").val().length-1; k >= 1; k--){
+								
+							var $template
+							var $clone
+							$template = $('#itemTemplate'),
+				               $clone = $template
+				                .clone()
+				                .removeClass('hide')
+				                .removeAttr('id')
+				                .attr('data-item-index', itemIndex)
+				                .insertBefore($template);
+
+				                // Update the name attributes
+				                $clone.find('[name="number"]').val(map[oldValue[k]])   
+				                $clone.find('[name="location"]').append("<option value=" + oldValue[k] + " >Text</option>"); 
+				                $clone.find('[name="location"]').val(oldValue[k])
+				                $clone.find('[name="location"]').addClass("selectpicker")
+				                $clone.find('[name="id"]').val(oldId)
+				                $clone.find('[name="id"]').attr('name', 'item[' + itemNum + '].id').end()
+				                $clone.find('[name="location"]').attr('name', 'item[' + itemNum + '].location').end()
+				                $clone.find('[name="number"]').attr('name', 'item[' + itemNum + '].number').end();
+				                
+				                itemNum = itemNum + 1
+							}
+							$("#input" + m + "").val(newValue)
+						}
+					}
+					
+					var data = $("#form_create").serializeObject();
+					var $btn = $(this).button('loading');
+					console.log(data)
+					$.ajax({
+						type : "post",
+						url : CONSTS.BASE_API + '/check',
+						async : false,
+						data : JSON.stringify(data),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							
+							if(data.message != "good"){
+								$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+		                        $("#modal_failure").modal("show");
+							}
+							else {
+								$("#modal_success").modal('show');
+		                    	 $("#modal_success").on('hide.bs.modal', function() {
+		                         location.reload();
+		                     });
+							}
+						},
+						fail : function(data) {
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+	                        $("#modal_failure").modal("show");
+						}
+					});
+					$btn.button('reset');
+				});
+				
+				//手动增删进货单输入框
+				
+				var $template
+				var $clone
+				$(document).on('click', '.btn-add', function() {
+					
+				   itemIndex++;
+				   array3.push(itemIndex)
+	               $template = $('#itemTemplate'),
+	               $clone = $template
+	                .clone()
+	                .removeClass('hide')
+	                .removeAttr('id')
+	                .attr('data-item-index', itemIndex)
+	                .insertBefore($template);
+
+	                  // Update the name attributes
+	                
+	                $clone.find('[name="id"]').addClass("test").end()
+	                $clone.find('[name="id"]').attr("test",""+itemIndex+"").end()
+	                $clone.find('[name="id"]').attr('name', 'item[' + itemIndex + '].id').end()
+	               
+	                $('<select style="width: 30%;"  data-width="fit" class="col-sm-4 form-control location"   id="input' + itemIndex + '" title="请选择库位" name="item[' + itemIndex + '].location" ><option>请选择库位</option></select>').insertAfter($clone.find('[name="label_location"]'));
+	                $('#input'+itemIndex+'').attr("importantAttr2",""+itemIndex+"")
+	                  $clone.find('[name="location"]').hide().end()
+	                $clone.find('[name="number"]').attr('id', 'number'+ itemIndex +'').end();
+	                $clone.find('[name="number"]').attr('name', 'item[' + itemIndex + '].number').end();
+	                $clone.find('[id="input_ware"]').autocomplete({
+	           	       source: function(request, response) {
+	           	            $.ajax({
+	           	            	type : "post",
+	           	                url: "api/check/autocomplete",
+	           	                dataType: "json",
+	           	                data: {search:request.term,field:"productCode,name"},
+	           	                success: function(data) {
+	           	                	var array = new Array();
+	           	                    response($.map(data.result, function(item) {
+	           	                    	if(inArray(array,item.product_code))
+	           	                    		return;
+	           	                        array.push(item.product_code);
+	           	                     if(item.unit_name == "fan"){
+	       	                        	autocompleteFlag = 1;
+	       	                        }
+	       	                        else{
+	       	                        	autocompleteFlag = 0;
+	       	                        }
+	           	                    	return {
+	           	                            value: item.product_code + " " + item.name
+	           	                        }
+	           	                    }));
+	           	                }
+	           	            });
+	           	        },
+	          	    }); 
+	                
+	                $(".test").blur(function(){
+	                	var num = $(this).attr("test");
+	                	
+	                	var num2 = parseInt(num) + 1
+	                	if(!autocompleteFlag){
+	                		var wareId = document.getElementsByName("item["+num+"].id")[0].value.split(" ")[0]
+	                	}
+	                	else{
+	                		var wareId = document.getElementsByName("item["+num+"].id")[0].value.split(" ")[1]
+	                	}
+	                	if(wareId!=""){
+	        				document.getElementById("input"+ num +"").length=0;
+	        				if($("#input"+num2+"").attr("class") == undefined){
+		        				if($("#input"+num+"").attr("importantAttr") == undefined){
+		        					 var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
+		 	        				$.get(url, function(data, status) {
+		 	        					if (data.code == 0) {
+		 	        						var array = new Array();
+		 	        						var racks = data.result;
+		 	        						for(var key in racks){ 
+		 	        							var tmp = $.trim(racks[key]['id']);
+		 	        							var number = $.trim(racks[key]['count']);
+		 	        						
+		 	        							 map[tmp] = number
+		 	        							if(inArray(array,tmp))
+		 	        	                    		break;
+		 	        							 array.push(racks[key]['id']);
+		 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
+		 	        						} 
+		 	        						 $('#input'+num+'').selectpicker('refresh');
+		 	        						 
+		 	        					}
+		 	        				}, 'json');   
+		        				$clone.find('[name="item[' + num + '].location"]').remove().end()
+		        				$('<select style="width: 20%;"  class="col-sm-4  selectpicker location" multiple="multiple" id="input' + num + '" title="请选择库位" name="item[' + num + '].location" ></select>').insertAfter($clone.find('[name="label_location"]'));
+		    	                $('#input'+num+'').attr("importantAttr",""+num+"")
+		    	                $('#input'+num+'').attr("importantAttr2",""+num+"")
+		    	                $(".btn-add").removeAttr("disabled")
+		        				}
+		        				else{
+		        					var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
+		 	        				$.get(url, function(data, status) {
+		 	        					if (data.code == 0) {
+		 	        						
+		 	        						var array = new Array();
+		 	        						var racks = data.result;
+		 	        						for(var key in racks){ 
+		 	        							var tmp = $.trim(racks[key]['id']);
+		 	        							var number = $.trim(racks[key]['count']);
+		 	        						    map[tmp] = number
+		 	        							if(inArray(array,tmp))
+		 	        	                    		break;
+		 	        							 array.push(racks[key]['id']);
+		 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
+		 	        						} 
+		 	        						 $('#input'+num+'').selectpicker('refresh');
+		 	        						 
+		 	        					}
+		 	        				}, 'json');   
+		        				}
+		        			}
+	        				else{
+	        					var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
+	 	        				$.get(url, function(data, status) {
+	 	        					if (data.code == 0) {
+	 	        						
+	 	        						var array = new Array();
+	 	        						var racks = data.result;
+	 	        						document.getElementById("input"+ num +"").length=0;
+	 	        						for(var key in racks){ 
+	 	        							var tmp = $.trim(racks[key]['id']);
+	 	        							var number = $.trim(racks[key]['count']);
+	 	        							map[tmp] = number
+	 	        							if(inArray(array,tmp))
+	 	        	                    		break;
+	 	        							 array.push(racks[key]['id']);
+	 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
+	 	        						} 
+	 	        						 $('#input'+num+'').selectpicker('refresh');
+	 	        						 $('#input'+num+'').attr("name",'item[' + num + '].location')
+	 	        					}
+	 	        				}, 'json');   
+	        				}
+	        				$('.location').on('changed.bs.select',function(e){
+		 	                	/*<![CDATA[*/
+		 	                	   var a = $(this).val()[0]
+	 	                		   var b = $(this).attr("importantAttr2")
+		 	                	   $("#number"+ b +"").val(map[a])     
+		 	                	/*]]>*/
+		 	                });
+	        	        }
+	                });
+	            }).on('click', '.btn-remove', function() {
+	            	$(".btn-add").removeAttr("disabled")
+	            	// Remove button click handler
+	                   var $row  = $(this).parents('.form-group'),
+	                   index = $row.attr('data-item-index');
+	                   for(i=array3.length-1;i>=0;i--){
+	                	   if(array3[i]==index)
+	                		   j=i;
+	                   };
+	                   if(j!=-1){
+	                   array3.splice(j, 1)
+	                   }
+	                    // Remove element containing the fields
+	                   $row.remove();
+	            });
+			});
+		
+		$('#input_ware').blur(function(){
+			if(!autocompleteFlag){
+        		var wareId = $("#input_ware").val().split(" ")[0]
+        	}
+        	else{
+        		var wareId = $("#input_ware").val().split(" ")[1]
+        	}
+			if(wareId!=""){
+				document.getElementById("input_location").length=0;
+				var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
+				$.get(url, function(data, status) {
+					if (data.code == 0) {
+						
+						var array = new Array();
+						var racks = data.result;
+						for(var key in racks){ 
+							var tmp = $.trim(racks[key]['id']);
+							var number = $.trim(racks[key]['count']);
+ 						    map[tmp] = number
+							if(inArray(array,tmp))
+	                    		break;
+							 array.push(racks[key]['id']);
+							$("#input_location").append('<option>' + tmp + '</option>');
+						} 
+					}
+					$('#input_location').selectpicker('refresh');
+				}, 'json');
+	        }
+		});
+		
+		$('#input_location').on('changed.bs.select',function(e){
+         	/*<![CDATA[*/
+         	   var a = $(this).val()[0]
+         	  
+         	   $("#input_number").val(map[a])     
+         	
+         	
+         	/*]]>*/
+         });
+		
+		$('#btn_print').click(function () {
+			var modal = $('#modal_detail');
+			/* document.getElementById(id).value =  */
+			var url = [location.protocol, '//', location.host, location.pathname.indexOf("check") >= 0 ? '/check' : '', '/printer'].join('');
+			var printWindow = window.open(url);
+			printWindow.onload = function () {
+			var table = modal.find('.tab-pane').html();
+			printWindow.document.body.innerHTML = table;
+			printWindow.print();
+			};
+		});
+		
+		$("#filter_state").val(
+				GetQueryString('state') == "" ? "default"
+						: GetQueryString('state'));
+		
+		$("#filter_time").val(
+				GetQueryString('time') == "" ? "default"
+						: GetQueryString('time'));
+		
+		$("#btn_filter").click(
+				function() {
+					/*<![CDATA[*/
+					location.href = 'check?page=0' + ',' + defaultSize + 
+					"&time=" + $("#filter_time").val() + 
+					"&state=" + $("#filter_state").val()
+							
+					/*]]>*/
+				});
+		
+		$('#input_ware').autocomplete({
+        	 source: function(request, response) {
+      	            $.ajax({
+      	            	type : "post",
+      	                url: "api/check/autocomplete",
+      	                dataType: "json",
+      	                data: {search:request.term,field:"productCode,name"},
+      	                success: function(data) {
+      	                	var array = new Array();
+      	                    response($.map(data.result, function(item) {
+      	                    	if(inArray(array,item.product_code))
+      	                    		return;
+      	                        array.push(item.product_code);
+      	                        if(item.unit_name == "fan"){
+      	                        	autocompleteFlag = 1;
+      	                        }
+      	                        else{
+      	                        	autocompleteFlag = 0;
+      	                        }
+       	                    	return {
+  	                           			value: item.product_code + " " + item.name
+       	                        }
+      	                    }));
+       	           }
+       	     });
+       	},
+        	       
+       });
+		
+		//获取进货单详情		  
+		$('#modal_detail').on('show.bs.modal',function(event) {
+			var target = $(event.relatedTarget);
+			$(this).data('id', target.data('id'));
+			var url = CONSTS.BASE_API + '/check/' + target.data('id');
+			$.get(url,function(data, status) {
+				if (data.code == 0) {
+					var arr = new Array();
+					var map = {}
+					var check = data.result;								
+					//进货单详情的表格
+					console.log(check)
+					var table = document.getElementById("check_detail");								
+		        	var body = table.tBodies[0];
+		        	reset(body);
+		        	var rowIndex = body.childElementCount;
+		        	body.insertRow(rowIndex);
+		        	body.rows[rowIndex].insertCell(0)
+		        	body.rows[rowIndex].cells[0].innerText = "业务单类型：" + check.type;
+		        	body.rows[rowIndex].cells[0].width="50%";
+		        	body.rows[rowIndex].insertCell(1)
+ 						    body.rows[rowIndex].cells[1].innerText = "盘库单编号：" + check.no;
+		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
+		        	
+		        	rowIndex += 1;
+		        	body.insertRow(rowIndex);
+		        	body.rows[rowIndex].insertCell(0)
+		        	body.rows[rowIndex].cells[0].innerText = "盘库单状态：" + check.state;
+		        	body.rows[rowIndex].insertCell(1)
+		        	body.rows[rowIndex].cells[1].innerText = "货品种类：" + check.details.length;
+		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
+
+		        	rowIndex += 1;
+		        	body.insertRow(rowIndex);
+		        	body.rows[rowIndex].insertCell(0)
+		        	body.rows[rowIndex].cells[0].innerText = "创建时间：" + dateformat(check.create_time);
+		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
+		        	body.rows[rowIndex].cells[0].setAttribute("colspan", "2")
+
+		        	var table = document.getElementById("ware_detail");
+		        	var body = table.tBodies[0];
+		        	reset(body);
+		        	var rowIndex = body.childElementCount;
+		        	for(j = check.details.length-1; j>=0; j--){
+		        		if(inArray(arr,check.details[j].product_code)){
+		        			map[check.details[j].product_code] = map[check.details[j].product_code] + 1
+		        		}
+		        		else{
+		        		map[check.details[j].product_code] = 1	
+		        		arr.push(check.details[j].product_code)
+		        		}
+		        		
+		        	}
+		        	
+		        	for(i = arr.length-1; i>=0; i--){
+		        		var c = 1
+		        		for(j = check.details.length-1; j>=0; j--){
+		        			if(check.details[j].product_code == arr[i]){
+		        				if(c ==1){
+		        					body.insertRow(rowIndex);
+		        		        	body.rows[rowIndex].insertCell(0);
+		        		        	body.rows[rowIndex].cells[0].innerText = "货品名：" + check.details[j].product_name;
+		        		        	body.rows[rowIndex].cells[0].width = "50%" ;
+		        		        	body.rows[rowIndex].insertCell(1);
+		        		        	body.rows[rowIndex].cells[1].innerText = "货品编码：" + check.details[j].product_code;
+		        		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2")
+		        		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
+		        		        	
+		        		        	rowIndex += 1;
+		        				}
+		        				body.insertRow(rowIndex);
+		    		        	body.rows[rowIndex].insertCell(0)
+		    		        	body.rows[rowIndex].cells[0].innerText = "盘库库位：" + check.details[j].loc_no;
+		    		        	body.rows[rowIndex].insertCell(1)
+		    		        	body.rows[rowIndex].cells[1].innerText = "当前数量：" + check.details[j].quantity;
+		    		        	body.rows[rowIndex].insertCell(2)
+		    		        	body.rows[rowIndex].cells[2].innerText = "盘库数量：" + check.details[j].check_quantity;
+		    		        	body.rows[rowIndex].cells[2].setAttribute("style", "height:30px;")
+		    		        	
+		    		        	
+		    		        	rowIndex += 1;
+		    		        	c = c + 1; 
+		        			}
+						}
+		        		body.rows[rowIndex-1].setAttribute("style", "border-color:grey grey black grey")
+		        	}
+	        	}
+			}, 'json');
+		});
+		
+		function post(file_list) {
+			console.log(file_list);		
+			var attachment = $("#form_batch").serializeObject();
+			attachment['attachment_names'] = file_list[0];
+			$.ajax({
+				type : "post",
+				url : CONSTS.BASE_API + 'check/batch',
+				async : false,
+				data : JSON.stringify(attachment),
+				contentType : "application/json; charset=utf-8",
+				success : function(data) {
+					if (data.code != 0) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息："
+								+ data.message;
+						$("#modal_failure").modal("show");
+					} else {
+						$("#modal_success").modal('show');
+						$("#modal_success").on('hide.bs.modal', function() {
+							location.reload();
+						});
+					}
+				},
+				fail : function(data) {
+					alert(data);
+				}
+			});
+		}
+		
+		$('#btn_batch').click(function(){
+			var $btn = $(this).button('loading');
+			var length = document.getElementById("fileupload").files.length;
+			if (length == 0){
+				post();
+			}
+			else {
+				var i;
+				var files = document.getElementById("fileupload").files;
+				var filename = "";
+				for (i = files.length - 1; i >= 0; i--) {
+					if (files[i].size > 104857600) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息：请不要上传超过100M的文件";
+						$("#modal_failure").modal("show");
+						$btn.button('reset');
+						return;
+					}
+					filename = filename + files[i].name + "/";
+				}
+				attachment_names.value = filename.substring(0, filename.length - 1);
+				i = 1;
+				$('#fileupload').fileupload().fileupload(
+					'add',
+					{
+						files : files,
+						url : CONSTS.BASE_URL + "/upload"
+					}).bind('fileuploaddone',
+						function(e, data) {
+							if (i == length) {
+								post(data.result.result);
+							}
+							i++;
+						});
+			}
+			$btn.button('reset');
+		});
+		
+		//传参数
+		$('#modal_delete').on('show.bs.modal', function(event) {
+			$(this).find(".warning-message").addClass('hidden').html('');
+			$(this).data('id', $(event.relatedTarget).data('id'));
+		});
+
+		//处理删除
+		var modal = $("#modal_delete");
+		modal.find(".btn-submit").click(
+				function(event) {
+					var submit = $(event.currentTarget).button('loading');
+					$.ajax({
+						type : "delete",
+						url : CONSTS.BASE_API + '/check/'
+								+ modal.data('id'),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							window.location.reload();
+						},
+						error : function(data) {
+							modal.find(".warning-message").html(
+									'删除失败请稍后再试,或者联系管理员.').removeClass(
+									'hidden');
+						},
+						complete : function() {
+							submit.button('reset');
+						}
+					});
+				});
+		
+		function inArray(array,value)
+	    {
+	        var len=array.length;
+	        for(var i=len-1;i>=0;i--)
+	        {
+	            if(array[i]==value)
+	                return true;
+	        }
+	        return false;
+	    }
+		
+		Date.prototype.format = function(f) {
+			var o = {
+				"M+" : this.getMonth() + 1, //month
+				"d+" : this.getDate(), //day
+				"h+" : this.getHours(), //hour
+				"m+" : this.getMinutes(), //minute
+				"s+" : this.getSeconds(), //second
+				"q+" : Math.floor((this.getMonth() + 3) / 3), //quarter
+				"S" : this.getMilliseconds()
+			//millisecond
+			}
+			if (/(y+)/.test(f))
+				f = f.replace(RegExp.$1, (this.getFullYear() + "")
+						.substr(4 - RegExp.$1.length));
+			for ( var k in o)
+				if (new RegExp("(" + k + ")").test(f))
+					f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
+							: ("00" + o[k]).substr(("" + o[k]).length));
+			return f
+		}
+
+		function dateformat(time) {
+			var d = new Date();
+			d.setTime(time);
+			var date = d.format('yyyy-MM-dd hh:mm:ss');
+			return date;
+		}
+		function contains(a, obj) {
+    	    var i = a.length;
+    	    while (i--) {
+    	       if (a[i].indexOf(obj)!= -1) {
+    	           return true;
+    	       }
+    	    }
+    	    return false;
+    	}
+		function reset(body) {
+			var rowIndex = body.childElementCount;
+				if (rowIndex > 0)
+					for (var i = rowIndex - 1; i >= 0; i--)
+						body.deleteRow(i);
+		}
+	</script>
+</body>
+</html>
