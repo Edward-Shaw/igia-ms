@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
-<head th:replace="fragments/head :: head (title='盘货')">
+<head th:replace="fragments/head :: head (title='用户管理')">
 </head>
 
 <body>
@@ -77,7 +77,7 @@
 				<tr th:if="${#lists.isEmpty(checks)}">
 					<td colspan="6">
 						<div class="alert alert-info" role="alert">
-							还没有进行过盘库, <a data-toggle="modal" data-target="#modal_create"><strong>点此开始盘库</strong></a>?
+							还没有用户信息, <a data-toggle="modal" data-target="#modal_create"><strong>点此新增用户</strong></a>?
 						</div>
 					</td>
 				</tr>
