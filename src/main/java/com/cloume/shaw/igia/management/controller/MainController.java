@@ -1,13 +1,25 @@
 package com.cloume.shaw.igia.management.controller;
 
 import java.security.Principal;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.cloume.shaw.igia.management.iservice.IUserService;
+import com.cloume.shaw.igia.management.resource.User;
 
 @Controller
 public class MainController {
+	
+	@Autowired
+	private IUserService userService; 
 	
 	@RequestMapping(value = "/index", method = {RequestMethod.GET})
 	public String indexPage(Principal principal){
@@ -22,13 +34,15 @@ public class MainController {
 	}
 	
 	@RequestMapping(value = "/user", method = {RequestMethod.GET})
-	public String userPage(Principal principal){
+	public String userPage(Principal principal,
+			@RequestParam(value = "page", required = false, defaultValue = "0, 20") int[] page,
+			@RequestParam(value = "state", required = false, defaultValue = "default") String state,
+			@RequestParam(value = "time", required = false, defaultValue = "default") String time,
+			Model model){
 		
-		/*
-		if(principal == null || principal.getName() == null){
-			return "error";
-		}
-		*/
+		List<User> users = userService.listByPage("true", state, time, page);
+		
+		model.addAttribute("users", users);
 		
 		return "user";
 	}

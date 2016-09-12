@@ -49,32 +49,34 @@
 					<td class="cell">用户手机</td>
 					<td class="cell">用户地址</td>
 					<td class="cell">用户状态</td>
+					<td class="cell">注册时间</td>
 					<td align="right" style="width: 7%;">操作</td>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="check : ${checks}">
-					<td style="text-align: left" class="cell" th:text="${check.type}" data-toggle="tooltip" th:title="${check.type}">20151028001</td>
-					<td class="cell" th:text="${check.number}" data-toggle="tooltip" th:title="${check.number}">在库</td>
-					<td class="cell" th:text="${#calendars.format(check.createTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(check.createTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
-					<td class="cell" th:if="${check.finishTime != 0}" th:text="${#calendars.format(check.finishTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(check.finishTime, 'yyyy-MM-dd HH:mm:ss ')}">电阻器</td>
-					<td class="cell" th:if="${check.finishTime == 0}" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
-					<td class="cell" th:text="${check.state}" data-toggle="tooltip" th:title="${check.state}">待检测</td>
+				<tr th:each="user : ${users}">
+					<td style="text-align: left" class="cell" th:text="${user.id}" data-toggle="tooltip" th:title="${user.id}">20151028001</td>
+					<td class="cell" th:text="${user.type}" data-toggle="tooltip" th:title="${user.type}">在库</td>
+					<td class="cell" th:text="${user.name}" data-toggle="tooltip" th:title="${user.name}">在库</td>
+					<td class="cell" th:text="${user.mobile}" data-toggle="tooltip" th:title="${user.mobile}">在库</td>
+					<td class="cell" th:text="${user.address}" data-toggle="tooltip" th:title="${user.address}">在库</td>
+					<td class="cell" th:text="${user.banned}" data-toggle="tooltip" th:title="${user.banned}">在库</td>
+					<td class="cell" th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
-								th:attr="data-id=${check.id}" data-toggle="modal"
+								th:attr="data-id=${user.id}" data-toggle="modal"
 								data-target="#modal_detail">详情</button>
 							<!-- <button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${check.id}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>  -->
 							<button type="button" class="btn btn-danger btn-xs"
-								th:attr="data-id=${check.id}" data-toggle="modal"
+								th:attr="data-id=${user.id}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
 						</div>
 					</td>
 				</tr>
-				<tr th:if="${#lists.isEmpty(checks)}">
+				<tr th:if="${#lists.isEmpty(users)}">
 					<td colspan="6">
 						<div class="alert alert-info" role="alert">
 							还没有用户信息, <a data-toggle="modal" data-target="#modal_create"><strong>点此新增用户</strong></a>?

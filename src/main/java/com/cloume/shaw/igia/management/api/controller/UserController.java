@@ -19,7 +19,7 @@ import com.cloume.shaw.igia.management.rest.PagingRestResponse;
 public class UserController {
 	
 	@Autowired
-	private IUserService userSerivce;
+	private IUserService userService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public PagingRestResponse<User> list(HttpServletRequest request, 
@@ -27,7 +27,7 @@ public class UserController {
 			@RequestParam(value = "state", defaultValue = "default") String state,
 			@RequestParam(value = "time", defaultValue = "default") String time){
 		
-		List<User> users = userSerivce.listByPage("true", state, time, page);
+		List<User> users = userService.listByPage("true", state, time, page);
 		
 		return new PagingRestResponse<User>(0, "OK", users);
 	}
