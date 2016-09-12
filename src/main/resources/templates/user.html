@@ -28,13 +28,12 @@
 						<option value="yesterday">昨天</option>
 						<option value="this_week">本周</option>
 						<option value="this_month">本月</option>
-						
 					</select>
 				</div>
 				<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
-			<button class="btn btn-sm btn-success btn-primary" id="new"
+			<!-- <button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">新增用户</button>
+				data-target="#modal_create">新增用户</button>  -->
 		</div>
 
 		<!-- 表格 -->
@@ -195,59 +194,6 @@
 		</div>
 	</div>
 
-	<!-- 上传Excel表格盘库单列表 -->
-	<div class="modal fade" id="excel_batch" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span>&times;</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel"
-						style="margin-top: 0px; text-align: center;">
-						<strong>批量导入盘库单</strong>
-					</h4>
-				</div>
-				<div class="modal-body">
-					<form class="form-horizontal" id="form_batch">
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="state">是否立即执行盘库:</label>
-							<div class="col-sm-10">
-								<select class="form-control" id="state" name="state">
-									<option value="未审核">导入成功后即刻执行盘库</option>
-									<option value="审核中">手动触发盘库</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="attachment">盘库单:</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="fileupload" type="file"
-									name="files[]" data-url="/upload" multiple="multiple" /> <input
-									type="hidden" name="attachment_names" id="attachment_names" /> <label
-									class="label label-warning">请不要上传超过10M的附件(仅支持单个Excel文件上传)</label>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="attachment"></label>
-								<a href="/docs/check.xlsx">点此下载盘库单模板</a>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<div align="center">
-						<button type="button" class="btn btn-default"
-							data-dismiss="modal">取消</button>
-						<button type="submit" class="btn btn-success" id="btn_batch"
-							data-dismiss="modal" data-loading-text="提交中...">提交盘库单</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>	
-
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
 		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='盘库单提交成功', style='success',url='')"></div>
@@ -273,7 +219,7 @@
 			if (maxPage >= currentPage) {
 				var $btn = $(this).button('loading');
 				/*<![CDATA[*/
-				location.href = 'check?page=' + currentPage + ',' + defaultSize + "&time="
+				location.href = 'user?page=' + currentPage + ',' + defaultSize + "&time="
 				+ $("#filter_time").val() + "&state="+ $("#filter_state").val(); 
 				/*]]>*/
 			$btn.button('reset');
@@ -289,7 +235,7 @@
 			if (Math.max(currentPage, 0) == currentPage) {
 				var $btn = $(this).button('loading');
 				/*<![CDATA[*/
-				location.href = 'check?page=' + currentPage + ',' + defaultSize + "&time="
+				location.href = 'user?page=' + currentPage + ',' + defaultSize + "&time="
 				+ $("#filter_time").val() + "&state="+ $("#filter_state").val();
 				/*]]>*/
 				$btn.button('reset');
