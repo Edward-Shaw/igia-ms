@@ -10,15 +10,16 @@
 		style="width: 1024px; margin-bottom: 60px;">
 		<div class="form-inline" >
 			<div class="form-group form-group-sm">
-					<label class="control-label">进货单状态</label> <select
+					<label class="control-label">课程类别</label> <select
 						class="form-control" id="filter_state"
 						onchange="document.getElementById('btn_filter').click();">
-						<option value="default">状态筛选</option>
-						<option value="init">待上货</option>
-						<option value="ing">正在上货</option>
-						<option value="exception">上货异常</option>
-						<option value="finished">上货完成</option>
-						<option value="deleted">已作废</option>
+						<option value="default">类别筛选</option>
+						<option value="init">绘画</option>
+						<option value="ing">舞蹈</option>
+						<option value="exception">跆拳道</option>
+						<option value="finished">瑜伽</option>
+						<option value="deleted">语言与科技</option>
+						<option value="deleted">寒暑假集训</option>
 					</select>
 			</div>
 			<div class="form-group form-group-sm">
@@ -36,7 +37,7 @@
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">新增进货</button>
+				data-target="#modal_create">添加课程</button>
 		</div>
 
 		<!-- 表格 -->
@@ -45,11 +46,11 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">业务单类型</td>
+					<td style="text-align: left" class="cell">课程类别</td>
 					<td class="cell">编号</td>
 					<td class="cell">创建时间</td>
-					<td class="cell">完成时间</td>
-					<!-- <td class="cell">完成时间</td>  -->
+					<td class="cell">活动内容</td>
+					<td class="cell">备注</td>
 					<td class="cell">状态</td>
 					<td align="right" style="width: 12%;">操作</td>
 				</tr>
@@ -62,11 +63,6 @@
 					<td class="cell" th:if="${storage.finishTime != 0}" th:text="${#calendars.format(storage.finishTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(storage.finishTime, 'yyyy-MM-dd HH:mm:ss ')}">电阻器</td>
 					<td class="cell" th:if="${storage.finishTime == 0}" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
 					<td class="cell" th:text="${storage.state}" data-toggle="tooltip" th:title="${storage.state}">在库</td>
-					<!-- 
-					<td class="cell" 
-						th:text="${#calendars.format(0, 'yyyy-MM-dd HH:mm:ss')}" data-toggle="tooltip" th:title="${#calendars.format(0, 'yyyy-MM-dd HH:mm:ss')}">2015-10-28
-						10：00</td>
-						 -->
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
@@ -85,9 +81,9 @@
 					</td>
 				</tr>
 				<tr th:if="${#lists.isEmpty(storages)}">
-					<td colspan="6">
+					<td colspan="7">
 						<div class="alert alert-info" role="alert">
-							不存在任何进货记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在进货</strong></a>?
+							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在添加课程</strong></a>?
 						</div>
 					</td>
 				</tr>
