@@ -37,7 +37,7 @@
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">添加课程</button>
+				data-target="#modal_create2">添加课程</button>
 		</div>
 
 		<!-- 表格 -->
@@ -67,23 +67,23 @@
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${storage.id}" data-toggle="modal"
-								data-target="#modal_details">详情</button>
+								data-target="#modal_details2">详情</button>
 							<!-- <button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${storage.id}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>  -->
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${storage.id}" data-toggle="modal"
-								data-target="#modal_delete">作废</button>
+								data-target="#modal_delete2">作废</button>
 							<button type="button" class="btn btn-warning btn-xs"
 								th:attr="data-id=${storage.id}" data-toggle="modal"
-								data-target="#modal_truck">叉车任务</button>
+								data-target="#modal_truck2">叉车任务</button>
 						</div>
 					</td>
 				</tr>
 				<tr th:if="${#lists.isEmpty(storages)}">
 					<td colspan="7">
 						<div class="alert alert-info" role="alert">
-							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在添加课程</strong></a>?
+							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create2"><strong>现在添加课程</strong></a>?
 						</div>
 					</td>
 				</tr>

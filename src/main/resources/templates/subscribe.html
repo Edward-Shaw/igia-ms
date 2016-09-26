@@ -38,7 +38,7 @@
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">新增预约</button>
+				data-target="#modal_create2">新增预约</button>
 		</div>
 
 		<!-- 表格 -->
@@ -75,10 +75,10 @@
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
-								data-target="#modal_detail">详情</button>
+								data-target="#modal_detail2">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
-								data-target="#modal_modify">修改</button>
+								data-target="#modal_modify2">修改</button>
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
@@ -88,7 +88,7 @@
 				<tr th:if="${#lists.isEmpty(subscribes)}">
 					<td colspan="10">
 						<div class="alert alert-info" role="alert">
-							不存在任何预约记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在创建</strong></a>?
+							不存在任何预约记录, <a data-toggle="modal" data-target="#modal_create2"><strong>现在创建</strong></a>?
 						</div>
 					</td>
 				</tr>
