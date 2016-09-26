@@ -46,6 +46,7 @@
 					<td class="cell">用户姓名</td>
 					<td class="cell">用户手机</td>
 					<td class="cell">用户地址</td>
+					<td class="cell">邮箱地址</td>
 					<td class="cell">用户状态</td>
 					<td class="cell">注册时间</td>
 					<td align="right" style="width: 8%;">操作</td>
@@ -57,6 +58,7 @@
 					<td class="cell" th:text="${user.name}" data-toggle="tooltip" th:title="${user.name}">在库</td>
 					<td class="cell" th:text="${user.mobile}" data-toggle="tooltip" th:title="${user.mobile}">在库</td>
 					<td class="cell" th:text="${user.address}" data-toggle="tooltip" th:title="${user.address}">在库</td>
+					<td class="cell" th:text="${user.email}" data-toggle="tooltip" th:title="${user.email}">在库</td>
 					<td class="cell" th:if="${user.banned == true}" th:text="已注册" data-toggle="tooltip" th:title="已注册">已注册</td>
 					<td class="cell" th:if="${user.banned == false}" th:text="未注册" data-toggle="tooltip" th:title="未注册">未注册</td>
 					<td class="cell" th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
