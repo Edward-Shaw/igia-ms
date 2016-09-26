@@ -12,14 +12,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cloume.shaw.igia.management.iservice.ISubscribeService;
 import com.cloume.shaw.igia.management.iservice.IUserService;
+import com.cloume.shaw.igia.management.resource.Subscribe;
 import com.cloume.shaw.igia.management.resource.User;
 
 @Controller
 public class MainController {
 	
 	@Autowired
-	private IUserService userService; 
+	private IUserService userService;
+	
+	@Autowired
+	private ISubscribeService subscribeService;
 	
 	@RequestMapping(value = "/index", method = {RequestMethod.GET})
 	public String indexPage(Principal principal){
@@ -48,13 +53,16 @@ public class MainController {
 	}
 	
 	@RequestMapping(value = "/subscribe", method = {RequestMethod.GET})
-	public String subscribePage(Principal principal){
+	public String subscribePage(Principal principal,
+			@RequestParam(value = "page", required = false, defaultValue = "0, 20") int[] page,
+			@RequestParam(value = "state", required = false, defaultValue = "default") String state,
+			@RequestParam(value = "time", required = false, defaultValue = "default") String createTime,
+			@RequestParam(value = "subscribe_time", required = false, defaultValue = "default") String subscribeTime,
+			Model model){
 		
-		/*
-		if(principal == null || principal.getName() == null){
-			return "error";
-		}
-		*/
+		List<Subscribe> subscribes = subscribeService.listByPage(state, createTime, subscribeTime, page);
+		
+		model.addAttribute("subscribes", subscribes);
 		
 		return "subscribe";
 	}

@@ -10,16 +10,18 @@
 		style="width: 1024px; margin-bottom: 60px;">
 		<div class="form-inline">
 			<div class="form-group form-group-sm">
-				<label class="control-label">库存状态</label> <select
+				<label class="control-label">预约处理状态</label> <select
 					class="form-control" id="filter_stock_state"
 					onchange="document.getElementById('btn_filter').click();">
 					<option value="default">状态筛选</option>
-					<option value="have">有库存</option>
-					<option value="havenot">没有库存</option>
+					<option value="ACCEPTED">已接受</option>
+					<option value="DECLINED">已拒绝</option>
+					<option value="HANDLING">待处理</option>
+					<option value="CLOSED">已完结</option>
 				</select>
 			</div>
 			<div class="form-group form-group-sm">
-				<label class="control-label">入库时间</label> <select class="form-control"
+				<label class="control-label">预约提交时间</label> <select class="form-control"
 					id="filter_time"
 					onchange="document.getElementById('btn_filter').click();">
 					<option value="default">时间筛选</option>
@@ -27,17 +29,16 @@
 					<option value="yesterday">昨天</option>
 					<option value="this_week">本周</option>
 					<option value="this_month">本月</option>
-					
 				</select>
 			</div>
 			<div class="form-group form-group-sm">
 				<input type="text" class="form-control" id="search_input" onkeypress="getKey()"
-					placeholder="输入货品编号或货品名称" />
+					placeholder="输入预约编号或用户手机号" />
 			</div>
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">添加货品</button>
+				data-target="#modal_create">新增预约</button>
 		</div>
 
 		<!-- 表格 -->
@@ -46,63 +47,54 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">货品编码</td>
-					<td class="cell">货品名称</td>
-					<td class="cell">库存</td>
-					<td class="cell">堆码数</td>
-					<td class="cell">重量</td>
-					<td class="cell">缩略图</td>
-					<td class="cell">录入日期</td>
-					<td class="cell">货品批次</td>
-					<td class="cell">托盘编码</td>
+					<td style="text-align: left" class="cell">预约编号</td>
+					<td class="cell">创建时间</td>
+					<td class="cell">处理状态</td>
+					<td class="cell">用户姓名</td>
+					<td class="cell">用户手机号</td>
+					<td class="cell">用户地址</td>
+					<td class="cell">预约活动</td>
 					<td align="right" style="width: 20%;">操作</td>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="ware : ${wares}">
-					<td style="text-align: left" class="cell" th:text="${ware.productCode}" data-toggle="tooltip" th:title="${ware.productCode}">20151028001</td>
-					<td class="cell" th:text="${ware.name}" data-toggle="tooltip" th:title="${ware.name}">电阻器</td>
-					<td class="cell" th:text="${ware.amount}" data-toggle="tooltip" th:title="${ware.amount}">在库</td>
-					<td class="cell" th:text="${ware.stackNumber}" data-toggle="tooltip" th:title="${ware.stackNumber}">待检测</td>
-					<td class="cell" th:text="${ware.weight}" data-toggle="tooltip" th:title="${ware.weight}">待检测</td>
-					<td class="cell">
-					
-					<img th:if="${ware.picture!=null}" th:src="@{/upload/get/}+${ware.picture}"
-										style="height:50px;width:50px" alt="通用的占位符缩略图" ></img>
-					</td>
-					<!-- <td class="cell" th:text="${ware.unitName}" data-toggle="tooltip" th:title="${ware.unitName}">待检测</td> -->
+				<tr th:each="subscribe : ${subscribes}">
+					<td style="text-align: left" class="cell" th:text="${subscribe.code}" data-toggle="tooltip" th:title="${subscribe.code}">20151028001</td>
 					<td class="cell" 
-						th:text="${#calendars.format(ware.createdTime, 'yyyy-MM-dd HH:mm:ss')}" data-toggle="tooltip" th:title="${#calendars.format(ware.createdTime, 'yyyy-MM-dd HH:mm:ss')}">2015-10-28
+						th:text="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm:ss')}" data-toggle="tooltip" th:title="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm:ss')}">2015-10-28
 						10：00</td>
-					<td class="cell" th:text="${ware.batchNumber}" data-toggle="tooltip" th:title="${ware.batchNumber}">电阻器</td>
-					<td class="cell" th:text="${ware.palletTagsNumber}" data-toggle="tooltip" th:title="${ware.palletTagsNumber}">电阻器</td>
+					<td class="cell" th:if="${subscribe.state} == 'HANDLING'" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
+					<td class="cell" th:if="${subscribe.state} == 'ACCEPTED'" th:text="已接受预约" data-toggle="tooltip" th:title="已接受预约">电阻器</td>
+					<td class="cell" th:if="${subscribe.state} == 'DECLINED'" th:text="已拒绝" data-toggle="tooltip" th:title="已拒绝">电阻器</td>
+					<td class="cell" th:if="${subscribe.state} == 'CLOSED'" th:text="已关闭" data-toggle="tooltip" th:title="已关闭">电阻器</td>
+					<td class="cell" th:text="${subscribe.user.username}" data-toggle="tooltip" th:title="${subscribe.user.username}">在库</td>
+					<td class="cell" th:text="${subscribe.user.mobile}" data-toggle="tooltip" th:title="${subscribe.user.mobile}">待检测</td>
+					<td class="cell" th:text="${subscribe.user.address}" data-toggle="tooltip" th:title="${subscribe.user.address}">待检测</td>
+					<td class="cell" th:text="${subscribe.items}" data-toggle="tooltip" th:title="${subscribe.items}">待检测</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
-								th:attr="data-id=${ware.id}" data-toggle="modal"
+								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_detail">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
-								th:attr="data-id=${ware.id}" data-toggle="modal"
+								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>
-							<button type="button" class="btn btn-info btn-xs"
-								th:attr="data-id=${ware.productCode}" data-toggle="modal"
-								data-target="#modal_stock">货架</button>
 							<button type="button" class="btn btn-danger btn-xs"
-								th:attr="data-id=${ware.id}" data-toggle="modal"
+								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
 						</div>
 					</td>
 				</tr>
-				<tr th:if="${#lists.isEmpty(wares)}">
+				<tr th:if="${#lists.isEmpty(subscribes)}">
 					<td colspan="10">
 						<div class="alert alert-info" role="alert">
-							不存在任何货品记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在创建</strong></a>?
+							不存在任何预约记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在创建</strong></a>?
 						</div>
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<div th:if="${not#lists.isEmpty(wares)}" style="text-align: center;">
+		<div th:if="${not#lists.isEmpty(subscribes)}" style="text-align: center;">
 			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
 				data-trigger="focus" data-placement="left" data-toggle="popover"
 				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
@@ -218,7 +210,7 @@
 						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
 					</button>
 					<h4 class="modal-title"
-						style="margin-top: 0px; text-align: center;">货品详情</h4>
+						style="margin-top: 0px; text-align: center;">活动预约详情</h4>
 				</div>
 				<div class="modal-body">
 					<form id="form_detail" class="form-horizontal">
@@ -420,7 +412,7 @@
 				if (maxPage >= currentPage) {
 					var $btn = $(this).button('loading');
 					/*<![CDATA[*/
-					location.href = 'wares?page=' + currentPage + ',' + defaultSize + "&time="
+					location.href = 'subscribe?page=' + currentPage + ',' + defaultSize + "&time="
 					+ $("#filter_time").val() + "&stock_state="+ $("#filter_state").val();
 					/*]]>*/
 				$btn.button('reset');
@@ -436,7 +428,7 @@
 				if (Math.max(currentPage, 0) == currentPage) {
 					var $btn = $(this).button('loading');
 					/*<![CDATA[*/
-					location.href = 'wares?page=' + currentPage + ',' + defaultSize + "&time="
+					location.href = 'subscribe?page=' + currentPage + ',' + defaultSize + "&time="
 					+ $("#filter_time").val() + "&stock_state="+ $("#filter_state").val();
 					/*]]>*/
 					$btn.button('reset');
@@ -450,7 +442,7 @@
 			$("#btn_filter").click(
 					function() {
 						/*<![CDATA[*/
-						location.href = 'wares?page=0' + ',' + defaultSize + "&time="
+						location.href = 'subscribe?page=0' + ',' + defaultSize + "&time="
 						+ $("#filter_time").val() + "&state="+ $("#filter_stock_state").val()
 								
 						/*]]>*/
