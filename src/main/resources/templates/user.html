@@ -54,7 +54,7 @@
 			</thead>
 			<tbody>
 				<tr th:each="user : ${users}">
-					<td style="text-align: left" class="cell" th:text="${user.id}" data-toggle="tooltip" th:title="${user.id}">20151028001</td>
+					<td style="text-align: left" class="cell" th:text="${user.code}" data-toggle="tooltip" th:title="${user.code}">20151028001</td>
 					<td class="cell" th:text="${user.name}" data-toggle="tooltip" th:title="${user.name}">在库</td>
 					<td class="cell" th:text="${user.mobile}" data-toggle="tooltip" th:title="${user.mobile}">在库</td>
 					<td class="cell" th:text="${user.address}" data-toggle="tooltip" th:title="${user.address}">在库</td>
