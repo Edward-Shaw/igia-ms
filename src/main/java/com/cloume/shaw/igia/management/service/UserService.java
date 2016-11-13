@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.cloume.shaw.igia.common.resource.User;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
 import com.cloume.shaw.igia.management.iservice.IUserService;
-import com.cloume.shaw.igia.management.resource.User;
 
 @Service
 public class UserService extends AbstractServiceBase implements IUserService {

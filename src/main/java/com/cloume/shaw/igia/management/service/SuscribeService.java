@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.cloume.shaw.igia.common.resource.Subscribe;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
 import com.cloume.shaw.igia.management.iservice.ISubscribeService;
-import com.cloume.shaw.igia.management.resource.Subscribe;
 
 @Service
 public class SuscribeService extends AbstractServiceBase implements ISubscribeService {

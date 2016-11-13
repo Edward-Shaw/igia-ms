@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cloume.shaw.igia.common.resource.Subscribe;
+import com.cloume.shaw.igia.common.resource.User;
 import com.cloume.shaw.igia.management.iservice.ISubscribeService;
 import com.cloume.shaw.igia.management.iservice.IUserService;
-import com.cloume.shaw.igia.management.resource.Subscribe;
-import com.cloume.shaw.igia.management.resource.User;
 
 @Controller
 public class MainController {

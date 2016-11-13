@@ -2,7 +2,7 @@ package com.cloume.shaw.igia.management.iservice;
 
 import java.util.List;
 
-import com.cloume.shaw.igia.management.resource.Subscribe;
+import com.cloume.shaw.igia.common.resource.Subscribe;
 
 public interface ISubscribeService {
 	

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cloume.shaw.igia.common.resource.User;
 import com.cloume.shaw.igia.management.iservice.IUserService;
-import com.cloume.shaw.igia.management.resource.User;
 import com.cloume.shaw.igia.management.rest.PagingRestResponse;
 
 @RestController

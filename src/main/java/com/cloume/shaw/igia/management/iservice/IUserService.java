@@ -2,7 +2,7 @@ package com.cloume.shaw.igia.management.iservice;
 
 import java.util.List;
 
-import com.cloume.shaw.igia.management.resource.User;
+import com.cloume.shaw.igia.common.resource.User;
 
 public interface IUserService {
 	
