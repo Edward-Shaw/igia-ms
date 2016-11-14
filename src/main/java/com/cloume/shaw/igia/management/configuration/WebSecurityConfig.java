@@ -16,12 +16,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 	    http
 	        .authorizeRequests()
-	            .antMatchers("/js/**", "/less/**", "/images/**", "/css/**", "/fonts/**", "/api/**", "/wares/**", "/racks/**", "/storagein/**").permitAll()
+	            .antMatchers("/js/**", "/less/**", "/images/**", "/css/**", "/fonts/**", "/api/**").permitAll()
 	            .anyRequest().authenticated()
 	            .and()
 	        .formLogin()
-	        	.permitAll()
-	        	.defaultSuccessUrl("/index", true)
+	        	.loginPage("/login").permitAll()
+	        	.defaultSuccessUrl("/user", true)
 	        	.and()
 	        .csrf().disable();
 	}
