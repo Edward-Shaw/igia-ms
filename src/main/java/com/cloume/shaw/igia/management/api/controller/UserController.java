@@ -5,12 +5,14 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cloume.shaw.igia.common.resource.User;
+import com.cloume.shaw.igia.common.rest.RestResponse;
 import com.cloume.shaw.igia.management.iservice.IUserService;
 import com.cloume.shaw.igia.management.rest.PagingRestResponse;
 
@@ -30,5 +32,13 @@ public class UserController {
 		List<User> users = userService.listByPage("true", state, time, page);
 		
 		return new PagingRestResponse<User>(0, "OK", users);
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public RestResponse<User> getUserDetailById(HttpServletRequest request,
+			@PathVariable("id") String id){
+		User user = userService.getUserById(id);
+		
+		return new RestResponse<User>(0, "OK", user);
 	}
 }

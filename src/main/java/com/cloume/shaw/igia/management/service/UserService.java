@@ -3,6 +3,7 @@ package com.cloume.shaw.igia.management.service;
 import java.util.Calendar;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -67,6 +68,16 @@ public class UserService extends AbstractServiceBase implements IUserService {
 		List<User> users = getMongoTemplate().find(query.with(new Sort(Direction.DESC, "_id")), User.class);
 		
 		return users;
+	}
+
+	@Override
+	public User getUserById(String id) {
+		
+		Query query = new Query(Criteria.where("_id").is(id));
+		
+		User user = getMongoTemplate().findOne(query, User.class);
+		
+		return user;
 	}
 
 }

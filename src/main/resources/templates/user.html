@@ -19,17 +19,17 @@
 						<option value="exception">全部</option>
 					</select>
 			</div>
-				<div class="form-group form-group-sm">
-					<label class="control-label">注册时间</label> <select class="form-control"
-						id="filter_time"
-						onchange="document.getElementById('btn_filter').click();">
-						<option value="default">全部</option>
-						<option value="today">今天</option>
-						<option value="yesterday">昨天</option>
-						<option value="this_week">本周</option>
-						<option value="this_month">本月</option>
-					</select>
-				</div>
+			<div class="form-group form-group-sm">
+				<label class="control-label">注册时间</label> <select class="form-control"
+					id="filter_time"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">全部</option>
+					<option value="today">今天</option>
+					<option value="yesterday">昨天</option>
+					<option value="this_week">本周</option>
+					<option value="this_month">本月</option>
+				</select>
+			</div>
 				<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<!-- <button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
@@ -66,13 +66,13 @@
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${user.id}" data-toggle="modal"
-								data-target="#user_detail2">详情</button>
+								data-target="#modal_detail">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${user.id}" data-toggle="modal"
-								data-target="#user_modify2">修改</button>
+								data-target="#modal_modify">修改</button>
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${user.id}" data-toggle="modal"
-								data-target="#user_delete">作废</button>
+								data-target="#modal_delete">作废</button>
 						</div>
 					</td>
 				</tr>
@@ -172,19 +172,12 @@
 				<div class="modal-body">
 					<form id="form_details" class="form-horizontal">																	
 						<div class="tab-pane" id="tab" style="text-align:left">
-							
 							<label>用户信息</label>
 							<table border="1" id="user_detail" style="border-collapse:collapse;  width: 100%;">
 								<tbody>
 								</tbody>
-							</table>
-							<label>用户详情</label>
-							<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%;">
-								<tbody>
-								</tbody>
-							</table>
-							
-							</div>
+							</table>						
+						</div>
 					</form>
 				</div>		
 				<div class="modal-footer" style="text-align:center">
@@ -352,7 +345,7 @@
 	               
 	                $('<select style="width: 30%;"  data-width="fit" class="col-sm-4 form-control location"   id="input' + itemIndex + '" title="请选择库位" name="item[' + itemIndex + '].location" ><option>请选择库位</option></select>').insertAfter($clone.find('[name="label_location"]'));
 	                $('#input'+itemIndex+'').attr("importantAttr2",""+itemIndex+"")
-	                  $clone.find('[name="location"]').hide().end()
+	                $clone.find('[name="location"]').hide().end()
 	                $clone.find('[name="number"]').attr('id', 'number'+ itemIndex +'').end();
 	                $clone.find('[name="number"]').attr('name', 'item[' + itemIndex + '].number').end();
 	                $clone.find('[id="input_ware"]').autocomplete({
@@ -601,7 +594,7 @@
 					var arr = new Array();
 					var map = {}
 					var user = data.result;								
-					//进货单详情的表格
+					//用户详情的表格
 					console.log(user)
 					var table = document.getElementById("user_detail");								
 		        	var body = table.tBodies[0];
@@ -609,74 +602,41 @@
 		        	var rowIndex = body.childElementCount;
 		        	body.insertRow(rowIndex);
 		        	body.rows[rowIndex].insertCell(0)
-		        	body.rows[rowIndex].cells[0].innerText = "业务单类型：" + user.type;
+		        	body.rows[rowIndex].cells[0].innerText = "编号：" + user.code;
 		        	body.rows[rowIndex].cells[0].width="50%";
 		        	body.rows[rowIndex].insertCell(1)
- 						    body.rows[rowIndex].cells[1].innerText = "盘库单编号：" + user.no;
+ 					body.rows[rowIndex].cells[1].innerText = "姓名：" + user.name;
 		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
+		        	body.rows[rowIndex].insertCell(2)
+ 					body.rows[rowIndex].cells[2].innerText = "性别：" + user.gender;
+		        	body.rows[rowIndex].cells[2].setAttribute("style", "height:30px;")
 		        	
 		        	rowIndex += 1;
 		        	body.insertRow(rowIndex);
 		        	body.rows[rowIndex].insertCell(0)
-		        	body.rows[rowIndex].cells[0].innerText = "盘库单状态：" + user.state;
+		        	body.rows[rowIndex].cells[0].innerText = "用户状态：" + user.banned;
 		        	body.rows[rowIndex].insertCell(1)
-		        	body.rows[rowIndex].cells[1].innerText = "货品种类：" + user.details.length;
+		        	body.rows[rowIndex].cells[1].innerText = "注册时间：" + dateformat(user.created_time);
 		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
-
+		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2")
+					
 		        	rowIndex += 1;
 		        	body.insertRow(rowIndex);
-		        	body.rows[rowIndex].insertCell(0)
-		        	body.rows[rowIndex].cells[0].innerText = "创建时间：" + dateformat(user.create_time);
+		        	body.rows[rowIndex].insertCell(0);
+		        	body.rows[rowIndex].cells[0].innerText = "联系地址：" + user.address;
+		        	body.rows[rowIndex].cells[0].setAttribute("colspan", "3")
 		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
-		        	body.rows[rowIndex].cells[0].setAttribute("colspan", "2")
-
-		        	var table = document.getElementById("ware_detail");
-		        	var body = table.tBodies[0];
-		        	reset(body);
-		        	var rowIndex = body.childElementCount;
-		        	for(j = user.details.length-1; j>=0; j--){
-		        		if(inArray(arr,user.details[j].product_code)){
-		        			map[user.details[j].product_code] = map[user.details[j].product_code] + 1
-		        		}
-		        		else{
-		        		map[user.details[j].product_code] = 1	
-		        		arr.push(user.details[j].product_code)
-		        		}
-		        		
-		        	}
 		        	
-		        	for(i = arr.length-1; i>=0; i--){
-		        		var c = 1
-		        		for(j = user.details.length-1; j>=0; j--){
-		        			if(user.details[j].product_code == arr[i]){
-		        				if(c ==1){
-		        					body.insertRow(rowIndex);
-		        		        	body.rows[rowIndex].insertCell(0);
-		        		        	body.rows[rowIndex].cells[0].innerText = "货品名：" + user.details[j].product_name;
-		        		        	body.rows[rowIndex].cells[0].width = "50%" ;
-		        		        	body.rows[rowIndex].insertCell(1);
-		        		        	body.rows[rowIndex].cells[1].innerText = "货品编码：" + user.details[j].product_code;
-		        		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2")
-		        		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
-		        		        	
-		        		        	rowIndex += 1;
-		        				}
-		        				body.insertRow(rowIndex);
-		    		        	body.rows[rowIndex].insertCell(0)
-		    		        	body.rows[rowIndex].cells[0].innerText = "盘库库位：" + user.details[j].loc_no;
-		    		        	body.rows[rowIndex].insertCell(1)
-		    		        	body.rows[rowIndex].cells[1].innerText = "当前数量：" + user.details[j].quantity;
-		    		        	body.rows[rowIndex].insertCell(2)
-		    		        	body.rows[rowIndex].cells[2].innerText = "盘库数量：" + user.details[j].user_quantity;
-		    		        	body.rows[rowIndex].cells[2].setAttribute("style", "height:30px;")
-		    		        	
-		    		        	
-		    		        	rowIndex += 1;
-		    		        	c = c + 1; 
-		        			}
-						}
-		        		body.rows[rowIndex-1].setAttribute("style", "border-color:grey grey black grey")
-		        	}
+		        	rowIndex += 1;
+		        	body.insertRow(rowIndex);
+		        	body.rows[rowIndex].insertCell(0);
+		        	body.rows[rowIndex].cells[0].innerText = "邮箱：" + user.email;
+		        	body.rows[rowIndex].cells[0].width = "50%" ;
+		        	body.rows[rowIndex].insertCell(1);
+		        	body.rows[rowIndex].cells[1].innerText = "电话：" + user.mobile;
+		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2");
+		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;");
+
 	        	}
 			}, 'json');
 		});

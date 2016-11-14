@@ -7,7 +7,7 @@ import com.cloume.shaw.igia.common.resource.User;
 public interface IUserService {
 	
 	/**
-	 * get use list by page
+	 * get user list by page.
 	 * @param banned
 	 * @param type
 	 * @param time
@@ -15,4 +15,11 @@ public interface IUserService {
 	 * @return
 	 */
 	public List<User> listByPage(String banned, String type, String time, int[] page);
+	
+	/**
+	 * get user detail by id.
+	 * @param id
+	 * @return
+	 */
+	public User getUserById(String id);
 }

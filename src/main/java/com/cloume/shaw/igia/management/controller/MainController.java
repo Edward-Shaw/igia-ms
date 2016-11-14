@@ -78,4 +78,9 @@ public class MainController {
 		
 		return "class";
 	}
+	
+	@RequestMapping("/login")
+	public String login() {
+		return "login";
+	}
 }
