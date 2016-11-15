@@ -11,15 +11,25 @@
 		<div class="form-inline" >
 			<div class="form-group form-group-sm">
 					<label class="control-label">课程类别</label> <select
+						class="form-control" id="filter_classification"
+						onchange="document.getElementById('btn_filter').click();">
+						<option value="default">类别筛选</option>
+						<option value="0">绘画</option>
+						<option value="1">舞蹈</option>
+						<option value="2">跆拳道</option>
+						<option value="3">瑜伽</option>
+						<option value="4">语言与科技</option>
+						<option value="5">寒暑假集训</option>
+					</select>
+			</div>
+			<div class="form-group form-group-sm">
+					<label class="control-label">发布状态</label> <select
 						class="form-control" id="filter_state"
 						onchange="document.getElementById('btn_filter').click();">
 						<option value="default">类别筛选</option>
-						<option value="init">绘画</option>
-						<option value="ing">舞蹈</option>
-						<option value="exception">跆拳道</option>
-						<option value="finished">瑜伽</option>
-						<option value="deleted">语言与科技</option>
-						<option value="deleted">寒暑假集训</option>
+						<option value="published">已发布</option>
+						<option value="unpublished">未发布</option>
+						<option value="deleted">已删除</option>
 					</select>
 			</div>
 			<div class="form-group form-group-sm">
@@ -96,7 +106,7 @@
 		</div>
 	</div>
 
-	<!--新增检测机构账号-->
+	<!--新增课程-->
     <div class="modal fade" id="modal_create" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -105,7 +115,7 @@
                         <span>&times;</span>
                     </button>
                     <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
-						<strong>新增活动</strong>
+						<strong>新增课程</strong>
 					</h4>
                 </div>
                 <div class="modal-body">
@@ -133,15 +143,15 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="name">活动名称:</label>
+                            <label class="col-sm-2 control-label" for="name">课程名称:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" id="name" name="name" placeholder="请输入活动名称，最好不要超过15个汉字" />
+                                <input class="form-control" type="text" id="name" name="name" placeholder="请输入课程名称，最好不要超过15个汉字" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="content">活动内容:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入活动内容" />
+                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入课程内容" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -160,7 +170,7 @@
         </div>
     </div>
 	
-	<!-- 进货单详情 -->
+	<!-- 课程详情 -->
 	<div class="modal fade" id="modal_details" tabindex="-1" role="dialog"
 		aria-hidden="true">
 		<div class="modal-dialog">
@@ -204,8 +214,7 @@
 	<nav th:replace="fragments/footer :: footer"></nav>
 	<script type="text/javascript">
 
-		var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString(
-		"page").split(",")[0];
+		var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString("page").split(",")[0];
 		var defaultSize = 20;
 		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
 		
@@ -220,6 +229,10 @@
 					GetQueryString('state') == "" ? "default"
 							: GetQueryString('state'));
 			
+			$("#filter_classification").val(
+					GetQueryString('classification') == "" ? "default"
+							: GetQueryString('classification'));
+			
 			$("#filter_time").val(
 					GetQueryString('time') == "" ? "default"
 							: GetQueryString('time'));
@@ -229,7 +242,7 @@
 				if (maxPage >= currentPage) {
 					var $btn = $(this).button('loading');
 					/*<![CDATA[*/
-				location.href = 'storagein?page=' + currentPage + ',' + defaultSize + "&time="
+				location.href = 'course?page=' + currentPage + ',' + defaultSize + "&time="
 						+ $("#filter_time").val() + "&state="+ $("#filter_state").val();; 
 					/*]]>*/
 				$btn.button('reset');
@@ -245,7 +258,7 @@
 				if (Math.max(currentPage, 0) == currentPage) {
 					var $btn = $(this).button('loading');
 					/*<![CDATA[*/
-				location.href = 'storagein?page=' + currentPage + ',' + defaultSize + "&time="
+				location.href = 'course?page=' + currentPage + ',' + defaultSize + "&time="
 						+ $("#filter_time").val() + "&state="+ $("#filter_state").val();; 
 					/*]]>*/
 					$btn.button('reset');
@@ -260,10 +273,10 @@
 		$("#btn_filter").click(
 				function() {
 					/*<![CDATA[*/
-					location.href = 'storagein?page=0' + ',' + defaultSize + "&time="
-					+ $("#filter_time").val()
-							+ "&state="
-							+ $("#filter_state").val()
+					location.href = 'course?page=0' + ',' + defaultSize 
+							+ "&time=" + $("#filter_time").val()
+							+ "&state=" + $("#filter_state").val()
+							+ "&classification=" + $("#filter_classification").val();
 							
 					/*]]>*/
 				});

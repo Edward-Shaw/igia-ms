@@ -24,7 +24,7 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 	}
 
 	@Override
-	public List<Course> listByPage(String state, String classfication, String createdTime, int[] page) {
+	public List<Course> listByPage(String state, String classification, String createdTime, int[] page) {
 		if (page == null) {
 			page = new int[2];
 			page[0] = 0;
@@ -41,8 +41,8 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 			criterion.and("state").is(state);
 		}
 		
-		if(state.compareToIgnoreCase("default") != 0){
-			criterion.and("classfication").is(classfication);
+		if(classification.compareToIgnoreCase("default") != 0){
+			criterion.and("classification").is(classification);
 		}
 		
 		if (createdTime.compareToIgnoreCase("default") != 0) {
