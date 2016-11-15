@@ -56,31 +56,28 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="storage : ${storages}">
-					<td style="text-align: left" class="cell" th:text="${storage.type}" data-toggle="tooltip" th:title="${storage.type}">20151028001</td>
-					<td class="cell" th:text="${storage.number}" data-toggle="tooltip" th:title="${storage.number}">在库</td>
-					<td class="cell" th:text="${#calendars.format(storage.createTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(storage.createTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
-					<td class="cell" th:if="${storage.finishTime != 0}" th:text="${#calendars.format(storage.finishTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(storage.finishTime, 'yyyy-MM-dd HH:mm:ss ')}">电阻器</td>
-					<td class="cell" th:if="${storage.finishTime == 0}" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
-					<td class="cell" th:text="${storage.state}" data-toggle="tooltip" th:title="${storage.state}">在库</td>
+				<tr th:each="course : ${courses}">
+					<td style="text-align: left" class="cell" th:text="${course.classification}" data-toggle="tooltip" th:title="${course.classification}">20151028001</td>
+					<td class="cell" th:text="${course.code}" data-toggle="tooltip" th:title="${course.code}">在库</td>
+					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
+					<td class="cell" th:text="${course.content}" data-toggle="tooltip" th:title="${course.content}">在库</td>
+					<td class="cell" th:text="${course.remark}" data-toggle="tooltip" th:title="${course.remark}">在库</td>
+					<td class="cell" th:text="${course.state}" data-toggle="tooltip" th:title="${course.state}">在库</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
-								th:attr="data-id=${storage.id}" data-toggle="modal"
+								th:attr="data-id=${course.id}" data-toggle="modal"
 								data-target="#modal_details2">详情</button>
-							<!-- <button type="button" class="btn btn-default btn-xs"
-								th:attr="data-id=${storage.id}" data-toggle="modal"
-								data-target="#modal_modify">修改</button>  -->
+							<button type="button" class="btn btn-default btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_modify">修改</button>
 							<button type="button" class="btn btn-danger btn-xs"
-								th:attr="data-id=${storage.id}" data-toggle="modal"
+								th:attr="data-id=${course.id}" data-toggle="modal"
 								data-target="#modal_delete2">作废</button>
-							<button type="button" class="btn btn-warning btn-xs"
-								th:attr="data-id=${storage.id}" data-toggle="modal"
-								data-target="#modal_truck2">叉车任务</button>
 						</div>
 					</td>
 				</tr>
-				<tr th:if="${#lists.isEmpty(storages)}">
+				<tr th:if="${#lists.isEmpty(courses)}">
 					<td colspan="7">
 						<div class="alert alert-info" role="alert">
 							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在添加课程</strong></a>?
@@ -89,7 +86,7 @@
 				</tr>
 			</tbody>
 		</table>
-		<div th:if="${not#lists.isEmpty(storages)}" style="text-align: center;">
+		<div th:if="${not#lists.isEmpty(courses)}" style="text-align: center;">
 			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
 				data-trigger="focus" data-placement="left" data-toggle="popover"
 				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
@@ -370,13 +367,13 @@
 				var $btn = $(this).button('loading');
 				$.ajax({
 					type : "post",
-					url : CONSTS.BASE_API + '/class',
+					url : CONSTS.BASE_API + '/course',
 					async : false,
 					data : JSON.stringify(data),
 					contentType : "application/json; charset=utf-8",
 					success : function(data) {
-						if(data.message != "good"){
-							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+						if(data.code != 0){
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:" + data.message;
 	                        $("#modal_failure").modal("show");
 						}
 						else {

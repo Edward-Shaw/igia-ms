@@ -1,5 +1,7 @@
 package com.cloume.shaw.igia.management.iservice;
 
+import java.util.List;
+
 import com.cloume.shaw.igia.common.resource.Course;
 
 public interface ICourseService {
@@ -10,4 +12,14 @@ public interface ICourseService {
 	 * @return
 	 */
 	public void addNewCourse(Course course);
+
+	/**
+	 * 根据筛选条件获取课程列表
+	 * @param state
+	 * @param classfication
+	 * @param createdTime
+	 * @param page
+	 * @return
+	 */
+	public List<Course> listByPage(String state, String classfication, String createdTime, int[] page);
 }
