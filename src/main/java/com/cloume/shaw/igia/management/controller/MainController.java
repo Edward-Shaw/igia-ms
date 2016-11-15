@@ -67,8 +67,8 @@ public class MainController {
 		return "subscribe";
 	}
 	
-	@RequestMapping(value = "/class", method = {RequestMethod.GET})
-	public String classPage(Principal principal){
+	@RequestMapping(value = "/course", method = {RequestMethod.GET})
+	public String coursePage(Principal principal){
 		
 		/*
 		if(principal == null || principal.getName() == null){
@@ -76,7 +76,7 @@ public class MainController {
 		}
 		*/
 		
-		return "class";
+		return "course";
 	}
 	
 	@RequestMapping("/login")
