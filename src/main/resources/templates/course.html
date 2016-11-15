@@ -127,7 +127,7 @@
                             <label class="col-sm-2 control-label" for="sex">活动发布状态:</label>
                             <div class="col-sm-10">
                             	<select class="form-control" id="state" name="state">
-                            		<option value="closed">暂不发布</option>
+                            		<option value="unpublished">暂不发布</option>
                             		<option value="published">创建完毕后即刻发布</option>
                             	</select>
                             </div>
@@ -196,101 +196,11 @@
 			</div>			
 		</div>
 	</div>
-	
-	<!-- 叉车任务列表 -->
-	<div class="modal fade" id="modal_truck" tabindex="-1" role="dialog"
-		aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content" id="modal-content" style="margin-top: 100px">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">任务单详情</h4>
-				</div>
-				<div class="modal-body">
-					<form id="form_truck" class="form-horizontal">															
-						<div class="tab-pane" id="tab" style="text-align:left">							
-							<label>上货单详情</label>
-							<table border="1" id="truck_detail" style="border-collapse:collapse;  width: 100%;">
-								<tbody>
-								</tbody>
-							</table>
-							<label>任务列表</label>
-							<table border="1" id="mission_detail" style="border-collapse:collapse;  width: 100%;">
-								<tbody>
-								</tbody>
-							</table>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default"
-						data-dismiss="modal">关闭</button>
-					<button type="submit" class="btn btn-success"
-						id="btn_print">打印</button>
-				</div>
-			</div>	
-		</div>
-	</div>
-	
-	<!-- 上传Excel表格进货单列表 -->
-	<div class="modal fade" id="excel_batch" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span>&times;</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel"
-						style="margin-top: 0px; text-align: center;">
-						<strong>批量导入进货单</strong>
-					</h4>
-				</div>
-				<div class="modal-body">
-					<form class="form-horizontal" id="form_batch">
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="state">是否立即执行上货:</label>
-							<div class="col-sm-10">
-								<select class="form-control" id="state" name="state">
-									<option value="未审核">导入成功后即刻执行上货</option>
-									<option value="审核中">手动触发上货</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="attachment">进货单:</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="fileupload" type="file"
-									name="files[]" data-url="/upload" multiple="multiple" /> <input
-									type="hidden" name="attachment_names" id="attachment_names" /> <label
-									class="label label-warning">请不要上传超过10M的附件(仅支持单个Excel文件上传)</label>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="attachment"></label>
-								<a href="/docs/storagein.xlsx">点此下载进货单模板</a>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<div align="center">
-						<button type="button" class="btn btn-default"
-							data-dismiss="modal">取消</button>
-						<button type="submit" class="btn btn-success" id="btn_batch"
-							data-dismiss="modal" data-loading-text="提交中...">提交进货单</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='进货单提交成功', style='success',url='')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='进货单提交失败，请重新提交或者联系客服处理！', style='warning',url='')"></div>	
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='新课程添加成功', style='success',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='新课程添加失败，请重新提交或者联系技术支持处理！', style='warning',url='')"></div>	
 	<nav th:replace="fragments/footer :: footer"></nav>
 	<script type="text/javascript">
 
@@ -507,59 +417,6 @@
 				}, 'json');
 			});
 			
-			//获取叉车运输任务详情			  
-			$('#modal_truck').on('show.bs.modal',function(event) {
-				var target = $(event.relatedTarget);
-				$(this).data('id', target.data('id'));
-				var url = CONSTS.BASE_API + '/storage/truck/' + target.data('id');
-				$.get(url, function(data, status) {
-					if (data.code == 0) {
-						var storagein = data.result;
-						var table = document.getElementById("truck_detail");								
-			        	var body = table.tBodies[0];
-			        	reset(body);
-			        	var rowIndex = body.childElementCount;
-			        	body.insertRow(rowIndex);
-			        	body.rows[rowIndex].insertCell(0)
-			        	body.rows[rowIndex].cells[0].innerText = "编号：" + storagein.no;
-			        	body.rows[rowIndex].cells[0].width="50%";
-			        	body.rows[rowIndex].insertCell(1);
-  						body.rows[rowIndex].cells[1].innerText = "任务数：" + storagein.details.length;
-			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;");
-
-			        	var table = document.getElementById("mission_detail");
-			        	var body = table.tBodies[0];
-			        	reset(body);
-			        	var rowIndex = body.childElementCount;
-			        	for(i = storagein.details.length-1; i >= 0; i--){
-							body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "货品编号：" + storagein.details[i].product_code;
-				        	body.rows[rowIndex].cells[0].width = "50%" ;
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "货品名称：" + storagein.details[i].product_name;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "堆码数：" + storagein.details[i].stack_num;
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "商品批号：" + storagein.details[i].batch;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "生产日期：" + dateformat(storagein.details[i].product_date);
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "入库数量：" + storagein.details[i].into_num;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "托盘编码：" + storagein.details[i].pallet_tags_num;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-			        	}
-					}}, 'json');
-				});
-			
 			$('#btn_print').click(function () {
 				var modal = $('#modal_truck');
 				/* document.getElementById(id).value =  */
@@ -682,43 +539,6 @@
 				}
 			});
 		}
-		
-		$('#btn_batch').click(function(){
-			var $btn = $(this).button('loading');
-			var length = document.getElementById("fileupload").files.length;
-			if (length == 0){
-				post();
-			}
-			else {
-				var i;
-				var files = document.getElementById("fileupload").files;
-				var filename = "";
-				for (i = files.length - 1; i >= 0; i--) {
-					if (files[i].size > 104857600) {
-						$("#modal_failure").find("p")[0].innerHTML = "错误信息：请不要上传超过100M的文件";
-						$("#modal_failure").modal("show");
-						$btn.button('reset');
-						return;
-					}
-					filename = filename + files[i].name + "/";
-				}
-				attachment_names.value = filename.substring(0, filename.length - 1);
-				i = 1;
-				$('#fileupload').fileupload().fileupload(
-					'add',
-					{
-						files : files,
-						url : CONSTS.BASE_URL + "/upload"
-					}).bind('fileuploaddone',
-						function(e, data) {
-							if (i == length) {
-								post(data.result.result);
-							}
-							i++;
-						});
-			}
-			$btn.button('reset');
-		});
 		
 		function inArray(array,value)
 	    {

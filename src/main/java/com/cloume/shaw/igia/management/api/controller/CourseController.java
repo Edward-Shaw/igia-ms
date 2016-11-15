@@ -26,6 +26,8 @@ public class CourseController extends AbstractController{
 	@Autowired
 	private ICourseService courseService;
 	
+	final String[] FIELDS = new String[] {"name", "content", "classification", "state"};
+	
 	/**
 	 * 增加新的课程
 	 * @param body
@@ -34,7 +36,47 @@ public class CourseController extends AbstractController{
 	@RequestMapping(value = "" ,method = {RequestMethod.POST , RequestMethod.PUT})
 	public RestResponse<Course> addNewCourse(@RequestBody Map<String, Object> body){
 		
+		for (String field : FIELDS) {
+			if (!body.containsKey(field)) {
+				return RestResponse.bad(-10001, String.format("missed property %s", field), null);
+			}
+		}
+		
 		Course course = new Updater<Course>(new Course()).update(body);
+		
+		switch(course.getClassification()){
+		case "0":
+			course.setClassification(Const.COURSE_PAINTING);
+			break;
+		case "1":
+			course.setClassification(Const.COURSE_DANCE);
+			break;
+		case "2":
+			course.setClassification(Const.COURSE_TAEKWONDO);
+			break;
+		case "3":
+			course.setClassification(Const.COURSE_YOGA);
+			break;
+		case "4":
+			course.setClassification(Const.COURSE_SCIENCE);
+			break;
+		case "5":
+			course.setClassification(Const.COURSE_CAMP);
+			break;
+		default:
+			course.setClassification(Const.COURSE_UNKNOWN);
+		}
+		
+		switch(course.getState()){
+		case "unpublished":
+			course.setState(Const.STATE_UNPUBLISHED);
+			break;
+		case "published":
+			course.setState(Const.STATE_PUBLISHED);
+			break;
+		default:
+			course.setState(Const.STATE_UNKNOWN);
+		}
 		
 		course.setCreatedTime(System.currentTimeMillis());
 		course.setCode(generateCourseCode());
