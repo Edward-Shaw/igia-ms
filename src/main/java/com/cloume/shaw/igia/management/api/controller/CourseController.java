@@ -15,7 +15,7 @@ import com.cloume.shaw.igia.management.iservice.ICourseService;
 
 @RestController
 @RequestMapping(value = "/api/course")
-public class ClassController {
+public class CourseController {
 	
 	@Autowired
 	private ICourseService courseService;
