@@ -83,7 +83,7 @@
 								data-target="#modal_modify">修改</button>
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${course.id}" data-toggle="modal"
-								data-target="#modal_delete2">作废</button>
+								data-target="#modal_delete">作废</button>
 						</div>
 					</td>
 				</tr>
@@ -321,28 +321,26 @@
 			});
 
 			//处理删除
-			var modal = $("#modal_delete");
-			modal.find(".btn-submit").click(
-					function(event) {
-						var submit = $(event.currentTarget).button('loading');
-						$.ajax({
-							type : "delete",
-							url : CONSTS.BASE_API + '/storage/'
-									+ modal.data('id'),
-							contentType : "application/json; charset=utf-8",
-							success : function(data) {
-								window.location.reload();
-							},
-							error : function(data) {
-								modal.find(".warning-message").html(
-										'删除失败请稍后再试,或者联系管理员.').removeClass(
-										'hidden');
-							},
-							complete : function() {
-								submit.button('reset');
-							}
-						});
+			$("#modal_delete").find(".btn-submit").click(
+				function(event) {
+					var submit = $(event.currentTarget).button('loading');
+					$.ajax({
+						type : "delete",
+						url : CONSTS.BASE_API + '/course/' + $("#modal_delete").data('id'),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							window.location.reload();
+						},
+						error : function(data) {
+							modal.find(".warning-message").html(
+									'删除失败请稍后再试,或者联系管理员.').removeClass(
+									'hidden');
+						},
+						complete : function() {
+							submit.button('reset');
+						}
 					});
+				});
 			
 			$('#btn_print').click(function () {
 				var modal = $('#modal_details');
@@ -444,63 +442,6 @@
 				printWindow.print();
 				};
 			});
-			
-			//手动增删进货单输入框
-			var itemIndex=0;
-			var $template
-			var $clone
-			$(document).on('click', '.btn-add', function() {	
-			   itemIndex++;
-			   array3.push(itemIndex)
-               $template = $('#itemTemplate'),
-               $clone = $template
-                .clone()
-                .removeClass('hide')
-                .removeAttr('id')
-                .attr('data-item-index', itemIndex)
-                .insertBefore($template);
-
-                  // Update the name attributes
-                $clone
-                      .find('[name="id"]').attr('name', 'item[' + itemIndex + '].id').end()
-                      .find('[name="number"]').attr('name', 'item[' + itemIndex + '].number').end();
-                $clone.find('[id="input_ware"]').autocomplete({
-           	       source: function(request, response) {
-           	            $.ajax({
-           	            	type : "post",
-           	                url: "api/storage/autocomplete",
-           	                dataType: "json",
-           	                data: {search:request.term,field:"productCode,name"},
-           	                success: function(data) {
-           	                	var array = new Array();
-           	                    response($.map(data.result, function(item) {
-           	                    	if(inArray(array,item.product_code))
-           	                    		return;
-           	                        array.push(item.product_code);
-           	                    	return {
-           	                    		value: item.product_code + " " + item.name
-           	                        }
-           	                    }));
-           	                }
-           	            });
-           	        },
-          	       
-          	   	}); 
-			}).on('click', '.btn-remove', function() { // Remove button click handler
-                   var $row  = $(this).parents('.form-group'),
-                   index = $row.attr('data-item-index');
-                   for(i=array3.length-1;i>=0;i--){
-                	   if(array3[i]==index)
-                		   j=i;
-                   };
-                   if(j!=-1){
-                   array3.splice(j, 1)
-                   }
-                    // Remove element containing the fields
-                   $row.remove();
-            });
-		});
-		
 		/*自动填充方法*/
 		$('#input_ware').autocomplete({
          	 source: function(request, response) {
@@ -524,34 +465,6 @@
         	     });
         	},
         });
-		
-		function post(file_list) {
-			console.log(file_list);		
-			var attachment = $("#form_batch").serializeObject();
-			attachment['attachment_names'] = file_list[0];
-			$.ajax({
-				type : "post",
-				url : CONSTS.BASE_API + 'storage/batch',
-				async : false,
-				data : JSON.stringify(attachment),
-				contentType : "application/json; charset=utf-8",
-				success : function(data) {
-					if (data.code != 0) {
-						$("#modal_failure").find("p")[0].innerHTML = "错误信息："
-								+ data.message;
-						$("#modal_failure").modal("show");
-					} else {
-						$("#modal_success").modal('show');
-						$("#modal_success").on('hide.bs.modal', function() {
-							location.reload();
-						});
-					}
-				},
-				fail : function(data) {
-					alert(data);
-				}
-			});
-		}
 		
 		function inArray(array,value)
 	    {
@@ -598,6 +511,7 @@
 					for (var i = rowIndex - 1; i >= 0; i--)
 						body.deleteRow(i);
 		}
+		});
 	</script>
 </body>
 </html>

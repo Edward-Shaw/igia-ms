@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -84,6 +85,19 @@ public class CourseController extends AbstractController{
 		courseService.addNewCourse(course);
 		
 		return RestResponse.good(course);
+	}
+	
+	/**
+	 * 根据指定id删除课程：将课程状态置为已删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public RestResponse<Course> deleteCourseById(@PathVariable("id") String id){
+		
+		Course course = courseService.deleteCourseById(id);
+		
+		return new RestResponse<Course>(0, "OK", course);
 	}
 	
 	/**

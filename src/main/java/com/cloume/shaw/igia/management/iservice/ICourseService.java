@@ -22,4 +22,11 @@ public interface ICourseService {
 	 * @return
 	 */
 	public List<Course> listByPage(String state, String classfication, String createdTime, int[] page);
+
+	/**
+	 * 将指定id的课程状态修改为删除状态
+	 * @param id
+	 * @return
+	 */
+	public Course deleteCourseById(String id);
 }

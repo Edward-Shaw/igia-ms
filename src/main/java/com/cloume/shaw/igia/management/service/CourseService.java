@@ -7,12 +7,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.cloume.shaw.igia.common.resource.Course;
 import com.cloume.shaw.igia.common.resource.Subscribe;
+import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
 import com.cloume.shaw.igia.management.iservice.ICourseService;
+import com.mongodb.WriteResult;
 
 @Service
 public class CourseService extends AbstractServiceBase implements ICourseService {
@@ -39,6 +42,8 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 		Criteria criterion = new Criteria();
 		if(state.compareToIgnoreCase("default") != 0){
 			criterion.and("state").is(state);
+		}else{
+			criterion.and("state").ne(Const.STATE_DELETED);
 		}
 		
 		if(classification.compareToIgnoreCase("default") != 0){
@@ -83,6 +88,17 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 		List<Course> courseList = getMongoTemplate().find(query.with(new Sort(Direction.DESC, "_id")), Course.class);
 		
 		return courseList;
+	}
+
+	@Override
+	public Course deleteCourseById(String id) {
+		Course course = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), Course.class);
+		if(course != null ){
+			course.setState(Const.STATE_DELETED);
+			getMongoTemplate().save(course);
+		}
+		
+		return course;
 	}
 
 }
