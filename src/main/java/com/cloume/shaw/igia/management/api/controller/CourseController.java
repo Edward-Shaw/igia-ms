@@ -19,6 +19,7 @@ import com.cloume.shaw.igia.common.rest.RestResponse;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.common.utils.Updater;
 import com.cloume.shaw.igia.management.iservice.ICourseService;
+import com.cloume.shaw.igia.management.repository.CourseRepository;
 
 @RestController
 @RequestMapping(value = "/api/course")
@@ -26,6 +27,9 @@ public class CourseController extends AbstractController{
 	
 	@Autowired
 	private ICourseService courseService;
+	
+	@Autowired
+	private CourseRepository courseRepository;
 	
 	final String[] FIELDS = new String[] {"name", "content", "classification", "state"};
 	
@@ -96,6 +100,26 @@ public class CourseController extends AbstractController{
 	public RestResponse<Course> deleteCourseById(@PathVariable("id") String id){
 		
 		Course course = courseService.deleteCourseById(id);
+		
+		return new RestResponse<Course>(0, "OK", course);
+	}
+	
+	/**
+	 * 根据指定id发布或撤回课程
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.POST})
+	public RestResponse<Course> updateCourseState(@PathVariable("id") String id,
+			@RequestBody Map<String, Object> body){
+		
+		Course course = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), Course.class);
+		if(course == null){
+			return RestResponse.bad(-1, "course not found!");
+		}
+
+		course = new Updater<Course>(course).update(body);
+		course = courseRepository.save(course);
 		
 		return new RestResponse<Course>(0, "OK", course);
 	}

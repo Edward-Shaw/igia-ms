@@ -69,7 +69,7 @@
 				<tr th:each="course : ${courses}">
 					<td style="text-align: left" class="cell" th:text="${course.classification}" data-toggle="tooltip" th:title="${course.classification}">20151028001</td>
 					<td class="cell" th:text="${course.code}" data-toggle="tooltip" th:title="${course.code}">在库</td>
-					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
+					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
 					<td class="cell" th:text="${course.content}" data-toggle="tooltip" th:title="${course.content}">在库</td>
 					<td class="cell" th:text="${course.remark}" data-toggle="tooltip" th:title="${course.remark}">在库</td>
 					<td class="cell" th:text="${course.state}" data-toggle="tooltip" th:title="${course.state}">在库</td>
@@ -81,6 +81,12 @@
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${course.id}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>
+							<button type="button" th:if="${course.state=='未发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_publish">发布</button>
+							<button type="button" th:if="${course.state=='已发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_publish">撤回</button>
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${course.id}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
@@ -204,6 +210,38 @@
 						id="btn_print">打印</button>
 				</div>						
 			</div>			
+		</div>
+	</div>
+	
+	<!-- 课程发布状态 -->
+	<div class="modal fade" id="modal_publish" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog" style="width: 500px;">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-body">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">请下拉选择课程操作</h4>
+					<form class="form-horizontal" id="form_publish" method="post">
+						<div class="form-group form-group-sm" align="center">
+							<select class="form-control" id="publish_state"
+								name="state" style="margin-top: 30px; width: 200px;">
+								<option value="已发布">发布课程</option>
+								<option value="未发布">撤回课程</option>
+							</select>
+						</div>
+						<div style="text-align: right; margin-top: 50px;">
+							<button type="button" class="btn btn-default btn-sm"
+								data-dismiss="modal">取消</button>
+							<button type="button" class="btn btn-success btn-sm"
+								id="state_update">确定</button>
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -352,6 +390,31 @@
 				printWindow.document.body.innerHTML = table;
 				printWindow.print();
 				};
+			});
+			
+			$("#modal_publish").on('show.bs.modal', function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+				var id = target.data('id');
+			})
+			
+			$("#state_update").click(function() {
+				var id = $("#modal_publish").data('id');
+				var url = CONSTS.BASE_API + '/course/' + id;
+				var data = $("#publish_state").serializeObject();
+				$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						location.reload();
+					},
+					fail : function(data) {
+						alert(data);
+					}
+				});
 			});
 			
 			//获取进货单详情		  
