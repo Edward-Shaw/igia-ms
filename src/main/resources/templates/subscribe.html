@@ -48,13 +48,13 @@
 			<thead>
 				<tr class="active">
 					<td style="text-align: left" class="cell">预约编号</td>
-					<td class="cell">创建时间</td>
+					<td class="cell" style="width: 15%;">创建时间</td>
 					<td class="cell">处理状态</td>
 					<td class="cell">用户姓名</td>
 					<td class="cell">用户手机号</td>
 					<td class="cell">用户地址</td>
-					<td class="cell">预约活动</td>
-					<td align="right" style="width: 20%;">操作</td>
+					<td class="cell" style="width: 16%;">预约活动</td>
+					<td align="right" style="width: 16%;">操作</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -70,15 +70,19 @@
 					<td class="cell" th:text="${subscribe.user.username}" data-toggle="tooltip" th:title="${subscribe.user.username}">在库</td>
 					<td class="cell" th:text="${subscribe.user.mobile}" data-toggle="tooltip" th:title="${subscribe.user.mobile}">待检测</td>
 					<td class="cell" th:text="${subscribe.user.address}" data-toggle="tooltip" th:title="${subscribe.user.address}">待检测</td>
-					<td class="cell" th:text="${subscribe.courses}" data-toggle="tooltip" th:title="${subscribe.courses}">待检测</td>
+					<td class="cell">
+						<span th:each="course : ${subscribe.courses}">
+							<a th:attr="data-id=${course}" data-toggle="modal" data-target="#modal_course_detail" th:text="${course}" style="margin-left: 2px;"></a>
+						</span>
+					</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
-								data-target="#modal_detail2">详情</button>
+								data-target="#modal_detail">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
-								data-target="#modal_modify2">修改</button>
+								data-target="#modal_modify">修改</button>
 							<button type="button" class="btn btn-danger btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
@@ -199,7 +203,7 @@
 		</div>
 	</div>
 
-	<!-- 货品详情 -->
+	<!-- 预约详情 -->
 	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
 		aria-hidden="true">
 		<div class="modal-dialog">
@@ -227,7 +231,35 @@
 		</div>
 	</div>
 	
-	<!-- 修改货品信息 -->
+	<!-- 活动详情 -->
+	<div class="modal fade" id="modal_course_detail" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">活动详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_detail" class="form-horizontal">
+						<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%; table-layout:fixed; word-break:break-all;">
+								<tbody>
+								</tbody>
+							</table>
+							<div class="col-sm-10">
+								<img class="form-control-static" id="detail_id"></img>
+							</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 修改活动预约 -->
 	<div class="modal fade" id="modal_modify" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content" id="modal-content" style="margin-top: 100px">
@@ -235,84 +267,58 @@
 					<button type="button" class="close" data-dismiss="modal">
 						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
 					</button>
-					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">货品修改</h4>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">修改活动预约</h4>
 				</div>
 
 				<div class="modal-body">
 					<form id="form_modify" class="form-horizontal">
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">编号</label>
+							<label for="modify-description" class="col-sm-2 control-label">预约编号</label>
 							<div class="col-sm-10">
-								<input id="modify_code" name="product_code" type="text" class="form-control" placeholder="货品编号"  disabled="disabled"></input>
+								<input id="modify_code" name="subscribe_code" type="text" class="form-control" placeholder="预约编号"  disabled="disabled"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">名称</label>
+							<label for="modify-description" class="col-sm-2 control-label">创建时间</label>
 							<div class="col-sm-10">
-								<input id="modify_name" name="name" type="text" class="form-control" placeholder="货品名称"></input>
+								<input id="modify_date" name="create_time" type="text" class="form-control" placeholder="预约创建时间" disabled="disabled"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-descrityion" class="col-sm-2 control-label">库存状态</label>
+							<label for="modify-description" class="col-sm-2 control-label">用户姓名</label>
 							<div class="col-sm-10">
-								<input id="modify_stock_state" name="stock_state" type="text" class="form-control" placeholder="库存状态"></input>
+								<input id="modify_name" name="name" type="text" class="form-control" placeholder="用户姓名"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">堆码数</label>
+							<label for="modify-descrityion" class="col-sm-2 control-label">用户手机</label>
 							<div class="col-sm-10">
-								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="堆码数"></input>
+								<input id="modify_stock_state" name="stock_state" type="text" class="form-control" placeholder="用户手机号"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">重量</label>
+							<label for="modify-description" class="col-sm-2 control-label">用户地址</label>
 							<div class="col-sm-10">
-								<input id="modify_weight" name="weight" type="text" class="form-control" placeholder="重量"></input>
+								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="用户地址"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">单位名</label>
+							<label for="modify-description" class="col-sm-2 control-label">预约活动</label>
 							<div class="col-sm-10">
-								<input id="modify_unit_name" name="unit_name" type="text" class="form-control" placeholder="单位名"></input>
+								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="预约活动"></input>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">生产日期</label>
+							<label for="modify-description" class="col-sm-2 control-label">处理状态</label>
 							<div class="col-sm-10">
-								<input id="modify_production_date" name="created_time" type="text" class="form-control" placeholder="生产日期" disabled="disabled"></input>
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">货品批次</label>
-							<div class="col-sm-10">
-								<input id="modify_batch_number" name="batch_number" type="text" class="form-control" placeholder="货品批次"></input>
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">存放位置</label>
-							<div class="col-sm-10">
-								<input id="modify_pallet_tags_number" name="pallet_tags_number" type="text" class="form-control" placeholder="存放位置"></input>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="picture">图片上传:</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="modify_fileupload" type="file" 
-								name="files[]" data-url="/upload" onchange="PreviewImg(this,'editPreview')" /> 	
-								<input type="hidden" name="picture" id="modify_picture" />
-								<label class="label label-warning">请不要上传超过10M的图片</label>
-							</div>
-							<label class="col-sm-2 control-label"></label>
-							<div class="col-sm-10">
-								<img id="editPreview"></img>
+								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="处理状态"></input>
 							</div>
 						</div>
 					</form>
 				</div>
-
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-success" id="btn_update">修改</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-success" id="btn_update">确认修改</button>
 				</div>
 			</div>
 		</div>
