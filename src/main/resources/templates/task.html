@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="fragments/head :: head (title='课程管理')">
+</head>
+
+<body>
+	<nav th:replace="fragments/navbar :: navbar"></nav>
+	<div class="container table-responsive"
+		style="width: 1024px; margin-bottom: 60px;">
+		<div class="form-inline" >
+			<div class="form-group form-group-sm">
+					<label class="control-label">课程类别</label> <select
+						class="form-control" id="filter_classification"
+						onchange="document.getElementById('btn_filter').click();">
+						<option value="default">类别筛选</option>
+						<option value="0">绘画</option>
+						<option value="1">舞蹈</option>
+						<option value="2">跆拳道</option>
+						<option value="3">瑜伽</option>
+						<option value="4">语言与科技</option>
+						<option value="5">寒暑假集训</option>
+					</select>
+			</div>
+			<div class="form-group form-group-sm">
+					<label class="control-label">发布状态</label> <select
+						class="form-control" id="filter_state"
+						onchange="document.getElementById('btn_filter').click();">
+						<option value="default">类别筛选</option>
+						<option value="published">已发布</option>
+						<option value="unpublished">未发布</option>
+						<option value="deleted">已删除</option>
+					</select>
+			</div>
+			<div class="form-group form-group-sm">
+				<label class="control-label">创建时间</label> <select class="form-control"
+					id="filter_time"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">全部</option>
+					<option value="today">今天</option>
+					<option value="yesterday">昨天</option>
+					<option value="this_week">本周</option>
+					<option value="this_month">本月</option>
+					
+				</select>
+			</div>
+			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
+			<button class="btn btn-sm btn-success btn-primary" id="new"
+				style="float: right; position: relative;" data-toggle="modal"
+				data-target="#modal_create">添加课程</button>
+		</div>
+
+		<!-- 表格 -->
+		<input type="hidden" id="maxPage" th:attr="value=${maxPage}" />
+		<table class="table table-condensed  table-hover"
+			style="margin-top: 10px;">
+			<thead>
+				<tr class="active">
+					<td style="text-align: left" class="cell">课程类别</td>
+					<td class="cell">编号</td>
+					<td class="cell">创建时间</td>
+					<td class="cell">活动内容</td>
+					<td class="cell">备注</td>
+					<td class="cell">状态</td>
+					<td align="right" style="width: 12%;">操作</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="course : ${courses}">
+					<td style="text-align: left" class="cell" th:text="${course.classification}" data-toggle="tooltip" th:title="${course.classification}">20151028001</td>
+					<td class="cell" th:text="${course.code}" data-toggle="tooltip" th:title="${course.code}">在库</td>
+					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
+					<td class="cell" th:text="${course.content}" data-toggle="tooltip" th:title="${course.content}">在库</td>
+					<td class="cell" th:text="${course.remark}" data-toggle="tooltip" th:title="${course.remark}">在库</td>
+					<td class="cell" th:text="${course.state}" data-toggle="tooltip" th:title="${course.state}">在库</td>
+					<td align="right">
+						<div class="btn-group">
+							<button type="button" class="btn btn-success btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_details2">详情</button>
+							<button type="button" class="btn btn-default btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_modify">修改</button>
+							<button type="button" th:if="${course.state=='未发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_publish">发布</button>
+							<button type="button" th:if="${course.state=='已发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_publish">撤回</button>
+							<button type="button" class="btn btn-danger btn-xs"
+								th:attr="data-id=${course.id}" data-toggle="modal"
+								data-target="#modal_delete">作废</button>
+						</div>
+					</td>
+				</tr>
+				<tr th:if="${#lists.isEmpty(courses)}">
+					<td colspan="7">
+						<div class="alert alert-info" role="alert">
+							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在添加课程</strong></a>?
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div th:if="${not#lists.isEmpty(courses)}" style="text-align: center;">
+			<a tabindex="0" role="button" class="btn btn-success" id="page_up"
+				data-trigger="focus" data-placement="left" data-toggle="popover"
+				data-content="没有上一页了">上一页</a> <label id="currentPage">当前页</label> <label>/</label>
+			<label id="totalPage">总页数</label> <a tabindex="0" role="button"
+				class="btn btn-success" id="page_down" data-trigger="focus"
+				data-placement="right" data-toggle="popover" data-content="没有下一页了">下一页</a>
+		</div>
+	</div>
+
+	<!--新增课程-->
+    <div class="modal fade" id="modal_create" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
+						<strong>新增课程</strong>
+					</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="form_create" method="POST" action="./user">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="sex">活动分类:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="classification" name="classification">
+                            		<option value="0">绘画</option>
+                            		<option value="1">舞蹈</option>
+                            		<option value="2">跆拳道</option>
+                            		<option value="3">瑜伽</option>
+                            		<option value="4">语言与科技</option>
+                            		<option value="5">寒暑假集训</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="sex">活动发布状态:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="state" name="state">
+                            		<option value="unpublished">暂不发布</option>
+                            		<option value="published">创建完毕后即刻发布</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="name">课程名称:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="name" name="name" placeholder="请输入课程名称，最好不要超过15个汉字" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="content">活动内容:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入课程内容" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="remark">备注:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="remark" name="remark" placeholder="备注内容，可不填写" />
+                            </div>
+                        </div>
+                        <div align="right">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-success" id="btn_create" data-dismiss="modal" data-loading-text="提交中...">确定</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	<!-- 课程详情 -->
+	<div class="modal fade" id="modal_details" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">进货单详情</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form_details" class="form-horizontal">																	
+						<div class="tab-pane" id="tab" style="text-align:left">
+							
+							<label>进货单信息</label>
+							<table border="1" id="storagein_detail" style="border-collapse:collapse;  width: 100%;">
+								<tbody>
+								</tbody>
+							</table>
+							<label>货品列表详情</label>
+							<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%;">
+								<tbody>
+								</tbody>
+							</table>
+							
+							</div>
+					</form>
+				</div>	
+				<div class="modal-footer" style="text-align:center">
+					<button type="submit" class="btn btn-success"
+						id="btn_print">打印</button>
+				</div>						
+			</div>			
+		</div>
+	</div>
+	
+	<!-- 课程发布状态 -->
+	<div class="modal fade" id="modal_publish" tabindex="-1" role="dialog"
+		aria-hidden="true">
+		<div class="modal-dialog" style="width: 500px;">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
+				<div class="modal-body">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">请下拉选择课程操作</h4>
+					<form class="form-horizontal" id="form_publish" method="post">
+						<div class="form-group form-group-sm" align="center">
+							<select class="form-control" id="publish_state"
+								name="state" style="margin-top: 30px; width: 200px;">
+								<option value="已发布">发布课程</option>
+								<option value="未发布">撤回课程</option>
+							</select>
+						</div>
+						<div style="text-align: right; margin-top: 50px;">
+							<button type="button" class="btn btn-default btn-sm"
+								data-dismiss="modal">取消</button>
+							<button type="button" class="btn btn-success btn-sm"
+								id="state_update">确定</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='新课程添加成功', style='success',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='新课程添加失败，请重新提交或者联系技术支持处理！', style='warning',url='')"></div>	
+	<nav th:replace="fragments/footer :: footer"></nav>
+	<script type="text/javascript">
+
+		var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString("page").split(",")[0];
+		var defaultSize = 20;
+		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
+		
+		/* 页面文档结构加载完成执行下面： */
+		$(function() {
+			if (document.getElementById('currentPage'))
+				document.getElementById('currentPage').innerText = Number(currentPage) + 1;
+			if (document.getElementById('totalPage'))
+				document.getElementById('totalPage').innerText = Number(maxPage) + 1;
+			
+			$("#filter_state").val(
+					GetQueryString('state') == "" ? "default"
+							: GetQueryString('state'));
+			
+			$("#filter_classification").val(
+					GetQueryString('classification') == "" ? "default"
+							: GetQueryString('classification'));
+			
+			$("#filter_time").val(
+					GetQueryString('time') == "" ? "default"
+							: GetQueryString('time'));
+			
+			$("#page_down").click( function() {
+				currentPage = ++currentPage;
+				if (maxPage >= currentPage) {
+					var $btn = $(this).button('loading');
+					/*<![CDATA[*/
+				location.href = 'course?page=' + currentPage + ',' + defaultSize + "&time="
+						+ $("#filter_time").val() + "&state="+ $("#filter_state").val();; 
+					/*]]>*/
+				$btn.button('reset');
+				} else {
+					currentPage = --currentPage;
+					$("#page_down").popover('show');
+					return;
+				}
+			});
+			//上一页
+			$("#page_up").click( function(){
+				currentPage = --currentPage;
+				if (Math.max(currentPage, 0) == currentPage) {
+					var $btn = $(this).button('loading');
+					/*<![CDATA[*/
+				location.href = 'course?page=' + currentPage + ',' + defaultSize + "&time="
+						+ $("#filter_time").val() + "&state="+ $("#filter_state").val();; 
+					/*]]>*/
+					$btn.button('reset');
+				} else {
+					currentPage = ++currentPage;
+					$("#page_up").popover('show');
+					return;
+				}
+			});
+		});
+		
+		$("#btn_filter").click(
+				function() {
+					/*<![CDATA[*/
+					location.href = 'course?page=0' + ',' + defaultSize 
+							+ "&time=" + $("#filter_time").val()
+							+ "&state=" + $("#filter_state").val()
+							+ "&classification=" + $("#filter_classification").val();
+							
+					/*]]>*/
+				});
+		
+		var array3 = new Array();
+		var j=-1;
+		array3.push(0)
+		$(function(){
+			$('#btn_create').click(function() {
+				var data = $("#form_create").serializeObject();
+				var $btn = $(this).button('loading');
+				$.ajax({
+					type : "post",
+					url : CONSTS.BASE_API + '/course',
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						if(data.code != 0){
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:" + data.message;
+	                        $("#modal_failure").modal("show");
+						}
+						else {
+							$("#modal_success").modal('show');
+	                    	 $("#modal_success").on('hide.bs.modal', function() {
+	                         location.reload();
+	                     });
+						}
+					},
+					fail : function(data) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+                        $("#modal_failure").modal("show");
+					}
+				});
+				$btn.button('reset');
+			});
+			
+			//传参数
+			$('#modal_delete').on('show.bs.modal', function(event) {
+				$(this).find(".warning-message").addClass('hidden').html('');
+				$(this).data('id', $(event.relatedTarget).data('id'));
+			});
+
+			//处理删除
+			$("#modal_delete").find(".btn-submit").click(
+				function(event) {
+					var submit = $(event.currentTarget).button('loading');
+					$.ajax({
+						type : "delete",
+						url : CONSTS.BASE_API + '/course/' + $("#modal_delete").data('id'),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							window.location.reload();
+						},
+						error : function(data) {
+							modal.find(".warning-message").html(
+									'删除失败请稍后再试,或者联系管理员.').removeClass(
+									'hidden');
+						},
+						complete : function() {
+							submit.button('reset');
+						}
+					});
+				});
+			
+			$('#btn_print').click(function () {
+				var modal = $('#modal_details');
+				/* document.getElementById(id).value =  */
+				var url = [location.protocol, '//', location.host, location.pathname.indexOf("storagein") >= 0 ? '/storagein' : '', '/printer'].join('');
+				var printWindow = window.open(url);
+				printWindow.onload = function () {
+				var table = modal.find('.tab-pane').html();
+				printWindow.document.body.innerHTML = table;
+				printWindow.print();
+				};
+			});
+			
+			$("#modal_publish").on('show.bs.modal', function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+				var id = target.data('id');
+			})
+			
+			$("#state_update").click(function() {
+				var id = $("#modal_publish").data('id');
+				var url = CONSTS.BASE_API + '/course/' + id;
+				var data = $("#publish_state").serializeObject();
+				$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						location.reload();
+					},
+					fail : function(data) {
+						alert(data);
+					}
+				});
+			});
+			
+			//获取进货单详情		  
+			$('#modal_details').on('show.bs.modal',function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+				var url = CONSTS.BASE_API + '/storage/' + target.data('id');
+				$.get(url,function(data, status) {
+					if (data.code == 0) {
+						var storagein = data.result;								
+						//进货单详情的表格
+						var table = document.getElementById("storagein_detail");								
+			        	var body = table.tBodies[0];
+			        	reset(body);
+			        	var rowIndex = body.childElementCount;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "进货单类型：" + storagein.type;
+			        	body.rows[rowIndex].cells[0].width="50%";
+			        	body.rows[rowIndex].insertCell(1)
+  						    body.rows[rowIndex].cells[1].innerText = "进货单编号：" + storagein.no;
+			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
+			        	
+			        	
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "进货单状态：" + storagein.state;
+			        	body.rows[rowIndex].insertCell(1)
+			        	body.rows[rowIndex].cells[1].innerText = "货品种类：" + storagein.details.length;
+			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
+
+			        	rowIndex += 1;
+			        	body.insertRow(rowIndex);
+			        	body.rows[rowIndex].insertCell(0)
+			        	body.rows[rowIndex].cells[0].innerText = "创建时间：" + dateformat(storagein.create_time);
+			        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
+			        	body.rows[rowIndex].cells[0].setAttribute("colspan", "2")
+
+			        	var table = document.getElementById("ware_detail");
+			        	var body = table.tBodies[0];
+			        	reset(body);
+			        	var rowIndex = body.childElementCount;
+			        	for(i = storagein.details.length-1; i>=0; i--){
+							body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "货品名：" + storagein.details[i].product_name;
+				        	body.rows[rowIndex].cells[0].width = "50%" ;
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "货品编码：" + storagein.details[i].product_code;
+				        	body.rows[rowIndex].cells[0].setAttribute("colspan", "2")
+				        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
+				        	
+				        	rowIndex += 1;
+				        	body.insertRow(rowIndex);
+				        	body.rows[rowIndex].insertCell(0);
+				        	body.rows[rowIndex].cells[0].innerText = "明细数量：" + storagein.details[i].into_num;
+				        	body.rows[rowIndex].insertCell(1);
+				        	body.rows[rowIndex].cells[1].innerText = "实际上架数量：" + storagein.details[i].real_quantity;
+				        	body.rows[rowIndex].insertCell(2);
+				        	var state = "未分配";
+				        	if(storagein.details[i].state == 1){
+				        		state = "上货完成";
+				        	}else if(storagein.details[i].state == 0){
+				        		state = "待上货";
+				        	}else{
+				        		state = "上货异常: " + storagein.details[i].state;
+				        	}
+				        	body.rows[rowIndex].cells[2].innerText = "上货状态：" + state;
+				        	body.rows[rowIndex].setAttribute("style", "border-color:black grey black grey")
+				        	rowIndex += 1;
+			        	}
+			        }
+				}, 'json');
+			});
+			
+			$('#btn_print').click(function () {
+				var modal = $('#modal_truck');
+				/* document.getElementById(id).value =  */
+				var url = [location.protocol, 
+				           '//', location.host, 
+				           location.pathname.indexOf("missions") >= 0 ? '/mission' : '', 
+				           '/printer'].join('');
+				var printWindow = window.open(url);
+				printWindow.onload = function () {
+				var table = modal.find('.tab-pane').html();
+				printWindow.document.body.innerHTML = table;// + "<p></p><p></p>" + table; ///
+				printWindow.print();
+				};
+			});
+		/*自动填充方法*/
+		$('#input_ware').autocomplete({
+         	 source: function(request, response) {
+         			$.ajax({
+       	            	type : "post",
+       	                url: "api/storage/autocomplete",
+       	                dataType: "json",
+       	                data: {search:request.term,field:"productCode,name"},
+       	                success: function(data) {
+       	                	var array = new Array();
+       	                    response($.map(data.result, function(item) {
+       	                    	if(inArray(array,item.product_code))
+       	                    		return;
+       	                        array.push(item.product_code);
+       	                     console.log(item)
+        	                    	return {
+   	                           			value: item.product_code + " " + item.name
+        	                        }
+        	                }));
+        	           }
+        	     });
+        	},
+        });
+		
+		function inArray(array,value)
+	    {
+	        var len=array.length;
+	        for(var i=len-1;i>=0;i--)
+	        {
+	            if(array[i]==value)
+	                return true;
+	        }
+	        return false;
+	    }
+		
+		Date.prototype.format = function(f) {
+			var o = {
+				"M+" : this.getMonth() + 1, //month
+				"d+" : this.getDate(), //day
+				"h+" : this.getHours(), //hour
+				"m+" : this.getMinutes(), //minute
+				"s+" : this.getSeconds(), //second
+				"q+" : Math.floor((this.getMonth() + 3) / 3), //quarter
+				"S" : this.getMilliseconds()
+			//millisecond
+			}
+			if (/(y+)/.test(f))
+				f = f.replace(RegExp.$1, (this.getFullYear() + "")
+						.substr(4 - RegExp.$1.length));
+			for ( var k in o)
+				if (new RegExp("(" + k + ")").test(f))
+					f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
+							: ("00" + o[k]).substr(("" + o[k]).length));
+			return f
+		}
+
+		function dateformat(time) {
+			var d = new Date();
+			d.setTime(time);
+			var date = d.format('yyyy-MM-dd hh:mm:ss');
+			return date;
+		}
+		
+		function reset(body) {
+			var rowIndex = body.childElementCount;
+				if (rowIndex > 0)
+					for (var i = rowIndex - 1; i >= 0; i--)
+						body.deleteRow(i);
+		}
+		});
+	</script>
+</body>
+</html>
