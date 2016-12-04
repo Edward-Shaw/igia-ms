@@ -614,7 +614,13 @@
 		        	rowIndex += 1;
 		        	body.insertRow(rowIndex);
 		        	body.rows[rowIndex].insertCell(0)
-		        	body.rows[rowIndex].cells[0].innerText = "用户状态：" + user.banned;
+		        	var banned = "已注册";
+		        	if(user.banned){
+		        		banned = "已注册";
+		        	}else{
+		        		banned = "未注册";
+		        	}
+		        	body.rows[rowIndex].cells[0].innerText = "用户状态：" + banned;
 		        	body.rows[rowIndex].insertCell(1)
 		        	body.rows[rowIndex].cells[1].innerText = "注册时间：" + dateformat(user.created_time);
 		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")

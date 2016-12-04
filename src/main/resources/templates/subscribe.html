@@ -61,7 +61,7 @@
 				<tr th:each="subscribe : ${subscribes}">
 					<td style="text-align: left" class="cell" th:text="${subscribe.code}" data-toggle="tooltip" th:title="${subscribe.code}">20151028001</td>
 					<td class="cell" 
-						th:text="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm:ss')}" data-toggle="tooltip" th:title="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm:ss')}">2015-10-28
+						th:text="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm')}" data-toggle="tooltip" th:title="${#calendars.format(subscribe.createTime, 'yyyy-MM-dd HH:mm')}">2015-10-28
 						10：00</td>
 					<td class="cell" th:if="${subscribe.state} == 'HANDLING'" th:text="正在处理" data-toggle="tooltip" th:title="正在处理">电阻器</td>
 					<td class="cell" th:if="${subscribe.state} == 'ACCEPTED'" th:text="已接受预约" data-toggle="tooltip" th:title="已接受预约">电阻器</td>
@@ -70,7 +70,7 @@
 					<td class="cell" th:text="${subscribe.user.username}" data-toggle="tooltip" th:title="${subscribe.user.username}">在库</td>
 					<td class="cell" th:text="${subscribe.user.mobile}" data-toggle="tooltip" th:title="${subscribe.user.mobile}">待检测</td>
 					<td class="cell" th:text="${subscribe.user.address}" data-toggle="tooltip" th:title="${subscribe.user.address}">待检测</td>
-					<td class="cell" th:text="${subscribe.items}" data-toggle="tooltip" th:title="${subscribe.items}">待检测</td>
+					<td class="cell" th:text="${subscribe.courses}" data-toggle="tooltip" th:title="${subscribe.courses}">待检测</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
