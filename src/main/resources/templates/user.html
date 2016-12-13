@@ -10,9 +10,8 @@
 		style="width: 1024px; margin-bottom: 60px;">
 		<div class="form-inline" >
 			<div class="form-group form-group-sm">
-					<label class="control-label">用户状态</label> <select
-						class="form-control" id="filter_state"
-						onchange="document.getElementById('btn_filter').click();">
+					<label class="control-label">用户状态</label> 
+					<select class="form-control" id="filter_state" onchange="document.getElementById('btn_filter').click();">
 						<option value="default">状态筛选</option>
 						<option value="init">已注册</option>
 						<option value="ing">未注册</option>
@@ -20,9 +19,8 @@
 					</select>
 			</div>
 			<div class="form-group form-group-sm">
-				<label class="control-label">注册时间</label> <select class="form-control"
-					id="filter_time"
-					onchange="document.getElementById('btn_filter').click();">
+				<label class="control-label">注册时间</label> 
+				<select class="form-control" id="filter_time" onchange="document.getElementById('btn_filter').click();">
 					<option value="default">全部</option>
 					<option value="today">今天</option>
 					<option value="yesterday">昨天</option>
@@ -30,10 +28,10 @@
 					<option value="this_month">本月</option>
 				</select>
 			</div>
-				<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
-			<!-- <button class="btn btn-sm btn-success btn-primary" id="new"
+			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
+			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">新增用户</button>  -->
+				data-target="#modal_create">新增用户</button>
 		</div>
 
 		<!-- 表格 -->
@@ -113,36 +111,51 @@
 				<div class="modal-body">
 					<div class="row">
 				        <div class="control-group" id="fields">
-				            <div class="controls">
-				                <form role="form" autocomplete="off" id="form_create" class="form-inline form-horizontal">
-				                	<div class="form-group col-sm-12" >
-				                    	<label for="input_ware" class="col-sm-2 form-label control-label" style="width: 12%">货品:</label>
-				                        <input type="text" style="width: 30%;" class=" col-sm-2 form-control" id="input_ware" name="item[0].id" placeholder="请输入货品"></input>
-				                        <label for="input_quality" class="control-label form-label col-sm-2" style="width: 12%;display:none">数量:</label>
-				                        <input type="number" min="1" style="width: 12%;display:none" class=" col-sm-2 form-control" id="input_number" name="item[0].number" placeholder="请输入货品数量"></input>		                                
-				                        <label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%">库位:</label>
-				                        <select style="width: 20%;" class="col-sm-4  selectpicker" multiple="multiple" title="请选择库位" id="input_location" name="item[0].location" ></select>
-				                        <!-- <span class="input-group-btn btn-group-vertical col-sm-2 form-control" style="border:0"> -->
-			                                <span style="white-space:pre">   </span>
-			                                <button class="btn btn-success btn-add" type="button" style="height: 35px; width: 35px; text-align:center" >
-			                                    <span class="glyphicon-plus" style="font-size: 18px; text-align:center;"></span>
-			                                </button>
-				                        <!-- </span> -->
-				                    </div>
-				                    <div class="form-group col-sm-12 hide" id="itemTemplate" style="margin-top:15px">
-				                        <label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%">货品:</label>
-		                            	<input type="text" style="width: 30%;" class="col-sm-2 form-control" id="input_ware" name="id" placeholder="请输入货品"></input>
-		                            	<label for="input_quality" class="col-sm-2 control-label form-label" style="width: 12%;display:none">数量:</label>
-		                            	<input type="number" style="width: 12%;display:none" min="1" class="col-sm-2 form-control" id="input_number" name="number" placeholder="请输入货品数量"></input>		                                
-		                            	<label for="input_ware" class="col-sm-2 control-label form-label" style="width: 12%"  name = "label_location">库位:</label>
-		                            	<select style="width: 20%;" data-width="fit" class="col-sm-4 form-control " multiple="multiple" id="input_location" title="请选择库位" name="location" ><option>请选择库位</option></select>
-		                            	<span style="white-space:pre">   </span>
-		                            	<button class="btn btn-danger btn-remove" type="button" style="height: 35px; width: 35px">
-				                            <span class="glyphicon-minus" style="font-size: 18px;"></span>
-				                        </button>
-				                    </div>
-				                </form>
-				            </div>
+			                <form role="form-horizontal" autocomplete="off" id="form_create" class="form-horizontal">
+			                	<div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group">
+			                    	<label for="input_ware" class="control-label col-sm-2">性别:</label>
+			                        <div class="col-sm-10">
+				                        <select class="selectpicker" title="请选择用户性别" id="input_location" name="item[0].location" >
+				                        	<option>男</option>
+				                        	<option>女</option>
+				                        	<option>未知</option>
+				                        </select>
+			                        </div>
+			                    </div>
+			                    <div class="form-group">
+			                    	<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
+			                        <div class="col-sm-10">
+				                        <select class="selectpicker" title="请选择用户状态" id="input_location" name="item[0].location" >
+				                        	<option>已注册</option>
+				                        	<option>未注册</option>
+				                        </select>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                </form>
 				        </div>
 					</div>
 				</div>
@@ -152,6 +165,84 @@
 							data-dismiss="modal">取消</button>
 						<button type="submit" class="btn btn-success" id="btn_create"
 							data-dismiss="modal" data-loading-text="提交中...">创建用户</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 修改用户信息  -->
+	<div class="modal fade " id="modal_modify" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal_create"
+						style="margin-top: 0px; text-align: center;">
+						<strong>修改用户信息</strong>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+				        <div class="control-group" id="fields">
+			                <form role="form-horizontal" autocomplete="off" id="form_create" class="form-horizontal">
+			                	<div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group">
+			                    	<label for="input_ware" class="control-label col-sm-2">性别:</label>
+			                        <div class="col-sm-10">
+				                        <select class="selectpicker" title="请选择用户性别" id="input_location" name="item[0].location" >
+				                        	<option>男</option>
+				                        	<option>女</option>
+				                        	<option>未知</option>
+				                        </select>
+			                        </div>
+			                    </div>
+			                    <div class="form-group">
+			                    	<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
+			                        <div class="col-sm-10">
+				                        <select class="selectpicker" title="请选择用户状态" id="input_location" name="item[0].location" >
+				                        	<option>已注册</option>
+				                        	<option>未注册</option>
+				                        </select>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                    <div class="form-group" >
+			                    	<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
+			                    	<div class="col-sm-8">
+			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
+			                        </div>
+			                    </div>
+			                </form>
+				        </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div align="center">
+						<button type="button" class="btn btn-default"
+							data-dismiss="modal">取消</button>
+						<button type="submit" class="btn btn-success" id="btn_create"
+							data-dismiss="modal" data-loading-text="提交中...">确认修改</button>
 					</div>
 				</div>
 			</div>

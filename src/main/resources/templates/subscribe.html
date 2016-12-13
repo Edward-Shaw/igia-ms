@@ -108,7 +108,7 @@
 		</div>
 	</div>
 
-	<!-- 新建货品 -->
+	<!-- 新增预约 -->
 	<div class="modal fade" id="modal_create" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
@@ -281,7 +281,7 @@
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">创建时间</label>
 							<div class="col-sm-10">
-								<input id="modify_date" name="create_time" type="text" class="form-control" placeholder="预约创建时间" disabled="disabled"></input>
+								<input id="modify_time" name="create_time" type="text" class="form-control" placeholder="预约创建时间" disabled="disabled"></input>
 							</div>
 						</div>
 						<div class="form-group">
@@ -293,25 +293,25 @@
 						<div class="form-group">
 							<label for="modify-descrityion" class="col-sm-2 control-label">用户手机</label>
 							<div class="col-sm-10">
-								<input id="modify_stock_state" name="stock_state" type="text" class="form-control" placeholder="用户手机号"></input>
+								<input id="modify_mobile" name="mobile" type="text" class="form-control" placeholder="用户手机号"></input>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">用户地址</label>
 							<div class="col-sm-10">
-								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="用户地址"></input>
+								<input id="modify_address" name="address" type="text" class="form-control" placeholder="用户地址"></input>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">预约活动</label>
 							<div class="col-sm-10">
-								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="预约活动"></input>
+								<input id="modify_courses" name="courses" type="text" class="form-control" placeholder="预约活动"></input>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">处理状态</label>
 							<div class="col-sm-10">
-								<input id="modify_stack_number" name="stack_number" type="text" class="form-control" placeholder="处理状态"></input>
+								<input id="modify_state" name="state" type="text" class="form-control" placeholder="处理状态"></input>
 							</div>
 						</div>
 					</form>
@@ -599,82 +599,22 @@
 				}, 'json');
 			});
 		 
-			//货品所在货架的列表详情			  
-			$('#modal_stock').on('show.bs.modal',function(event) {
-				var target = $(event.relatedTarget);
-				$(this).data('id', target.data('id'));
-				var url =  CONSTS.AGVS_URL + '/ui/data/pod?product='  + target.data('id');
-				$.get(url, function(data, status) {
-					if (data.code == 0) {
-			        	var table = document.getElementById("stock_detail");
-			        	var body = table.tBodies[0];
-			        	reset(body);
-			        	var rowIndex = body.childElementCount;
-			        	var racks = data.result;
-			        	for(i = racks.length-1; i >= 0; i--){
-			        		if(racks[i].count == 0){
-			        			continue;
-			        		}
-							body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "货架编号：" + racks[i].id;
-				        	body.rows[rowIndex].cells[0].width = "50%" ;
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "存放数量：" + racks[i].count;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "堆码数：" + racks[i].stackNumber;
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "层数：" + racks[i].level;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "列：" + racks[i].colum;
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "朝向：" + racks[i].faceName;
-				        	rowIndex += 1;
-				        	body.insertRow(rowIndex);
-				        	body.rows[rowIndex].insertCell(0);
-				        	body.rows[rowIndex].cells[0].innerText = "----";
-				        	body.rows[rowIndex].insertCell(1);
-				        	body.rows[rowIndex].cells[1].innerText = "----";
-				        	rowIndex += 1;
-			        	}
-					}}, 'json');
-				});
-		 
 		 	//修改货品信息
 		 	$('#modal_modify').on('show.bs.modal', function(event) {
 		 		var target = $(event.relatedTarget);
 		 		$(this).data('id', target.data('id'));
-		 		//获取货品信息
 		 		/*<![CDATA[*/
-						/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
-		 		var url = CONSTS.BASE_API + '/ware/' + target.data('id');
+				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
+		 		var url = CONSTS.BASE_API + '/subscribe/' + target.data('id');
 		 		$.get(url, function(data, status) {
 		 			if (data.code == 0) {
-		 				var ware = data.result;
-		 				$("#modify_code").val(ware.product_code);
-		 				$("#modify_name").val(ware.name);
-		 				$("#modify_stock_state").val(ware.stock_state);
-		 				$("#modify_stack_number").val(ware.stack_number);
-		 				$("#modify_weight").val(ware.weight);
-		 				$("#modify_unit_name").val(ware.unit_name);
-		 				$("#modify_production_date").val(dateformat(ware.created_time));
-		 				$("#modify_batch_number").val(ware.batch_number);
-		 				$("#modify_pallet_tags_number").val(ware.pallet_tags_number);
-		 				
-		 				$("#modify_picture").val('');
-						$("#editPreview").attr('src','');
-						$("#editPreview").attr('height','');
-						$("#editPreview").attr('width','');
-						if(ware.picture!=null && ware.picture!=''){
-							$("#editPreview").attr('src',CONSTS.BASE_URL+'upload/get/'+ware.picture); 
-							$("#editPreview").attr('height','150px');
-							$("#editPreview").attr('width','200px');
-							$("#modify_picture").val(ware.picture);
-						}
+		 				var subscribe = data.result;
+		 				$("#modify_code").val(subscribe.code);
+		 				$("#modify_time").val(subscribe.createTime);
+		 				$("#modify_name").val(subscribe.user.username);
+		 				$("#modify_mobile").val(subscribe.user.mobile);
+		 				$("#modify_address").val(subscribe.user.address);
+		 				$("#modify_courses").val(subscribe.courses[0]);
 		 			}
 		 		}, 'json');
 		 		/*]]>*/
