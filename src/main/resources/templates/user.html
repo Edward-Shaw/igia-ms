@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
 <head th:replace="fragments/head :: head (title='用户管理')">
 </head>
@@ -8,19 +9,21 @@
 	<nav th:replace="fragments/navbar :: navbar"></nav>
 	<div class="container table-responsive"
 		style="width: 1024px; margin-bottom: 60px;">
-		<div class="form-inline" >
+		<div class="form-inline">
 			<div class="form-group form-group-sm">
-					<label class="control-label">用户状态</label> 
-					<select class="form-control" id="filter_state" onchange="document.getElementById('btn_filter').click();">
-						<option value="default">状态筛选</option>
-						<option value="init">已注册</option>
-						<option value="ing">未注册</option>
-						<option value="exception">全部</option>
-					</select>
+				<label class="control-label">用户状态</label> <select
+					class="form-control" id="filter_state"
+					onchange="document.getElementById('btn_filter').click();">
+					<option value="default">状态筛选</option>
+					<option value="init">已注册</option>
+					<option value="ing">未注册</option>
+					<option value="exception">全部</option>
+				</select>
 			</div>
 			<div class="form-group form-group-sm">
-				<label class="control-label">注册时间</label> 
-				<select class="form-control" id="filter_time" onchange="document.getElementById('btn_filter').click();">
+				<label class="control-label">注册时间</label> <select
+					class="form-control" id="filter_time"
+					onchange="document.getElementById('btn_filter').click();">
 					<option value="default">全部</option>
 					<option value="today">今天</option>
 					<option value="yesterday">昨天</option>
@@ -52,14 +55,24 @@
 			</thead>
 			<tbody>
 				<tr th:each="user : ${users}">
-					<td style="text-align: left" class="cell" th:text="${user.code}" data-toggle="tooltip" th:title="${user.code}">20151028001</td>
-					<td class="cell" th:text="${user.name}" data-toggle="tooltip" th:title="${user.name}">在库</td>
-					<td class="cell" th:text="${user.mobile}" data-toggle="tooltip" th:title="${user.mobile}">在库</td>
-					<td class="cell" th:text="${user.address}" data-toggle="tooltip" th:title="${user.address}">在库</td>
-					<td class="cell" th:text="${user.email}" data-toggle="tooltip" th:title="${user.email}">在库</td>
-					<td class="cell" th:if="${user.banned == true}" th:text="已注册" data-toggle="tooltip" th:title="已注册">已注册</td>
-					<td class="cell" th:if="${user.banned == false}" th:text="未注册" data-toggle="tooltip" th:title="未注册">未注册</td>
-					<td class="cell" th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}" data-toggle="tooltip" th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
+					<td style="text-align: left" class="cell" th:text="${user.code}"
+						data-toggle="tooltip" th:title="${user.code}">20151028001</td>
+					<td class="cell" th:text="${user.name}" data-toggle="tooltip"
+						th:title="${user.name}">在库</td>
+					<td class="cell" th:text="${user.mobile}" data-toggle="tooltip"
+						th:title="${user.mobile}">在库</td>
+					<td class="cell" th:text="${user.address}" data-toggle="tooltip"
+						th:title="${user.address}">在库</td>
+					<td class="cell" th:text="${user.email}" data-toggle="tooltip"
+						th:title="${user.email}">在库</td>
+					<td class="cell" th:if="${user.banned == true}" th:text="已注册"
+						data-toggle="tooltip" th:title="已注册">已注册</td>
+					<td class="cell" th:if="${user.banned == false}" th:text="未注册"
+						data-toggle="tooltip" th:title="未注册">未注册</td>
+					<td class="cell"
+						th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}"
+						data-toggle="tooltip"
+						th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
@@ -110,59 +123,65 @@
 				</div>
 				<div class="modal-body">
 					<div class="row">
-				        <div class="control-group" id="fields">
-			                <form role="form-horizontal" autocomplete="off" id="form_create" class="form-horizontal">
-			                	<div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group">
-			                    	<label for="input_ware" class="control-label col-sm-2">性别:</label>
-			                        <div class="col-sm-10">
-				                        <select class="selectpicker" title="请选择用户性别" id="input_location" name="item[0].location" >
-				                        	<option>男</option>
-				                        	<option>女</option>
-				                        	<option>未知</option>
-				                        </select>
-			                        </div>
-			                    </div>
-			                    <div class="form-group">
-			                    	<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
-			                        <div class="col-sm-10">
-				                        <select class="selectpicker" title="请选择用户状态" id="input_location" name="item[0].location" >
-				                        	<option>已注册</option>
-				                        	<option>未注册</option>
-				                        </select>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                </form>
-				        </div>
+						<div class="control-group" id="fields">
+							<form role="form-horizontal" autocomplete="off" id="form_create"
+								class="form-horizontal">
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="input_ware"
+											name="item[0].id" placeholder="请输入用户姓名"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="control-label col-sm-2">性别:</label>
+									<div class="col-sm-10">
+										<select class="selectpicker" title="请选择用户性别"
+											id="input_location" name="item[0].location">
+											<option>男</option>
+											<option>女</option>
+											<option>未知</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
+									<div class="col-sm-10">
+										<select class="selectpicker" title="请选择用户状态"
+											id="input_location" name="item[0].location">
+											<option>已注册</option>
+											<option>未注册</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="input_ware"
+											name="item[0].id" placeholder="请输入用户姓名"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="input_ware"
+											name="item[0].id" placeholder="请输入用户姓名"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="input_ware"
+											name="item[0].id" placeholder="请输入用户姓名"></input>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<div align="center">
-						<button type="button" class="btn btn-default"
-							data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 						<button type="submit" class="btn btn-success" id="btn_create"
 							data-dismiss="modal" data-loading-text="提交中...">创建用户</button>
 					</div>
@@ -170,7 +189,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 修改用户信息  -->
 	<div class="modal fade " id="modal_modify" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
@@ -188,59 +207,65 @@
 				</div>
 				<div class="modal-body">
 					<div class="row">
-				        <div class="control-group" id="fields">
-			                <form role="form-horizontal" autocomplete="off" id="form_create" class="form-horizontal">
-			                	<div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group">
-			                    	<label for="input_ware" class="control-label col-sm-2">性别:</label>
-			                        <div class="col-sm-10">
-				                        <select class="selectpicker" title="请选择用户性别" id="input_location" name="item[0].location" >
-				                        	<option>男</option>
-				                        	<option>女</option>
-				                        	<option>未知</option>
-				                        </select>
-			                        </div>
-			                    </div>
-			                    <div class="form-group">
-			                    	<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
-			                        <div class="col-sm-10">
-				                        <select class="selectpicker" title="请选择用户状态" id="input_location" name="item[0].location" >
-				                        	<option>已注册</option>
-				                        	<option>未注册</option>
-				                        </select>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                    <div class="form-group" >
-			                    	<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
-			                    	<div class="col-sm-8">
-			                        	<input type="text" class="form-control" id="input_ware" name="item[0].id" placeholder="请输入用户姓名"></input>
-			                        </div>
-			                    </div>
-			                </form>
-				        </div>
+						<div class="control-group" id="fields">
+							<form role="form-horizontal" autocomplete="off" id="form_create"
+								class="form-horizontal">
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="modify_name"
+											name="name" placeholder="请输入用户姓名"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="modify_gender" class="control-label col-sm-2">性别:</label>
+									<div class="col-sm-10">
+										<select class="selectpicker" title="请选择用户性别"
+											id="modify_gender" name="gender">
+											<option value="男">男</option>
+											<option value="女">女</option>
+											<option value="未知">未知</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="modify_banned" class="control-label col-sm-2">用户状态:</label>
+									<div class="col-sm-10">
+										<select class="selectpicker" title="请选择用户状态"
+											id="modify_banned" name="banned">
+											<option value="true">已注册</option>
+											<option value="false">未注册</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="modify_address"
+											name="address" placeholder="请输入用户联系地址"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="modify_mobile"
+											name="modify_mobile" placeholder="请输入用户手机号码"></input>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="modify_email"
+											name="modify_email" placeholder="请输入用户邮箱"></input>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<div align="center">
-						<button type="button" class="btn btn-default"
-							data-dismiss="modal">取消</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 						<button type="submit" class="btn btn-success" id="btn_create"
 							data-dismiss="modal" data-loading-text="提交中...">确认修改</button>
 					</div>
@@ -253,493 +278,330 @@
 	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
 		aria-hidden="true">
 		<div class="modal-dialog">
-			<div class="modal-content" id="modal-content" style="margin-top: 100px">
+			<div class="modal-content" id="modal-content"
+				style="margin-top: 100px">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">
 						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
 					</button>
-					<h4 class="modal-title" style="margin-top: 0px; text-align: center;">用户详情</h4>
+					<h4 class="modal-title"
+						style="margin-top: 0px; text-align: center;">用户详情</h4>
 				</div>
 				<div class="modal-body">
-					<form id="form_details" class="form-horizontal">																	
-						<div class="tab-pane" id="tab" style="text-align:left">
+					<form id="form_details" class="form-horizontal">
+						<div class="tab-pane" id="tab" style="text-align: left">
 							<label>用户信息</label>
-							<table border="1" id="user_detail" style="border-collapse:collapse;  width: 100%;">
+							<table border="1" id="user_detail"
+								style="border-collapse: collapse; width: 100%;">
 								<tbody>
 								</tbody>
-							</table>						
+							</table>
 						</div>
 					</form>
-				</div>		
-				<div class="modal-footer" style="text-align:center">
-					<button type="submit" class="btn btn-success"
-						id="btn_print">打印</button>
-				</div>				
-			</div>			
+				</div>
+				<div class="modal-footer" style="text-align: center">
+					<button type="submit" class="btn btn-success" id="btn_print">打印</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除该用户吗?',style='danger')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='新用户创建成功', style='success',url='')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='新用户创建失败，请重新提交或者联系技术支持！', style='warning',url='')"></div>
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='新用户创建成功', style='success',url='')"></div>
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='新用户创建失败，请重新提交或者联系技术支持！', style='warning',url='')"></div>
 	<nav th:replace="fragments/footer :: footer"></nav>
 	<script type="text/javascript">
-	var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString(
-	"page").split(",")[0];
-	var defaultSize = 20;
-	var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
-	var autocompleteFlag = 0;
-	var map = {}
-	var itemIndex=0;
-	/* 页面文档结构加载完成执行下面： */
-	$(function() {
-		if (document.getElementById('currentPage'))
-			document.getElementById('currentPage').innerText = Number(currentPage) + 1;
-		if (document.getElementById('totalPage'))
-			document.getElementById('totalPage').innerText = Number(maxPage) + 1;
-		
-		$("#page_down").click( function() {
-			currentPage = ++currentPage;
-			if (maxPage >= currentPage) {
-				var $btn = $(this).button('loading');
-				/*<![CDATA[*/
-				location.href = 'user?page=' + currentPage + ',' + defaultSize + "&time="
-				+ $("#filter_time").val() + "&state="+ $("#filter_state").val(); 
-				/*]]>*/
-			$btn.button('reset');
-			} else {
-				currentPage = --currentPage;
-				$("#page_down").popover('show');
-				return;
+		var currentPage = GetQueryString("page") == "" ? "0" : GetQueryString("page").split(",")[0];
+		var defaultSize = 20;
+		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
+		var autocompleteFlag = 0;
+		var map = {}
+		var itemIndex = 0;
+		/* 页面文档结构加载完成执行下面： */
+		$(function() {
+			if (document.getElementById('currentPage')){
+				document.getElementById('currentPage').innerText = Number(currentPage) + 1;
 			}
-		});
-		//上一页
-		$("#page_up").click( function(){
-			currentPage = --currentPage;
-			if (Math.max(currentPage, 0) == currentPage) {
-				var $btn = $(this).button('loading');
-				/*<![CDATA[*/
-				location.href = 'user?page=' + currentPage + ',' + defaultSize + "&time="
-				+ $("#filter_time").val() + "&state="+ $("#filter_state").val();
-				/*]]>*/
-				$btn.button('reset');
-			} else {
-				currentPage = ++currentPage;
-				$("#page_up").popover('show');
-				return;
+			if (document.getElementById('totalPage')){
+				document.getElementById('totalPage').innerText = Number(maxPage) + 1;
 			}
-		});
-	});
-	
-		var array3 = new Array();
-		var j=-1;
-		array3.push(0)
-			$(function(){
-				$('#btn_create').click(function() {
-					var itemNum = array3.length
-					for(i=array3.length-1;i>=0;i--){
-						document.getElementsByName('item[' + array3[i] + '].id')[0].name='item[' + i + '].id'
-						document.getElementsByName('item[' + array3[i] + '].id')[0].id='id'+ i +''
-						document.getElementsByName('item[' + array3[i] + '].location')[0].name='item[' + i + '].location'
-						document.getElementsByName('item[' + array3[i] + '].location')[0].id='input'+ i +''
-						document.getElementsByName('item[' + array3[i] + '].number')[0].name='item[' + i + '].number'
-						document.getElementsByName('item[' + array3[i] + '].number')[0].id='num'+ i +''
-					}
-					
-					for(m=array3.length-1; m>=0; m--){
-						if($("#input" + m + "").val().length > 1){
-							var oldNum = $("#num" + m + "").val()
-							var oldId = $("#id" + m + "").val()
-							var oldValue = $("#input" + m + "").val()
-							var newValue = $("#input" + m + "").val()[0]
-							
-							for(var k = $("#input" + m + "").val().length-1; k >= 1; k--){
-								
-							var $template
-							var $clone
-							$template = $('#itemTemplate'),
-				               $clone = $template
-				                .clone()
-				                .removeClass('hide')
-				                .removeAttr('id')
-				                .attr('data-item-index', itemIndex)
-				                .insertBefore($template);
 
-				                // Update the name attributes
-				                $clone.find('[name="number"]').val(map[oldValue[k]])   
-				                $clone.find('[name="location"]').append("<option value=" + oldValue[k] + " >Text</option>"); 
-				                $clone.find('[name="location"]').val(oldValue[k])
-				                $clone.find('[name="location"]').addClass("selectpicker")
-				                $clone.find('[name="id"]').val(oldId)
-				                $clone.find('[name="id"]').attr('name', 'item[' + itemNum + '].id').end()
-				                $clone.find('[name="location"]').attr('name', 'item[' + itemNum + '].location').end()
-				                $clone.find('[name="number"]').attr('name', 'item[' + itemNum + '].number').end();
-				                
-				                itemNum = itemNum + 1
-							}
-							$("#input" + m + "").val(newValue)
-						}
+			$("#page_down").click(
+				function() {
+					currentPage = ++currentPage;
+					if (maxPage >= currentPage) {
+						var $btn = $(this).button('loading');
+						/*<![CDATA[*/
+						location.href = 'user?page=' + currentPage + ',' + defaultSize 
+								+ "&time=" + $("#filter_time").val() 
+								+ "&state=" + $("#filter_state").val();
+						/*]]>*/
+						$btn.button('reset');
+					} else {
+						currentPage = --currentPage;
+						$("#page_down").popover('show');
+						return;
 					}
-					
-					var data = $("#form_create").serializeObject();
-					var $btn = $(this).button('loading');
-					console.log(data)
-					$.ajax({
-						type : "post",
-						url : CONSTS.BASE_API + '/user',
-						async : false,
-						data : JSON.stringify(data),
-						contentType : "application/json; charset=utf-8",
-						success : function(data) {
-							
-							if(data.message != "good"){
-								$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-		                        $("#modal_failure").modal("show");
-							}
-							else {
-								$("#modal_success").modal('show');
-		                    	 $("#modal_success").on('hide.bs.modal', function() {
-		                         location.reload();
-		                     });
-							}
-						},
-						fail : function(data) {
-							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-	                        $("#modal_failure").modal("show");
+				});
+			//上一页
+			$("#page_up").click(
+					function() {
+						currentPage = --currentPage;
+						if (Math.max(currentPage, 0) == currentPage) {
+							var $btn = $(this).button('loading');
+							/*<![CDATA[*/
+							location.href = 'user?page=' + currentPage + ',' + defaultSize 
+									+ "&time=" + $("#filter_time").val() 
+									+ "&state=" + $("#filter_state").val();
+							/*]]>*/
+							$btn.button('reset');
+						} else {
+							currentPage = ++currentPage;
+							$("#page_up").popover('show');
+							return;
 						}
 					});
-					$btn.button('reset');
-				});
-				
-				//手动增删进货单输入框
-				
-				var $template
-				var $clone
-				$(document).on('click', '.btn-add', function() {
-					
-				   itemIndex++;
-				   array3.push(itemIndex)
-	               $template = $('#itemTemplate'),
-	               $clone = $template
-	                .clone()
-	                .removeClass('hide')
-	                .removeAttr('id')
-	                .attr('data-item-index', itemIndex)
-	                .insertBefore($template);
+		});
+		
+		$('#btn_create').click(
+			function() {
+				var itemNum = array3.length
+				for (i = array3.length - 1; i >= 0; i--) {
+					document.getElementsByName('item['
+							+ array3[i] + '].id')[0].name = 'item['
+							+ i + '].id'
+					document.getElementsByName('item['
+							+ array3[i] + '].id')[0].id = 'id'
+							+ i + ''
+					document.getElementsByName('item['
+							+ array3[i] + '].location')[0].name = 'item['
+							+ i + '].location'
+					document.getElementsByName('item['
+							+ array3[i] + '].location')[0].id = 'input'
+							+ i + ''
+					document.getElementsByName('item['
+							+ array3[i] + '].number')[0].name = 'item['
+							+ i + '].number'
+					document.getElementsByName('item['
+							+ array3[i] + '].number')[0].id = 'num'
+							+ i + ''
+				}
 
-	                  // Update the name attributes
-	                
-	                $clone.find('[name="id"]').addClass("test").end()
-	                $clone.find('[name="id"]').attr("test",""+itemIndex+"").end()
-	                $clone.find('[name="id"]').attr('name', 'item[' + itemIndex + '].id').end()
-	               
-	                $('<select style="width: 30%;"  data-width="fit" class="col-sm-4 form-control location"   id="input' + itemIndex + '" title="请选择库位" name="item[' + itemIndex + '].location" ><option>请选择库位</option></select>').insertAfter($clone.find('[name="label_location"]'));
-	                $('#input'+itemIndex+'').attr("importantAttr2",""+itemIndex+"")
-	                $clone.find('[name="location"]').hide().end()
-	                $clone.find('[name="number"]').attr('id', 'number'+ itemIndex +'').end();
-	                $clone.find('[name="number"]').attr('name', 'item[' + itemIndex + '].number').end();
-	                $clone.find('[id="input_ware"]').autocomplete({
-	           	       source: function(request, response) {
-	           	            $.ajax({
-	           	            	type : "post",
-	           	                url: "api/user/autocomplete",
-	           	                dataType: "json",
-	           	                data: {search:request.term,field:"productCode,name"},
-	           	                success: function(data) {
-	           	                	var array = new Array();
-	           	                    response($.map(data.result, function(item) {
-	           	                    	if(inArray(array,item.product_code))
-	           	                    		return;
-	           	                        array.push(item.product_code);
-	           	                     if(item.unit_name == "fan"){
-	       	                        	autocompleteFlag = 1;
-	       	                        }
-	       	                        else{
-	       	                        	autocompleteFlag = 0;
-	       	                        }
-	           	                    	return {
-	           	                            value: item.product_code + " " + item.name
-	           	                        }
-	           	                    }));
-	           	                }
-	           	            });
-	           	        },
-	          	    }); 
-	                
-	                $(".test").blur(function(){
-	                	var num = $(this).attr("test");
-	                	
-	                	var num2 = parseInt(num) + 1
-	                	if(!autocompleteFlag){
-	                		var wareId = document.getElementsByName("item["+num+"].id")[0].value.split(" ")[0]
-	                	}
-	                	else{
-	                		var wareId = document.getElementsByName("item["+num+"].id")[0].value.split(" ")[1]
-	                	}
-	                	if(wareId!=""){
-	        				document.getElementById("input"+ num +"").length=0;
-	        				if($("#input"+num2+"").attr("class") == undefined){
-		        				if($("#input"+num+"").attr("importantAttr") == undefined){
-		        					 var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
-		 	        				$.get(url, function(data, status) {
-		 	        					if (data.code == 0) {
-		 	        						var array = new Array();
-		 	        						var racks = data.result;
-		 	        						for(var key in racks){ 
-		 	        							var tmp = $.trim(racks[key]['id']);
-		 	        							var number = $.trim(racks[key]['count']);
-		 	        						
-		 	        							 map[tmp] = number
-		 	        							if(inArray(array,tmp))
-		 	        	                    		break;
-		 	        							 array.push(racks[key]['id']);
-		 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
-		 	        						} 
-		 	        						 $('#input'+num+'').selectpicker('refresh');
-		 	        						 
-		 	        					}
-		 	        				}, 'json');   
-		        				$clone.find('[name="item[' + num + '].location"]').remove().end()
-		        				$('<select style="width: 20%;"  class="col-sm-4  selectpicker location" multiple="multiple" id="input' + num + '" title="请选择库位" name="item[' + num + '].location" ></select>').insertAfter($clone.find('[name="label_location"]'));
-		    	                $('#input'+num+'').attr("importantAttr",""+num+"")
-		    	                $('#input'+num+'').attr("importantAttr2",""+num+"")
-		    	                $(".btn-add").removeAttr("disabled")
-		        				}
-		        				else{
-		        					var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
-		 	        				$.get(url, function(data, status) {
-		 	        					if (data.code == 0) {
-		 	        						
-		 	        						var array = new Array();
-		 	        						var racks = data.result;
-		 	        						for(var key in racks){ 
-		 	        							var tmp = $.trim(racks[key]['id']);
-		 	        							var number = $.trim(racks[key]['count']);
-		 	        						    map[tmp] = number
-		 	        							if(inArray(array,tmp))
-		 	        	                    		break;
-		 	        							 array.push(racks[key]['id']);
-		 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
-		 	        						} 
-		 	        						 $('#input'+num+'').selectpicker('refresh');
-		 	        						 
-		 	        					}
-		 	        				}, 'json');   
-		        				}
-		        			}
-	        				else{
-	        					var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
-	 	        				$.get(url, function(data, status) {
-	 	        					if (data.code == 0) {
-	 	        						
-	 	        						var array = new Array();
-	 	        						var racks = data.result;
-	 	        						document.getElementById("input"+ num +"").length=0;
-	 	        						for(var key in racks){ 
-	 	        							var tmp = $.trim(racks[key]['id']);
-	 	        							var number = $.trim(racks[key]['count']);
-	 	        							map[tmp] = number
-	 	        							if(inArray(array,tmp))
-	 	        	                    		break;
-	 	        							 array.push(racks[key]['id']);
-	 	        							 $('#input'+num+'').append('<option>' + tmp + '</option>');
-	 	        						} 
-	 	        						 $('#input'+num+'').selectpicker('refresh');
-	 	        						 $('#input'+num+'').attr("name",'item[' + num + '].location')
-	 	        					}
-	 	        				}, 'json');   
-	        				}
-	        				$('.location').on('changed.bs.select',function(e){
-		 	                	/*<![CDATA[*/
-		 	                	   var a = $(this).val()[0]
-	 	                		   var b = $(this).attr("importantAttr2")
-		 	                	   $("#number"+ b +"").val(map[a])     
-		 	                	/*]]>*/
-		 	                });
-	        	        }
-	                });
-	            }).on('click', '.btn-remove', function() {
-	            	$(".btn-add").removeAttr("disabled")
-	            	// Remove button click handler
-	                   var $row  = $(this).parents('.form-group'),
-	                   index = $row.attr('data-item-index');
-	                   for(i=array3.length-1;i>=0;i--){
-	                	   if(array3[i]==index)
-	                		   j=i;
-	                   };
-	                   if(j!=-1){
-	                   array3.splice(j, 1)
-	                   }
-	                    // Remove element containing the fields
-	                   $row.remove();
-	            });
-			});
-		
-		$('#input_ware').blur(function(){
-			if(!autocompleteFlag){
-        		var wareId = $("#input_ware").val().split(" ")[0]
-        	}
-        	else{
-        		var wareId = $("#input_ware").val().split(" ")[1]
-        	}
-			if(wareId!=""){
-				document.getElementById("input_location").length=0;
-				var url =  CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
-				$.get(url, function(data, status) {
-					if (data.code == 0) {
-						
-						var array = new Array();
-						var racks = data.result;
-						for(var key in racks){ 
-							var tmp = $.trim(racks[key]['id']);
-							var number = $.trim(racks[key]['count']);
- 						    map[tmp] = number
-							if(inArray(array,tmp))
-	                    		break;
-							 array.push(racks[key]['id']);
-							$("#input_location").append('<option>' + tmp + '</option>');
-						} 
+				var data = $("#form_create").serializeObject();
+				var $btn = $(this).button('loading');
+				console.log(data)
+				$.ajax({
+					type : "post",
+					url : CONSTS.BASE_API + '/user',
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						if (data.message != "good") {
+							$("#modal_failure").find(
+									"p")[0].innerHTML = "错误信息:"
+									+ data.message;
+							$("#modal_failure").modal(
+									"show");
+						} else {
+							$("#modal_success").modal(
+									'show');
+							$("#modal_success").on(
+									'hide.bs.modal',
+									function() {
+										location
+												.reload();
+									});
+						}
+					},
+					fail : function(data) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息:"
+								+ data.message;
+						$("#modal_failure").modal(
+								"show");
 					}
-					$('#input_location').selectpicker('refresh');
-				}, 'json');
-	        }
-		});
-		
-		$('#input_location').on('changed.bs.select',function(e){
-         	/*<![CDATA[*/
-         	   var a = $(this).val()[0]
-         	  
-         	   $("#input_number").val(map[a])     
-         	
-         	
-         	/*]]>*/
-         });
-		
-		$('#btn_print').click(function () {
-			var modal = $('#modal_detail');
-			/* document.getElementById(id).value =  */
-			var url = [location.protocol, '//', location.host, location.pathname.indexOf("user") >= 0 ? '/user' : '', '/printer'].join('');
-			var printWindow = window.open(url);
-			printWindow.onload = function () {
-			var table = modal.find('.tab-pane').html();
-			printWindow.document.body.innerHTML = table;
-			printWindow.print();
-			};
-		});
-		
-		$("#filter_state").val(
-				GetQueryString('state') == "" ? "default"
-						: GetQueryString('state'));
-		
-		$("#filter_time").val(
-				GetQueryString('time') == "" ? "default"
-						: GetQueryString('time'));
-		
-		$("#btn_filter").click(
-				function() {
-					/*<![CDATA[*/
-					location.href = 'user?page=0' + ',' + defaultSize + 
-					"&time=" + $("#filter_time").val() + 
-					"&state=" + $("#filter_state").val()
-							
-					/*]]>*/
 				});
-		
+				$btn.button('reset');
+			});
+
+		$('#input_ware').blur(
+				function() {
+					if (!autocompleteFlag) {
+						var wareId = $("#input_ware").val().split(" ")[0];
+					} else {
+						var wareId = $("#input_ware").val().split(" ")[1];
+					}
+					if (wareId != "") {
+						document.getElementById("input_location").length = 0;
+						var url = CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
+						$.get(url, function(data, status) {
+							if (data.code == 0) {
+								var array = new Array();
+								var racks = data.result;
+								for ( var key in racks) {
+									var tmp = $.trim(racks[key]['id']);
+									var number = $.trim(racks[key]['count']);
+									map[tmp] = number;
+									if (inArray(array, tmp)){
+										break;	
+									}
+									array.push(racks[key]['id']);
+									$("#input_location").append('<option>' + tmp + '</option>');
+								}
+							}
+							$('#input_location').selectpicker('refresh');
+						}, 'json');
+					}
+				});
+
+		$('#btn_print').click(
+			function() {
+				var modal = $('#modal_detail');
+				/* document.getElementById(id).value =  */
+				var url = [
+						location.protocol,
+						'//',
+						location.host,
+						location.pathname.indexOf("user") >= 0 ? '/user'
+								: '', '/printer' ].join('');
+				var printWindow = window.open(url);
+				printWindow.onload = function() {
+					var table = modal.find('.tab-pane').html();
+					printWindow.document.body.innerHTML = table;
+					printWindow.print();
+				};
+			});
+
+		$("#filter_state").val(GetQueryString('state') == "" ? "default" : GetQueryString('state'));
+		$("#filter_time").val(GetQueryString('time') == "" ? "default" : GetQueryString('time'));
+		$("#btn_filter").click(
+			function() {
+				/*<![CDATA[*/
+				location.href = 'user?page=0' + ',' + defaultSize
+						+ "&time=" + $("#filter_time").val() + "&state="
+						+ $("#filter_state").val()
+
+				/*]]>*/
+			});
+
 		$('#input_ware').autocomplete({
-        	 source: function(request, response) {
-      	            $.ajax({
-      	            	type : "post",
-      	                url: "api/user/autocomplete",
-      	                dataType: "json",
-      	                data: {search:request.term,field:"productCode,name"},
-      	                success: function(data) {
-      	                	var array = new Array();
-      	                    response($.map(data.result, function(item) {
-      	                    	if(inArray(array,item.product_code))
-      	                    		return;
-      	                        array.push(item.product_code);
-      	                        if(item.unit_name == "fan"){
-      	                        	autocompleteFlag = 1;
-      	                        }
-      	                        else{
-      	                        	autocompleteFlag = 0;
-      	                        }
-       	                    	return {
-  	                           			value: item.product_code + " " + item.name
-       	                        }
-      	                    }));
-       	           }
-       	     });
-       	},
-        	       
-       });
+			source : function(request, response) {
+				$.ajax({
+					type : "post",
+					url : "api/user/autocomplete",
+					dataType : "json",
+					data : {
+						search : request.term,
+						field : "productCode,name"
+					},
+					success : function(data) {
+						var array = new Array();
+						response($.map(data.result, function(item) {
+							if (inArray(array, item.product_code))
+								return;
+							array.push(item.product_code);
+							if (item.unit_name == "fan") {
+								autocompleteFlag = 1;
+							} else {
+								autocompleteFlag = 0;
+							}
+							return {
+								value : item.product_code + " " + item.name
+							}
+						}));
+					}
+				});
+			},
+		});
 		
-		//获取进货单详情		  
-		$('#modal_detail').on('show.bs.modal',function(event) {
+		$('#modal_modify').on('show.bs.modal', function(event){
 			var target = $(event.relatedTarget);
 			$(this).data('id', target.data('id'));
 			var url = CONSTS.BASE_API + '/user/' + target.data('id');
-			$.get(url,function(data, status) {
-				if (data.code == 0) {
-					var arr = new Array();
-					var map = {}
-					var user = data.result;								
-					//用户详情的表格
-					console.log(user)
-					var table = document.getElementById("user_detail");								
-		        	var body = table.tBodies[0];
-		        	reset(body);
-		        	var rowIndex = body.childElementCount;
-		        	body.insertRow(rowIndex);
-		        	body.rows[rowIndex].insertCell(0)
-		        	body.rows[rowIndex].cells[0].innerText = "编号：" + user.code;
-		        	body.rows[rowIndex].cells[0].width="50%";
-		        	body.rows[rowIndex].insertCell(1)
- 					body.rows[rowIndex].cells[1].innerText = "姓名：" + user.name;
-		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
-		        	body.rows[rowIndex].insertCell(2)
- 					body.rows[rowIndex].cells[2].innerText = "性别：" + user.gender;
-		        	body.rows[rowIndex].cells[2].setAttribute("style", "height:30px;")
-		        	
-		        	rowIndex += 1;
-		        	body.insertRow(rowIndex);
-		        	body.rows[rowIndex].insertCell(0)
-		        	var banned = "已注册";
-		        	if(user.banned){
-		        		banned = "已注册";
-		        	}else{
-		        		banned = "未注册";
-		        	}
-		        	body.rows[rowIndex].cells[0].innerText = "用户状态：" + banned;
-		        	body.rows[rowIndex].insertCell(1)
-		        	body.rows[rowIndex].cells[1].innerText = "注册时间：" + dateformat(user.created_time);
-		        	body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;")
-		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2")
-					
-		        	rowIndex += 1;
-		        	body.insertRow(rowIndex);
-		        	body.rows[rowIndex].insertCell(0);
-		        	body.rows[rowIndex].cells[0].innerText = "联系地址：" + user.address;
-		        	body.rows[rowIndex].cells[0].setAttribute("colspan", "3")
-		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;")
-		        	
-		        	rowIndex += 1;
-		        	body.insertRow(rowIndex);
-		        	body.rows[rowIndex].insertCell(0);
-		        	body.rows[rowIndex].cells[0].innerText = "邮箱：" + user.email;
-		        	body.rows[rowIndex].cells[0].width = "50%" ;
-		        	body.rows[rowIndex].insertCell(1);
-		        	body.rows[rowIndex].cells[1].innerText = "电话：" + user.mobile;
-		        	body.rows[rowIndex].cells[1].setAttribute("colspan", "2");
-		        	body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;");
+			$.get(url, function(data, status){
+				if(data.code == 0){
+					var user = data.result;
+					$('#modify_name').val(user.name);
+					$('#modify_gender').selectpicker('val', user.gender);
+					if(user.banned){
+						$('#modify_banned').selectpicker('val', 'true');
+					}else{
+						$('#modify_banned').selectpicker('val', 'false');
+					}
+					$('#modify_address').val(user.address);
+					$('#modify_mobile').val(user.mobile);
+					$('#modify_email').val(user.email);
+				}
+			})
+		})
 
-	        	}
-			}, 'json');
-		});
-		
+		//获取用户详情		  
+		$('#modal_detail').on('show.bs.modal', function(event) {
+				var target = $(event.relatedTarget);
+				$(this).data('id', target.data('id'));
+				var url = CONSTS.BASE_API + '/user/' + target.data('id');
+				$.get(url, function(data, status) {
+					if (data.code == 0) {
+						var arr = new Array();
+						var map = {}
+						var user = data.result;
+						//用户详情的表格
+						console.log(user)
+						var table = document.getElementById("user_detail");
+						var body = table.tBodies[0];
+						reset(body);
+						var rowIndex = body.childElementCount;
+						body.insertRow(rowIndex);
+						body.rows[rowIndex].insertCell(0);
+						body.rows[rowIndex].cells[0].innerText = "编号：" + user.code;
+						body.rows[rowIndex].cells[0].width = "50%";
+						body.rows[rowIndex].insertCell(1);
+						body.rows[rowIndex].cells[1].innerText = "姓名：" + user.name;
+						body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;");
+						body.rows[rowIndex].insertCell(2);
+						body.rows[rowIndex].cells[2].innerText = "性别：" + user.gender;
+						body.rows[rowIndex].cells[2].setAttribute("style", "height:30px;");
+
+						rowIndex += 1;
+						body.insertRow(rowIndex);
+						body.rows[rowIndex].insertCell(0);
+						var banned = "已注册";
+						if (user.banned) {
+							banned = "已注册";
+						} else {
+							banned = "未注册";
+						}
+						body.rows[rowIndex].cells[0].innerText = "用户状态：" + banned;
+						body.rows[rowIndex].insertCell(1);
+						body.rows[rowIndex].cells[1].innerText = "注册时间：" + dateformat(user.created_time);
+						body.rows[rowIndex].cells[1].setAttribute("style", "height:30px;");
+						body.rows[rowIndex].cells[1].setAttribute("colspan", "2");
+
+						rowIndex += 1;
+						body.insertRow(rowIndex);
+						body.rows[rowIndex].insertCell(0);
+						body.rows[rowIndex].cells[0].innerText = "联系地址：" + user.address;
+						body.rows[rowIndex].cells[0].setAttribute("colspan", "3");
+						body.rows[rowIndex].cells[0].setAttribute("style", "height:30px;");
+
+						rowIndex += 1;
+						body.insertRow(rowIndex);
+						body.rows[rowIndex].insertCell(0);
+						body.rows[rowIndex].cells[0].innerText = "邮箱：" + user.email;
+						body.rows[rowIndex].cells[0].width = "50%";
+						body.rows[rowIndex].insertCell(1);
+						body.rows[rowIndex].cells[1].innerText = "电话：" + user.mobile;
+						body.rows[rowIndex].cells[1].setAttribute("colspan", "2");
+						body.rows[rowIndex].cells[0].setAttribute("style","height:30px;");
+					}
+				}, 'json');
+			});
+
 		function post(file_list) {
-			console.log(file_list);		
+			console.log(file_list);
 			var attachment = $("#form_batch").serializeObject();
 			attachment['attachment_names'] = file_list[0];
 			$.ajax({
@@ -750,8 +612,7 @@
 				contentType : "application/json; charset=utf-8",
 				success : function(data) {
 					if (data.code != 0) {
-						$("#modal_failure").find("p")[0].innerHTML = "错误信息："
-								+ data.message;
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息：" + data.message;
 						$("#modal_failure").modal("show");
 					} else {
 						$("#modal_success").modal('show');
@@ -765,44 +626,7 @@
 				}
 			});
 		}
-		
-		$('#btn_batch').click(function(){
-			var $btn = $(this).button('loading');
-			var length = document.getElementById("fileupload").files.length;
-			if (length == 0){
-				post();
-			}
-			else {
-				var i;
-				var files = document.getElementById("fileupload").files;
-				var filename = "";
-				for (i = files.length - 1; i >= 0; i--) {
-					if (files[i].size > 104857600) {
-						$("#modal_failure").find("p")[0].innerHTML = "错误信息：请不要上传超过100M的文件";
-						$("#modal_failure").modal("show");
-						$btn.button('reset');
-						return;
-					}
-					filename = filename + files[i].name + "/";
-				}
-				attachment_names.value = filename.substring(0, filename.length - 1);
-				i = 1;
-				$('#fileupload').fileupload().fileupload(
-					'add',
-					{
-						files : files,
-						url : CONSTS.BASE_URL + "/upload"
-					}).bind('fileuploaddone',
-						function(e, data) {
-							if (i == length) {
-								post(data.result.result);
-							}
-							i++;
-						});
-			}
-			$btn.button('reset');
-		});
-		
+
 		//传参数
 		$('#modal_delete').on('show.bs.modal', function(event) {
 			$(this).find(".warning-message").addClass('hidden').html('');
@@ -812,37 +636,25 @@
 		//处理删除
 		var modal = $("#modal_delete");
 		modal.find(".btn-submit").click(
-				function(event) {
-					var submit = $(event.currentTarget).button('loading');
-					$.ajax({
-						type : "delete",
-						url : CONSTS.BASE_API + '/user/'
-								+ modal.data('id'),
-						contentType : "application/json; charset=utf-8",
-						success : function(data) {
-							window.location.reload();
-						},
-						error : function(data) {
-							modal.find(".warning-message").html(
-									'删除失败请稍后再试,或者联系管理员.').removeClass(
-									'hidden');
-						},
-						complete : function() {
-							submit.button('reset');
-						}
-					});
+			function(event) {
+				var submit = $(event.currentTarget).button('loading');
+				$.ajax({
+					type : "delete",
+					url : CONSTS.BASE_API + '/user/' + modal.data('id'),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						window.location.reload();
+					},
+					error : function(data) {
+						modal.find(".warning-message")
+								.html('删除失败请稍后再试,或者联系管理员.')
+								.removeClass('hidden');
+					},
+					complete : function() {
+						submit.button('reset');
+					}
 				});
-		
-		function inArray(array,value)
-	    {
-	        var len=array.length;
-	        for(var i=len-1;i>=0;i--)
-	        {
-	            if(array[i]==value)
-	                return true;
-	        }
-	        return false;
-	    }
+			});
 		
 		Date.prototype.format = function(f) {
 			var o = {
@@ -855,14 +667,17 @@
 				"S" : this.getMilliseconds()
 			//millisecond
 			}
-			if (/(y+)/.test(f))
+			if (/(y+)/.test(f)){
 				f = f.replace(RegExp.$1, (this.getFullYear() + "")
 						.substr(4 - RegExp.$1.length));
-			for ( var k in o)
-				if (new RegExp("(" + k + ")").test(f))
+			}
+			for ( var k in o){
+				if (new RegExp("(" + k + ")").test(f)){
 					f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
 							: ("00" + o[k]).substr(("" + o[k]).length));
-			return f
+				}
+			}
+			return f;
 		}
 
 		function dateformat(time) {
@@ -871,20 +686,14 @@
 			var date = d.format('yyyy-MM-dd hh:mm:ss');
 			return date;
 		}
-		function contains(a, obj) {
-    	    var i = a.length;
-    	    while (i--) {
-    	       if (a[i].indexOf(obj)!= -1) {
-    	           return true;
-    	       }
-    	    }
-    	    return false;
-    	}
+		
 		function reset(body) {
 			var rowIndex = body.childElementCount;
-				if (rowIndex > 0)
-					for (var i = rowIndex - 1; i >= 0; i--)
-						body.deleteRow(i);
+			if (rowIndex > 0){
+				for (var i = rowIndex - 1; i >= 0; i--){
+					body.deleteRow(i);
+				}
+			}
 		}
 	</script>
 </body>
