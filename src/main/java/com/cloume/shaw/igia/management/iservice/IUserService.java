@@ -14,7 +14,7 @@ public interface IUserService {
 	 * @param page [0, 1], [page, size]
 	 * @return
 	 */
-	public List<User> listByPage(String banned, String type, String time, int[] page);
+	public List<User> listByPage(boolean banned, String type, String time, int[] page);
 	
 	/**
 	 * get user detail by id.
@@ -22,4 +22,12 @@ public interface IUserService {
 	 * @return
 	 */
 	public User getUserById(String id);
+
+	/**
+	 * update user by id.
+	 * @param id
+	 * @param user
+	 * @return
+	 */
+	public User updateUserById(String id, User user);
 }

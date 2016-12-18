@@ -3,7 +3,6 @@ package com.cloume.shaw.igia.management.service;
 import java.util.Calendar;
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,7 +17,7 @@ import com.cloume.shaw.igia.management.iservice.IUserService;
 public class UserService extends AbstractServiceBase implements IUserService {
 
 	@Override
-	public List<User> listByPage(String banned, String type, String time, int[] page) {
+	public List<User> listByPage(boolean banned, String type, String time, int[] page) {
 		if (page == null) {
 			page = new int[2];
 			page[0] = 0;
@@ -78,6 +77,12 @@ public class UserService extends AbstractServiceBase implements IUserService {
 		User user = getMongoTemplate().findOne(query, User.class);
 		
 		return user;
+	}
+
+	@Override
+	public User updateUserById(String id, User user) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

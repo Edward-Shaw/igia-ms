@@ -48,10 +48,11 @@ public class MainController {
 	public String userPage(Principal principal,
 			@RequestParam(value = "page", required = false, defaultValue = "0, 20") int[] page,
 			@RequestParam(value = "state", required = false, defaultValue = "default") String state,
+			@RequestParam(value = "banned", required = false, defaultValue = "true") boolean banned,
 			@RequestParam(value = "time", required = false, defaultValue = "default") String time,
 			Model model){
 		
-		List<User> users = userService.listByPage("true", state, time, page);
+		List<User> users = userService.listByPage(banned, state, time, page);
 		
 		model.addAttribute("users", users);
 		
