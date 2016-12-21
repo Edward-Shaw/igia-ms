@@ -14,10 +14,10 @@
 				<label class="control-label">用户状态</label> <select
 					class="form-control" id="filter_state"
 					onchange="document.getElementById('btn_filter').click();">
-					<option value="default">状态筛选</option>
-					<option value="init">已注册</option>
-					<option value="ing">未注册</option>
-					<option value="exception">全部</option>
+					<option value="true">状态筛选</option>
+					<option value="true">已注册</option>
+					<option value="false">未注册</option>
+					<option value="all">全部</option>
 				</select>
 			</div>
 			<div class="form-group form-group-sm">
@@ -208,8 +208,7 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="control-group" id="fields">
-							<form role="form-horizontal" autocomplete="off" id="form_create"
-								class="form-horizontal">
+							<form role="form-horizontal" autocomplete="off" id="form_modify" class="form-horizontal">
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
 									<div class="col-sm-8">
@@ -249,14 +248,14 @@
 									<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
 									<div class="col-sm-8">
 										<input type="text" class="form-control" id="modify_mobile"
-											name="modify_mobile" placeholder="请输入用户手机号码"></input>
+											name="mobile" placeholder="请输入用户手机号码"></input>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
 									<div class="col-sm-8">
 										<input type="text" class="form-control" id="modify_email"
-											name="modify_email" placeholder="请输入用户邮箱"></input>
+											name="email" placeholder="请输入用户邮箱"></input>
 									</div>
 								</div>
 							</form>
@@ -266,7 +265,7 @@
 				<div class="modal-footer">
 					<div align="center">
 						<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-						<button type="submit" class="btn btn-success" id="btn_create"
+						<button type="submit" class="btn btn-success" id="btn_modify_confirm"
 							data-dismiss="modal" data-loading-text="提交中...">确认修改</button>
 					</div>
 				</div>
@@ -310,6 +309,8 @@
 		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除该用户吗?',style='danger')"></div>
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='新用户创建成功', style='success',url='')"></div>
+	<div
+		th:replace="fragments/modals/confirm :: confirm (id='modal_modify_success', title='修改成功', message='用户信息修改成功!', style='success',url='')"></div>
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='新用户创建失败，请重新提交或者联系技术支持！', style='warning',url='')"></div>
 	<nav th:replace="fragments/footer :: footer"></nav>
@@ -475,13 +476,13 @@
 				};
 			});
 
-		$("#filter_state").val(GetQueryString('state') == "" ? "default" : GetQueryString('state'));
+		$("#filter_state").val(GetQueryString('banned') == "" ? "true" : GetQueryString('banned'));
 		$("#filter_time").val(GetQueryString('time') == "" ? "default" : GetQueryString('time'));
 		$("#btn_filter").click(
 			function() {
 				/*<![CDATA[*/
 				location.href = 'user?page=0' + ',' + defaultSize
-						+ "&time=" + $("#filter_time").val() + "&state="
+						+ "&time=" + $("#filter_time").val() + "&banned="
 						+ $("#filter_state").val()
 
 				/*]]>*/
@@ -537,8 +538,34 @@
 				}
 			})
 		})
+		
+		$('#btn_modify_confirm').on('click', function(event){
+			var modified_data = $("#form_modify").serializeObject();
+			var id = $("#modal_modify").data('id');
+			$.ajax({
+				type : "PUT",
+				url : CONSTS.BASE_API + 'user/' + id,
+				async : false,
+				data : JSON.stringify(modified_data),
+				contentType : "application/json; charset=utf-8",
+				success : function(data) {
+					if (data.code != 0) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息：" + data.message;
+						$("#modal_failure").modal("show");
+					} else {
+						$("#modal_modify_success").modal('show');
+						$("#modal_modify_success").on('hide.bs.modal', function() {
+							location.reload();
+						});
+					}
+				},
+				fail : function(data) {
+					alert(data);
+				}
+			});
+		})
 
-		//获取用户详情		  
+		//获取用户详情
 		$('#modal_detail').on('show.bs.modal', function(event) {
 				var target = $(event.relatedTarget);
 				$(this).data('id', target.data('id'));
