@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 
-<head th:replace="fragments/head :: head (title='课程管理')">
+<head th:replace="fragments/head :: head (title='作业管理')">
 </head>
 
 <body>
@@ -47,7 +47,7 @@
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create">添加课程</button>
+				data-target="#modal_create">添加作业</button>
 		</div>
 
 		<!-- 表格 -->
@@ -56,12 +56,11 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">课程类别</td>
-					<td class="cell">编号</td>
+					<td class="cell">作业编号</td>
+					<td class="cell">所属课程</td>
+					<td class="cell">作业内容</td>
 					<td class="cell">创建时间</td>
-					<td class="cell">活动内容</td>
-					<td class="cell">备注</td>
-					<td class="cell">状态</td>
+					<td class="cell">发布状态</td>
 					<td align="right" style="width: 12%;">操作</td>
 				</tr>
 			</thead>
@@ -96,7 +95,7 @@
 				<tr th:if="${#lists.isEmpty(courses)}">
 					<td colspan="7">
 						<div class="alert alert-info" role="alert">
-							不存在任何课程记录, <a data-toggle="modal" data-target="#modal_create"><strong>现在添加课程</strong></a>?
+							还没有发布过课程作业, <a data-toggle="modal" data-target="#modal_create"><strong>现在发布作业</strong></a>?
 						</div>
 					</td>
 				</tr>
@@ -112,7 +111,7 @@
 		</div>
 	</div>
 
-	<!--新增课程-->
+	<!--新增作业-->
     <div class="modal fade" id="modal_create" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -121,13 +120,13 @@
                         <span>&times;</span>
                     </button>
                     <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
-						<strong>新增课程</strong>
+						<strong>新增作业</strong>
 					</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal" id="form_create" method="POST" action="./user">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="sex">活动分类:</label>
+                            <label class="col-sm-2 control-label" for="sex">选择课程:</label>
                             <div class="col-sm-10">
                             	<select class="form-control" id="classification" name="classification">
                             		<option value="0">绘画</option>
@@ -140,7 +139,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="sex">活动发布状态:</label>
+                            <label class="col-sm-2 control-label" for="sex">发布状态:</label>
                             <div class="col-sm-10">
                             	<select class="form-control" id="state" name="state">
                             		<option value="unpublished">暂不发布</option>
@@ -149,21 +148,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="name">课程名称:</label>
+                            <label class="col-sm-2 control-label" for="content">作业内容:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" id="name" name="name" placeholder="请输入课程名称，最好不要超过15个汉字" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label" for="content">活动内容:</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入课程内容" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label" for="remark">备注:</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" id="remark" name="remark" placeholder="备注内容，可不填写" />
+                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入作业内容" />
                             </div>
                         </div>
                         <div align="right">
