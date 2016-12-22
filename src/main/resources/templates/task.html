@@ -56,44 +56,43 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td class="cell">作业编号</td>
+					<td class="cell" style="text-align: left; width: 6%">作业编号</td>
 					<td class="cell">所属课程</td>
-					<td class="cell">作业内容</td>
-					<td class="cell">创建时间</td>
-					<td class="cell">发布状态</td>
+					<td class="cell" style="width: 15%">作业内容</td>
+					<td class="cell" style="width: 8%">创建时间</td>
+					<td class="cell" style="width: 6%">发布状态</td>
 					<td align="right" style="width: 12%;">操作</td>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="course : ${courses}">
-					<td style="text-align: left" class="cell" th:text="${course.classification}" data-toggle="tooltip" th:title="${course.classification}">20151028001</td>
-					<td class="cell" th:text="${course.code}" data-toggle="tooltip" th:title="${course.code}">在库</td>
-					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
-					<td class="cell" th:text="${course.content}" data-toggle="tooltip" th:title="${course.content}">在库</td>
-					<td class="cell" th:text="${course.remark}" data-toggle="tooltip" th:title="${course.remark}">在库</td>
-					<td class="cell" th:text="${course.state}" data-toggle="tooltip" th:title="${course.state}">在库</td>
+				<tr th:each="task : ${tasks}">
+					<td class="cell" style="text-align: left" th:text="${task.code}" data-toggle="tooltip" th:title="${task.code}">20151028001</td>
+					<td class="cell" th:text="${task.courseName}" data-toggle="tooltip" th:title="${task.courseName}">在库</td>
+					<td class="cell" th:text="${task.content}" data-toggle="tooltip" th:title="${task.content}">在库</td>
+					<td class="cell" th:text="${#calendars.format(task.createdTime, 'yyyy-MM-dd HH:mm ')}" data-toggle="tooltip" th:title="${#calendars.format(task.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
+					<td class="cell" th:text="${task.state}" data-toggle="tooltip" th:title="${task.state}">在库</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
-								th:attr="data-id=${course.id}" data-toggle="modal"
+								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_details2">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
-								th:attr="data-id=${course.id}" data-toggle="modal"
+								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>
-							<button type="button" th:if="${course.state=='未发布'}" class="btn btn-warning btn-xs"
-								th:attr="data-id=${course.id}" data-toggle="modal"
+							<button type="button" th:if="${task.state=='未发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_publish">发布</button>
-							<button type="button" th:if="${course.state=='已发布'}" class="btn btn-warning btn-xs"
-								th:attr="data-id=${course.id}" data-toggle="modal"
+							<button type="button" th:if="${task.state=='已发布'}" class="btn btn-warning btn-xs"
+								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_publish">撤回</button>
 							<button type="button" class="btn btn-danger btn-xs"
-								th:attr="data-id=${course.id}" data-toggle="modal"
+								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_delete">作废</button>
 						</div>
 					</td>
 				</tr>
-				<tr th:if="${#lists.isEmpty(courses)}">
-					<td colspan="7">
+				<tr th:if="${#lists.isEmpty(tasks)}">
+					<td colspan="6">
 						<div class="alert alert-info" role="alert">
 							还没有发布过课程作业, <a data-toggle="modal" data-target="#modal_create"><strong>现在发布作业</strong></a>?
 						</div>
@@ -126,9 +125,9 @@
                 <div class="modal-body">
                     <form class="form-horizontal" id="form_create" method="POST" action="./user">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="sex">选择课程:</label>
+                            <label class="col-sm-2 control-label" for="course">选择课程类别:</label>
                             <div class="col-sm-10">
-                            	<select class="form-control" id="classification" name="classification">
+                            	<select class="form-control" id="create_classification" name="classification">
                             		<option value="0">绘画</option>
                             		<option value="1">舞蹈</option>
                             		<option value="2">跆拳道</option>
@@ -139,9 +138,16 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="sex">发布状态:</label>
+                            <label class="col-sm-2 control-label" for="course">选择课程:</label>
                             <div class="col-sm-10">
-                            	<select class="form-control" id="state" name="state">
+                            	<select class="form-control" id="create_course" name="courseName">
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="state">发布状态:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="create_state" name="state">
                             		<option value="unpublished">暂不发布</option>
                             		<option value="published">创建完毕后即刻发布</option>
                             	</select>
@@ -150,7 +156,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="content">作业内容:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" id="content" name="content" placeholder="请输入作业内容" />
+                                <textarea class="form-control" id="create_content" name="content" placeholder="请输入作业内容"></textarea>
                             </div>
                         </div>
                         <div align="right">
@@ -306,16 +312,37 @@
 					/*]]>*/
 				});
 		
-		var array3 = new Array();
-		var j=-1;
-		array3.push(0)
 		$(function(){
+			$('#modal_create').on('show.bs.modal', function(event){
+				$('#create_course').empty();
+				var url = CONSTS.BASE_API + '/course?classification=' + $('#create_classification').val();
+				$.get(url,function(data, status) {
+					if (data.code == 0) {
+						data.result.forEach(function(element){
+							$('#create_course').append("<option>" + element.name + "</option>");
+						})
+					}
+				})
+			})
+			
+			$('#create_classification').change(function(event){
+				$('#create_course').empty();
+				var url = CONSTS.BASE_API + '/course?classification=' + $('#create_classification').val();
+				$.get(url,function(data, status) {
+					if (data.code == 0) {
+						data.result.forEach(function(element){
+							$('#create_course').append("<option>" + element.name + "</option>");
+						})
+					}
+				})
+			})
+			
 			$('#btn_create').click(function() {
 				var data = $("#form_create").serializeObject();
 				var $btn = $(this).button('loading');
 				$.ajax({
-					type : "post",
-					url : CONSTS.BASE_API + '/course',
+					type : "put",
+					url : CONSTS.BASE_API + '/task',
 					async : false,
 					data : JSON.stringify(data),
 					contentType : "application/json; charset=utf-8",
@@ -387,7 +414,7 @@
 			
 			$("#state_update").click(function() {
 				var id = $("#modal_publish").data('id');
-				var url = CONSTS.BASE_API + '/course/' + id;
+				var url = CONSTS.BASE_API + '/task/' + id;
 				var data = $("#publish_state").serializeObject();
 				$.ajax({
 					type : "post",

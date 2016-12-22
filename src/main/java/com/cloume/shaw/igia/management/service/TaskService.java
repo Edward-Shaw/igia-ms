@@ -7,20 +7,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Service;
 
-import com.cloume.shaw.igia.common.resource.Course;
 import com.cloume.shaw.igia.common.resource.Task;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
-import com.cloume.shaw.igia.management.iservice.ICourseService;
 import com.cloume.shaw.igia.management.iservice.ITaskService;
 
+@Service
 public class TaskService extends AbstractServiceBase implements ITaskService {
 
 	@Override
 	public void addNewTask(Task task) {
 		
-		getMongoTemplate().save(task);;
+		getMongoTemplate().save(task);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class TaskService extends AbstractServiceBase implements ITaskService {
 		}
 		
 		if(course.compareToIgnoreCase("default") != 0){
-			criterion.and("course").is(course);
+			criterion.and("courseName").is(course);
 		}
 		
 		if (createdTime.compareToIgnoreCase("default") != 0) {

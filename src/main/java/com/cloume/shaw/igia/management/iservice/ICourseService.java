@@ -36,4 +36,11 @@ public interface ICourseService {
 	 * @return
 	 */
 	public Course findCourseById(String id);
+
+	/**
+	 * 根据指定分类@classification获取课程列表
+	 * @param classification
+	 * @return
+	 */
+	public List<Course> getCourseByClassification(String classification);
 }

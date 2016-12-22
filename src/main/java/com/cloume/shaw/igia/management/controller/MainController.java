@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cloume.shaw.igia.common.resource.Course;
 import com.cloume.shaw.igia.common.resource.Subscribe;
+import com.cloume.shaw.igia.common.resource.Task;
 import com.cloume.shaw.igia.common.resource.User;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.management.iservice.ICourseService;
 import com.cloume.shaw.igia.management.iservice.ISubscribeService;
+import com.cloume.shaw.igia.management.iservice.ITaskService;
 import com.cloume.shaw.igia.management.iservice.IUserService;
 
 @Controller
@@ -29,6 +31,9 @@ public class MainController {
 	
 	@Autowired
 	private ICourseService courseService;
+	
+	@Autowired
+	private ITaskService taskService;
 	
 	@RequestMapping(value = "/index", method = {RequestMethod.GET})
 	public String indexPage(Principal principal){
@@ -134,7 +139,30 @@ public class MainController {
 	 * @return
 	 */
 	@RequestMapping("/task")
-	public String task(){
+	public String task(Principal principal,
+			@RequestParam(value = "page", required = false, defaultValue = "0, 20") int[] page,
+			@RequestParam(value = "state", required = false, defaultValue = "default") String state,
+			@RequestParam(value = "time", required = false, defaultValue = "default") String createdTime,
+			@RequestParam(value = "course", required = false, defaultValue = "default") String course,
+			Model model){
+		
+		switch(state){
+		case "unpublished":
+			state = Const.STATE_UNPUBLISHED;
+			break;
+		case "published":
+			state = Const.STATE_PUBLISHED;
+			break;
+		case "deleted":
+			state = Const.STATE_DELETED;
+			break;
+		default:
+			state = "default";
+		}
+		
+		List<Task> tasks = taskService.listByPage(state, course, createdTime, page);
+		model.addAttribute("tasks", tasks);
+		
 		return "task";
 	}
 }

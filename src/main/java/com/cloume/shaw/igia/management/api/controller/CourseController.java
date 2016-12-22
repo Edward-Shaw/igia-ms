@@ -1,6 +1,7 @@
 package com.cloume.shaw.igia.management.api.controller;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cloume.shaw.igia.common.controller.AbstractController;
@@ -131,6 +133,40 @@ public class CourseController extends AbstractController{
 		}
 		
 		return RestResponse.good(course);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, params = {"classification"})
+	public RestResponse<List<Course>> getCourseByClassification(@RequestParam (value = "classification", required = true) String classification){
+		switch(classification){
+		case "0":
+			classification = Const.COURSE_PAINTING;
+			break;
+		case "1":
+			classification = Const.COURSE_DANCE;
+			break;
+		case "2":
+			classification = Const.COURSE_TAEKWONDO;
+			break;
+		case "3":
+			classification = Const.COURSE_YOGA;
+			break;
+		case "4":
+			classification = Const.COURSE_SCIENCE;
+			break;
+		case "5":
+			classification = Const.COURSE_CAMP;
+			break;
+		default:
+			classification = Const.COURSE_UNKNOWN;
+		}
+		
+		
+		List<Course> courseList = courseService.getCourseByClassification(classification);
+		if(courseList == null || courseList.isEmpty()){
+			return RestResponse.bad(-1, "invalid classification: " + classification);
+		}
+		
+		return RestResponse.good(courseList);
 	}
 	
 	/**

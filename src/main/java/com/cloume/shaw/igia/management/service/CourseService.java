@@ -108,4 +108,11 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 		return course;
 	}
 
+	@Override
+	public List<Course> getCourseByClassification(String classification) {
+		List<Course> courseList = getMongoTemplate().find(Query.query(Criteria.where("classification").is(classification)), Course.class);
+		
+		return courseList;
+	}
+
 }
