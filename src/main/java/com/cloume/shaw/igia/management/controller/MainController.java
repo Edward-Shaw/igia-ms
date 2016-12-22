@@ -130,4 +130,13 @@ public class MainController {
 	public String login() {
 		return "login";
 	}
+	
+	/**
+	 * 作业管理
+	 * @return
+	 */
+	@RequestMapping("/task")
+	public String task(){
+		return "task";
+	}
 }

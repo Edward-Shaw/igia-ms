@@ -118,7 +118,7 @@
 					</button>
 					<h4 class="modal-title" id="modal_create"
 						style="margin-top: 0px; text-align: center;">
-						<strong>新建用户</strong>
+						<strong>新增用户</strong>
 					</h4>
 				</div>
 				<div class="modal-body">
@@ -129,15 +129,15 @@
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">姓名:</label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" id="input_ware"
-											name="item[0].id" placeholder="请输入用户姓名"></input>
+										<input type="text" class="form-control" id="input_name"
+											name="name" placeholder="请输入用户姓名"></input>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="input_ware" class="control-label col-sm-2">性别:</label>
 									<div class="col-sm-10">
 										<select class="selectpicker" title="请选择用户性别"
-											id="input_location" name="item[0].location">
+											id="input_gender" name="gender">
 											<option>男</option>
 											<option>女</option>
 											<option>未知</option>
@@ -148,31 +148,31 @@
 									<label for="input_ware" class="control-label col-sm-2">用户状态:</label>
 									<div class="col-sm-10">
 										<select class="selectpicker" title="请选择用户状态"
-											id="input_location" name="item[0].location">
-											<option>已注册</option>
-											<option>未注册</option>
+											id="input_banned" name="banned">
+											<option value="true">已注册</option>
+											<option value="false">未注册</option>
 										</select>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">联系地址:</label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" id="input_ware"
-											name="item[0].id" placeholder="请输入用户姓名"></input>
+										<input type="text" class="form-control" id="input_address"
+											name="address" placeholder="请输入用户联系地址"></input>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">联系电话:</label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" id="input_ware"
-											name="item[0].id" placeholder="请输入用户姓名"></input>
+										<input type="text" class="form-control" id="input_mobile"
+											name="mobile" placeholder="请输入用户联系电话"></input>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="input_ware" class="col-sm-2 control-label">邮箱:</label>
 									<div class="col-sm-8">
-										<input type="text" class="form-control" id="input_ware"
-											name="item[0].id" placeholder="请输入用户姓名"></input>
+										<input type="text" class="form-control" id="input_email"
+											name="email" placeholder="请输入用户邮箱地址"></input>
 									</div>
 								</div>
 							</form>
@@ -369,39 +369,17 @@
 		
 		$('#btn_create').click(
 			function() {
-				var itemNum = array3.length
-				for (i = array3.length - 1; i >= 0; i--) {
-					document.getElementsByName('item['
-							+ array3[i] + '].id')[0].name = 'item['
-							+ i + '].id'
-					document.getElementsByName('item['
-							+ array3[i] + '].id')[0].id = 'id'
-							+ i + ''
-					document.getElementsByName('item['
-							+ array3[i] + '].location')[0].name = 'item['
-							+ i + '].location'
-					document.getElementsByName('item['
-							+ array3[i] + '].location')[0].id = 'input'
-							+ i + ''
-					document.getElementsByName('item['
-							+ array3[i] + '].number')[0].name = 'item['
-							+ i + '].number'
-					document.getElementsByName('item['
-							+ array3[i] + '].number')[0].id = 'num'
-							+ i + ''
-				}
-
 				var data = $("#form_create").serializeObject();
 				var $btn = $(this).button('loading');
 				console.log(data)
 				$.ajax({
-					type : "post",
+					type : "put",
 					url : CONSTS.BASE_API + '/user',
 					async : false,
 					data : JSON.stringify(data),
 					contentType : "application/json; charset=utf-8",
 					success : function(data) {
-						if (data.message != "good") {
+						if (data.code != 0) {
 							$("#modal_failure").find(
 									"p")[0].innerHTML = "错误信息:"
 									+ data.message;
@@ -427,37 +405,7 @@
 				});
 				$btn.button('reset');
 			});
-
-		$('#input_ware').blur(
-				function() {
-					if (!autocompleteFlag) {
-						var wareId = $("#input_ware").val().split(" ")[0];
-					} else {
-						var wareId = $("#input_ware").val().split(" ")[1];
-					}
-					if (wareId != "") {
-						document.getElementById("input_location").length = 0;
-						var url = CONSTS.AGVS_URL + '/ui/data/pod?product=' + wareId;
-						$.get(url, function(data, status) {
-							if (data.code == 0) {
-								var array = new Array();
-								var racks = data.result;
-								for ( var key in racks) {
-									var tmp = $.trim(racks[key]['id']);
-									var number = $.trim(racks[key]['count']);
-									map[tmp] = number;
-									if (inArray(array, tmp)){
-										break;	
-									}
-									array.push(racks[key]['id']);
-									$("#input_location").append('<option>' + tmp + '</option>');
-								}
-							}
-							$('#input_location').selectpicker('refresh');
-						}, 'json');
-					}
-				});
-
+		
 		$('#btn_print').click(
 			function() {
 				var modal = $('#modal_detail');
@@ -487,36 +435,6 @@
 
 				/*]]>*/
 			});
-
-		$('#input_ware').autocomplete({
-			source : function(request, response) {
-				$.ajax({
-					type : "post",
-					url : "api/user/autocomplete",
-					dataType : "json",
-					data : {
-						search : request.term,
-						field : "productCode,name"
-					},
-					success : function(data) {
-						var array = new Array();
-						response($.map(data.result, function(item) {
-							if (inArray(array, item.product_code))
-								return;
-							array.push(item.product_code);
-							if (item.unit_name == "fan") {
-								autocompleteFlag = 1;
-							} else {
-								autocompleteFlag = 0;
-							}
-							return {
-								value : item.product_code + " " + item.name
-							}
-						}));
-					}
-				});
-			},
-		});
 		
 		$('#modal_modify').on('show.bs.modal', function(event){
 			var target = $(event.relatedTarget);
@@ -543,7 +461,7 @@
 			var modified_data = $("#form_modify").serializeObject();
 			var id = $("#modal_modify").data('id');
 			$.ajax({
-				type : "PUT",
+				type : "POST",
 				url : CONSTS.BASE_API + 'user/' + id,
 				async : false,
 				data : JSON.stringify(modified_data),
