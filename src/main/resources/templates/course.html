@@ -56,12 +56,13 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">课程类别</td>
-					<td class="cell">编号</td>
+					<td class="cell" style="text-align: left; width: 7%" >课程类别</td>
+					<td class="cell" style="width: 7%">编号</td>
+					<td class="cell">课程名称</td>
 					<td class="cell">创建时间</td>
 					<td class="cell">活动内容</td>
 					<td class="cell">备注</td>
-					<td class="cell">状态</td>
+					<td class="cell" style="width: 6%">状态</td>
 					<td align="right" style="width: 12%;">操作</td>
 				</tr>
 			</thead>
@@ -69,7 +70,8 @@
 				<tr th:each="course : ${courses}">
 					<td style="text-align: left" class="cell" th:text="${course.classification}" data-toggle="tooltip" th:title="${course.classification}">20151028001</td>
 					<td class="cell" th:text="${course.code}" data-toggle="tooltip" th:title="${course.code}">在库</td>
-					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
+					<td class="cell" th:text="${course.name}" data-toggle="tooltip" th:title="${course.name}">在库</td>
+					<td class="cell" th:text="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm')}" data-toggle="tooltip" th:title="${#calendars.format(course.createdTime, 'yyyy-MM-dd HH:mm')}">待检测</td>
 					<td class="cell" th:text="${course.content}" data-toggle="tooltip" th:title="${course.content}">在库</td>
 					<td class="cell" th:text="${course.remark}" data-toggle="tooltip" th:title="${course.remark}">在库</td>
 					<td class="cell" th:text="${course.state}" data-toggle="tooltip" th:title="${course.state}">在库</td>
@@ -77,7 +79,7 @@
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${course.id}" data-toggle="modal"
-								data-target="#modal_details2">详情</button>
+								data-target="#modal_details">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${course.id}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>
@@ -175,6 +177,70 @@
             </div>
         </div>
     </div>
+    
+    <!--课程信息修改-->
+    <div class="modal fade" id="modal_modify" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
+						<strong>课程信息修改</strong>
+					</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="form_modify" method="POST" action="./user">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="classification">活动分类:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="modify_classification" name="classification">
+                            		<option value="0">绘画</option>
+                            		<option value="1">舞蹈</option>
+                            		<option value="2">跆拳道</option>
+                            		<option value="3">瑜伽</option>
+                            		<option value="4">语言与科技</option>
+                            		<option value="5">寒暑假集训</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="sex">活动发布状态:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="modify_state" name="state">
+                            		<option value="unpublished">暂不发布</option>
+                            		<option value="published">创建完毕后即刻发布</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="name">课程名称:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="modify_name" name="name" placeholder="请输入课程名称，最好不要超过15个汉字" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="content">活动内容:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="modify_content" name="content" placeholder="请输入课程内容" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" for="remark">备注:</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" id="modify_remark" name="remark" placeholder="备注内容，可不填写" />
+                            </div>
+                        </div>
+                        <div align="right">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-success" id="btn_modify" data-dismiss="modal" data-loading-text="提交中...">提交修改</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 	
 	<!-- 课程详情 -->
 	<div class="modal fade" id="modal_details" tabindex="-1" role="dialog"
@@ -190,7 +256,6 @@
 				<div class="modal-body">
 					<form id="form_details" class="form-horizontal">																	
 						<div class="tab-pane" id="tab" style="text-align:left">
-							
 							<label>进货单信息</label>
 							<table border="1" id="storagein_detail" style="border-collapse:collapse;  width: 100%;">
 								<tbody>

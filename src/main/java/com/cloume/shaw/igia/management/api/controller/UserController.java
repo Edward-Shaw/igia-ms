@@ -142,7 +142,7 @@ public class UserController extends AbstractController{
 	private String generateUserCode() {
 		Calendar now = Calendar.getInstance();
 		String time = (now.get(Calendar.YEAR) + "").substring(2) + String.format("%02d", now.get(Calendar.MONTH) + 1);
-		final String prefix = time;
+		final String prefix = "U-" + time;
 		final String pattern = prefix + "-\\d{1,5}";
 
 		String code = "";

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cloume.shaw.igia.common.controller.AbstractController;
 import com.cloume.shaw.igia.common.resource.Course;
-import com.cloume.shaw.igia.common.resource.User;
 import com.cloume.shaw.igia.common.rest.RestResponse;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.common.utils.Updater;
@@ -122,6 +121,16 @@ public class CourseController extends AbstractController{
 		course = courseRepository.save(course);
 		
 		return new RestResponse<Course>(0, "OK", course);
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public RestResponse<Course> getCourseById(@PathVariable("id") String id){
+		Course course = courseService.findCourseById(id);
+		if(course == null){
+			return RestResponse.bad(-1, "course not found!");
+		}
+		
+		return RestResponse.good(course);
 	}
 	
 	/**

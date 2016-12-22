@@ -29,4 +29,11 @@ public interface ICourseService {
 	 * @return
 	 */
 	public Course deleteCourseById(String id);
+	
+	/**
+	 * 根据指定id获取课程详情
+	 * @param id
+	 * @return
+	 */
+	public Course findCourseById(String id);
 }
