@@ -106,11 +106,11 @@ public class CourseController extends AbstractController{
 	}
 	
 	/**
-	 * 根据指定id发布或撤回课程
+	 * 修改课程内容，包括发布/撤回课程
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.POST})
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
 	public RestResponse<Course> updateCourseState(@PathVariable("id") String id,
 			@RequestBody Map<String, Object> body){
 		
@@ -119,7 +119,33 @@ public class CourseController extends AbstractController{
 			return RestResponse.bad(-1, "course not found!");
 		}
 
-		course = new Updater<Course>(course).update(body);
+		course = new Updater<Course>(course).update(body, (key, value)->{
+			if(key.toString().compareToIgnoreCase("classification") == 0){
+				switch(value.toString()){
+				case "0":
+					value = Const.COURSE_PAINTING;
+					break;
+				case "1":
+					value = Const.COURSE_DANCE;
+					break;
+				case "2":
+					value = Const.COURSE_TAEKWONDO;
+					break;
+				case "3":
+					value = Const.COURSE_YOGA;
+					break;
+				case "4":
+					value = Const.COURSE_SCIENCE;
+					break;
+				case "5":
+					value = Const.COURSE_CAMP;
+					break;
+				default:
+					value = Const.COURSE_UNKNOWN;
+				}
+			}
+			return value;
+		});
 		course = courseRepository.save(course);
 		
 		return new RestResponse<Course>(0, "OK", course);
