@@ -67,13 +67,13 @@ public class TaskController extends AbstractController{
 	 * @param body
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
-	public RestResponse<Task> updateTask(@PathVariable("id") String id,
+	@RequestMapping(value = "/{code}", method = RequestMethod.POST)
+	public RestResponse<Task> updateTask(@PathVariable("code") String code,
 			@RequestBody Map<String, Object> body){
 		
-		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), Task.class);
+		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("code").is(code)), Task.class);
 		if(task == null){
-			return RestResponse.bad(-1, "Task not found: " + id);
+			return RestResponse.bad(-1, "Task not found: " + code);
 		}
 		
 		task = new Updater<Task>(task).update(body, (key, value)->{

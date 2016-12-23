@@ -82,7 +82,7 @@
 							<button type="button" th:if="${task.state=='未发布'}" class="btn btn-warning btn-xs"
 								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_publish">发布</button>
-							<button type="button" th:if="${task.state=='已发布'}" class="btn btn-warning btn-xs"
+							<button type="button" th:if="${task.state=='已发布'}" class="btn btn-info btn-xs"
 								th:attr="data-id=${task.code}" data-toggle="modal"
 								data-target="#modal_publish">撤回</button>
 							<button type="button" class="btn btn-danger btn-xs"
@@ -413,8 +413,8 @@
 			})
 			
 			$("#state_update").click(function() {
-				var id = $("#modal_publish").data('id');
-				var url = CONSTS.BASE_API + '/task/' + id;
+				var code = $("#modal_publish").data('id');
+				var url = CONSTS.BASE_API + '/task/' + code;
 				var data = $("#publish_state").serializeObject();
 				$.ajax({
 					type : "post",
