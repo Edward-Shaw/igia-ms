@@ -125,6 +125,11 @@ public class CourseController extends AbstractController{
 		return new RestResponse<Course>(0, "OK", course);
 	}
 	
+	/**
+	 * 根据指定@id获取课程详情
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public RestResponse<Course> getCourseById(@PathVariable("id") String id){
 		Course course = courseService.findCourseById(id);
@@ -135,6 +140,11 @@ public class CourseController extends AbstractController{
 		return RestResponse.good(course);
 	}
 	
+	/**
+	 * 根据课程分类获取课程列表
+	 * @param classification
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.GET, params = {"classification"})
 	public RestResponse<List<Course>> getCourseByClassification(@RequestParam (value = "classification", required = true) String classification){
 		switch(classification){
