@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,6 +57,30 @@ public class TaskController extends AbstractController{
 		//TODO:set course code from course name
 		
 		taskService.addNewTask(task);
+		
+		return RestResponse.good(task);
+	}
+	
+	/**
+	 * 更新作业信息
+	 * @param id
+	 * @param body
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.POST)
+	public RestResponse<Task> updateTask(@PathVariable("id") String id,
+			@RequestBody Map<String, Object> body){
+		
+		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), Task.class);
+		if(task == null){
+			return RestResponse.bad(-1, "Task not found: " + id);
+		}
+		
+		task = new Updater<Task>(task).update(body, (key, value)->{
+			return value;
+		});
+		
+		getMongoTemplate().save(task);
 		
 		return RestResponse.good(task);
 	}

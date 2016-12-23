@@ -87,4 +87,12 @@ public class TaskService extends AbstractServiceBase implements ITaskService {
 		return taskList;
 	}
 
+	@Override
+	public Task findTaskById(String id) {
+		
+		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), Task.class);
+		
+		return task;
+	}
+
 }

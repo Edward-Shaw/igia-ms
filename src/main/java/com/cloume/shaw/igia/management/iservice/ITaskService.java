@@ -21,4 +21,11 @@ public interface ITaskService {
 	 * @param task
 	 */
 	public void addNewTask(Task task);
+	
+	/**
+	 * 根据id查找课程作业
+	 * @param id
+	 * @return
+	 */
+	public Task findTaskById(String id);
 }
