@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cloume.shaw.igia.common.controller.AbstractController;
-import com.cloume.shaw.igia.common.resource.Course;
 import com.cloume.shaw.igia.common.resource.Task;
 import com.cloume.shaw.igia.common.rest.RestResponse;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.common.utils.Updater;
-import com.cloume.shaw.igia.management.iservice.ICourseService;
 import com.cloume.shaw.igia.management.iservice.ITaskService;
 
 @RestController
@@ -27,9 +25,6 @@ public class TaskController extends AbstractController{
 	
 	@Autowired
 	private ITaskService taskService;
-	
-	@Autowired
-	private ICourseService courseService;
 	
 	@RequestMapping(method = RequestMethod.PUT)
 	public RestResponse<Task> addNewTask(@RequestBody Map<String, Object> body){
@@ -99,8 +94,8 @@ public class TaskController extends AbstractController{
 		String code = "";
 		synchronized (this) {
 			long count = getMongoTemplate().count(
-					Query.query(Criteria.where("code").regex(pattern).and("state").ne(Const.STATE_DELETED)), Course.class,
-					"course") + 1;
+					Query.query(Criteria.where("code").regex(pattern).and("state").ne(Const.STATE_DELETED)), Task.class,
+					"task") + 1;
 			code = prefix + "-" + count;
 		}
 
