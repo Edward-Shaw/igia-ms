@@ -278,7 +278,7 @@
             </div>
         </div>
     </div>
-	
+    
 	<!-- 课程详情 -->
     <div class="modal fade" id="modal_course_details" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
         <div class="modal-dialog" role="document">
@@ -365,19 +365,19 @@
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">预约编号</label>
 							<div class="col-sm-10">
-								<input id="modify_code" name="subscribe_code" type="text" class="form-control" placeholder="预约编号"  disabled="disabled"></input>
+								<input id="modify_code" name="code" type="text" class="form-control" placeholder="预约编号"  disabled="disabled"></input>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">创建时间</label>
 							<div class="col-sm-10">
-								<input id="modify_time" name="create_time" type="text" class="form-control" placeholder="预约创建时间" disabled="disabled"></input>
+								<input id="modify_time" name="createTime" type="text" class="form-control" placeholder="预约创建时间" disabled="disabled"></input>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="modify-description" class="col-sm-2 control-label">用户姓名</label>
 							<div class="col-sm-10">
-								<input id="modify_name" name="name" type="text" class="form-control" placeholder="用户姓名"></input>
+								<input id="modify_name" name="username" type="text" class="form-control" placeholder="用户姓名"></input>
 							</div>
 						</div>
 						<div class="form-group">
@@ -399,11 +399,30 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="modify-description" class="col-sm-2 control-label">处理状态</label>
+							<label for="modify-description" class="col-sm-2 control-label">预约时间</label>
 							<div class="col-sm-10">
-								<input id="modify_state" name="state" type="text" class="form-control" placeholder="处理状态"></input>
+								<select class="form-control" id="modify_class" name="subscribeClass">
+									<option value="monday">周一</option>
+									<option value="tuesday">周二</option>
+									<option value="wednesday">周三</option>
+									<option value="thursday">周四</option>
+									<option value="friday">周五</option>
+									<option value="saturday">周六</option>
+									<option value="sunday">周日</option>
+								</select>
 							</div>
 						</div>
+                       	<div class="form-group">
+                            <label class="col-sm-2 control-label" for="state">处理状态:</label>
+                            <div class="col-sm-10">
+                            	<select class="form-control" id="modify_subscribe_state" name="state">
+                            		<option value="HANDLING">正在处理</option>
+                            		<option value="ACCEPTED">已接受预约</option>
+                            		<option value="DECLINED">已拒绝</option>
+                            		<option value="CLOSED">已关闭</option>
+                            	</select>
+                            </div>
+                        </div>
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -416,8 +435,8 @@
 	
 	<div
 		th:replace="fragments/modals/confirm :: confirm (id='modal_delete',title='警告确认',message='你确认要删除吗?',style='danger')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='货品添加成功', style='success',url='')"></div>
-		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='货品添加失败，请重新提交或者联系客服处理！', style='warning',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_success', title='提交成功', message='预约修改成功', style='success',url='')"></div>
+		<div th:replace="fragments/modals/confirm :: confirm (id='modal_failure', title='提交失败', message='预约修改失败，请重新提交或者联系客服处理！', style='warning',url='')"></div>
 	<nav th:replace="fragments/footer :: footer"></nav>
 	
 	<script type="text/javascript">
@@ -545,147 +564,35 @@
 				/*<![CDATA[*/
 				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
 	               var data = $("#form_create").serializeObject();
-	               var $btn = $(this).button('loading');
-	               
-	               var files = document.getElementById("fileupload").files;
-					if(files.length!=0)
-					{
-						var type = files[0].type.toUpperCase();
-						if(files[0].size < 10485760&&(type=="IMAGE/JPG"||type=="IMAGE/JPEG"||type=="IMAGE/PNG"))
-						{
-							$('#fileupload').fileupload().fileupload('add', {
-								files : files,
-								url : CONSTS.BASE_URL + "/upload"
-							}).bind('fileuploaddone', function (e,result) {
-								data.picture =  files[0].name;					
-								$.ajax({
-									type : "post",
-									url : CONSTS.BASE_API + '/ware/',
-									async : false,
-									data : JSON.stringify(data),
-									contentType : "application/json; charset=utf-8",
-									success : function(data) {
-										 if(data.message != "good"){
-												$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-						                        $("#modal_failure").modal("show");
-											}
-											else {
-												$("#modal_success").modal('show');
-						                    	 $("#modal_success").on('hide.bs.modal', function() {
-						                         location.reload();
-						                     });
-											}
-									},
-									fail : function(data) {
-										$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-				                        $("#modal_failure").modal("show");
-									}
-								}); 
-					    	});
-						}
-						else{
-							$("#modal_failure").find("p")[0].innerHTML = "错误信息：错误的图片格式或大小!";
-	                        $("#modal_failure").modal("show");
-						}
-					}
-					else{
-              	 $.ajax({
-	                   type : "post",
-	                   url : CONSTS.BASE_API + 'ware',
-	                   async : false,
-	                   data : JSON.stringify(data),
-	                   contentType : "application/json; charset=utf-8",
-	                   success : function(data) {
-	                	   if(data.message != "good"){
-								$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-		                        $("#modal_failure").modal("show");
-							}
-							else {
-								$("#modal_success").modal('show');
-		                    	 $("#modal_success").on('hide.bs.modal', function() {
-		                         location.reload();
-		                     });
-							}
-	                   },
-	                   fail : function(data) {
+	               var $btn = $(this).button('loading');			
+					$.ajax({
+						type : "post",
+						url : CONSTS.BASE_API + '/ware/',
+						async : false,
+						data : JSON.stringify(data),
+						contentType : "application/json; charset=utf-8",
+						success : function(data) {
+							 if(data.message != "good"){
+									$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+			                        $("#modal_failure").modal("show");
+								}
+								else {
+									$("#modal_success").modal('show');
+			                    	 $("#modal_success").on('hide.bs.modal', function() {
+			                         location.reload();
+			                     });
+								}
+						},
+						fail : function(data) {
 							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
 	                        $("#modal_failure").modal("show");
 						}
-	               });
-					}
+					});
 	               $btn.button('reset');
 	               /*]]>*/
 	           });
 			
-		 //查看货品详情
-		 $('#modal_detail').on('show.bs.modal', function(event) {
-				var target = $(event.relatedTarget);
-				$(this).data('id', target.data('id'));
-
-				///获取货品详细信息
-				var url = CONSTS.BASE_API + '/ware/'
-						+ target.data('id');
-				$.get(url, function(data, status) {
-					if (data.code == 0) {
-						var ware = data.result;
-						var table = document.getElementById("ware_detail");								
-			        	var body = table.tBodies[0];
-			        	reset(body);
-			        	var rowIndex = body.childElementCount;
-			        	body.insertRow(rowIndex);
-			        	
-			        	
-			        	body.rows[rowIndex].insertCell(0)
-			        	var e = document.createElement("img")
-			        	var a = CONSTS.BASE_URL+'upload/get/'+ ware.picture
-			        	e.setAttribute("src", a )
-			        	e.setAttribute("style", "height:165px; width:165px")
-					    body.rows[rowIndex].cells[0].appendChild(e);
-			        	body.rows[rowIndex].cells[0].setAttribute("rowspan", "3")
-			        	body.rows[rowIndex].insertCell(1)
-			        	body.rows[rowIndex].cells[1].innerText = "库存状态：" + ware.stock_state;
-			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
-			        	body.rows[rowIndex].insertCell(2)
-			        	body.rows[rowIndex].cells[2].innerText = "ID：" + ware.id;
-			        	body.rows[rowIndex].cells[2].width = "40%"
-			        	
-			        	rowIndex += 1;
-			        	body.insertRow(rowIndex);
-			        	body.rows[rowIndex].insertCell(0)
-			        	body.rows[rowIndex].cells[0].innerText = "名称：" + ware.name;
-			        	body.rows[rowIndex].insertCell(1)
-			        	body.rows[rowIndex].cells[1].innerText = "编码：" + ware.product_code;
-			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
-			        	
-			        	rowIndex += 1;
-			        	body.insertRow(rowIndex);
-			        	body.rows[rowIndex].insertCell(0)
-			        	body.rows[rowIndex].cells[0].innerText = "重量：" + ware.weight;
-			        	body.rows[rowIndex].cells[0].setAttribute("style", "height:60px;")
-			        	body.rows[rowIndex].insertCell(1)
-			        	body.rows[rowIndex].cells[1].innerText = "单位：" + ware.unit_name;
-			        	
-			        	rowIndex += 1;
-			        	body.insertRow(rowIndex);
-			        	body.rows[rowIndex].insertCell(0)
-			        	body.rows[rowIndex].cells[0].innerText = "堆码数：" + ware.stack_number;
-			        	body.rows[rowIndex].insertCell(1)
-			        	body.rows[rowIndex].cells[1].innerText = "货品批次：" + ware.batch_number;
-			        	body.rows[rowIndex].cells[1].setAttribute("style", "height:60px;")
-			        	body.rows[rowIndex].insertCell(2)
-			        	body.rows[rowIndex].cells[2].innerText = "存放位置：" + ware.pallet_tags_number;
-			        	
-			        	rowIndex += 1;
-			        	body.insertRow(rowIndex);
-			        	body.rows[rowIndex].insertCell(0)
-			        	body.rows[rowIndex].cells[0].innerText = "创建时间：" + dateformat(ware.created_time);
-			        	body.rows[rowIndex].cells[0].setAttribute("style", "height:60px;")
-			        	body.rows[rowIndex].cells[0].setAttribute("colspan", "3")
-					}
-				}, 'json');
-			});
-		 
-		 	//修改货品信息
+		 	//修改课程预约信息
 		 	$('#modal_modify').on('show.bs.modal', function(event) {
 		 		var target = $(event.relatedTarget);
 		 		$(this).data('id', target.data('id'));
@@ -696,11 +603,16 @@
 		 			if (data.code == 0) {
 		 				var subscribe = data.result;
 		 				$("#modify_code").val(subscribe.code);
-		 				$("#modify_time").val(subscribe.createTime);
+		 				$("#modify_time").val(dateformat(subscribe.createTime));
 		 				$("#modify_name").val(subscribe.user.username);
 		 				$("#modify_mobile").val(subscribe.user.mobile);
 		 				$("#modify_address").val(subscribe.user.address);
-		 				$("#modify_courses").val(subscribe.courses[0]);
+		 				$("#modify_class").val(subscribe.subscribeClass);
+		 				var courses = "";
+						subscribe.courses.forEach(function(course){
+							courses = courses + course + "  ";
+						});
+						$('#modify_courses').val(courses);
 		 			}
 		 		}, 'json');
 		 		/*]]>*/
@@ -711,66 +623,29 @@
 		 		/*<![CDATA[*/
 				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
 		 		var id = $("#modal_modify").data('id');
-		 		var url = CONSTS.BASE_API + '/ware/' + id;
+		 		var url = CONSTS.BASE_API + '/subscribe/' + id;
 		 		var data = $("#form_modify").serializeObject();
-		 		var files = document.getElementById("modify_fileupload").files;
-				var picId = $("#modify_picture").val();
-				if(files.length!=0)
-				{
-					var type = files[0].type.toUpperCase();
-					if(files[0].size < 10485760&&(type=="IMAGE/JPG"||type=="IMAGE/JPEG"||type=="IMAGE/PNG"))
-					{
-						$('#fileupload').fileupload().fileupload('add', {
-							formData : {"id":picId},
-							files : files,
-							url : CONSTS.BASE_URL +"/upload"
-						}).bind('fileuploaddone', function (e,result) {
-							data.picture = files[0].name;
-							$.ajax({
-								type : "post",
-								url : url,
-								async : false,
-								data : JSON.stringify(data),
-								contentType : "application/json; charset=utf-8",
-								success : function(data) {
-									 $("#modal_success").modal('show');
-				                     $("#modal_success").on('hide.bs.modal', function() {
-				                         location.reload();
-				                     });
-								},
-								fail : function(data) {
-									$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-			                        $("#modal_failure").modal("show");
-								}
-							}); 
-				    	});
-					}
-					else{
-						$("#modal_failure").find("p")[0].innerHTML = "错误信息：错误的图片格式或大小!";
+		 		$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						 $("#modal_success").modal('show');
+	                     $("#modal_success").on('hide.bs.modal', function() {
+	                         location.reload();
+	                     });
+					},
+					fail : function(data) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
                         $("#modal_failure").modal("show");
 					}
-				}
-				else{
-					$.ajax({
-				
-		 			type : "post",
-		 			url : url,
-		 			async : false,
-		 			data : JSON.stringify(data),
-		 			contentType : "application/json; charset=utf-8",
-		 			success : function(data) {
-		 				location.reload();
-		 			},
-		 			fail : function(data) {
-		 				alert(data);
-		 			}
-		 		});
-				}
-				/*]]>*/
-		 	});
+				});
+			});
+			/*]]>*/
 		 	
-		 	//删除货品
-		 	//传参数
+		 	//删除预约，传参数
 		 	$('#modal_delete').on('show.bs.modal', function(event) {
 		 		$(this).find(".warning-message").addClass('hidden').html('');
 		 		$(this).data('id', $(event.relatedTarget).data('id'));
@@ -793,32 +668,7 @@
 		 				submit.button('reset');
 		 			}
 		 		});
-		 	}); 	
-			
-			//货品生产日期
-			$('#datetimepicker').datetimepicker({
-				format : 'YYYY-MM-DD HH:mm',
-				locale: 'zh-cn'
-			});
-			$("#production_date").click(	
-				function() {
-					$('#datetimepicker').data("DateTimePicker").show();
-			});
-		});
-		
-		$('#btn_print').click(function () {
-			var modal = $('#modal_stock');
-			/* document.getElementById(id).value =  */
-			var url = [location.protocol, 
-			           '//', location.host, 
-			           location.pathname.indexOf("missions") >= 0 ? '/mission' : '', 
-			           '/printer'].join('');
-			var printWindow = window.open(url);
-			printWindow.onload = function () {
-			var table = modal.find('.tab-pane').html();
-			printWindow.document.body.innerHTML = table;// + "<p></p><p></p>" + table; ///
-			printWindow.print();
-			};
+		 	});
 		});
 		
 		//格式化日期
@@ -833,14 +683,17 @@
 				"S" : this.getMilliseconds()
 			//millisecond
 			}
-			if (/(y+)/.test(f))
+			if (/(y+)/.test(f)){
 				f = f.replace(RegExp.$1, (this.getFullYear() + "")
 						.substr(4 - RegExp.$1.length));
-			for ( var k in o)
-				if (new RegExp("(" + k + ")").test(f))
+			}
+			for ( var k in o){
+				if (new RegExp("(" + k + ")").test(f)){
 					f = f.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k]
 							: ("00" + o[k]).substr(("" + o[k]).length));
-			return f
+				}
+			}
+			return f;
 		}
 
 		function dateformat(time) {
@@ -858,18 +711,20 @@
 			var obj = document.getElementsByClassName("bgimg");
 			for(var i=0;i<obj.length;i++){
 				// 获取到IMG对象的直接父级对象元素
-					var parentEl = obj[i].parentElement;
-					obj[i].style.height=parentEl.offsetHeight-10+"px";
-					obj[i].style.width=parentEl.offsetWidth-10+"px";
-				}
+				var parentEl = obj[i].parentElement;
+				obj[i].style.height=parentEl.offsetHeight-10+"px";
+				obj[i].style.width=parentEl.offsetWidth-10+"px";
+			}
 			/*]]>*/
 		});
 		
 		function reset(body) {
 			var rowIndex = body.childElementCount;
-				if (rowIndex > 0)
-					for (var i = rowIndex - 1; i >= 0; i--)
-						body.deleteRow(i);
+			if (rowIndex > 0){
+				for (var i = rowIndex - 1; i >= 0; i--){
+					body.deleteRow(i);
+				}
+			}
 		}
 	</script>
 </body>
