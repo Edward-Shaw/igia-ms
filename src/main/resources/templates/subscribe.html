@@ -53,7 +53,7 @@
 					<td class="cell">用户姓名</td>
 					<td class="cell">用户手机号</td>
 					<td class="cell">用户地址</td>
-					<td class="cell" style="width: 16%;">预约活动</td>
+					<td class="cell" style="width: 16%;">预约课程</td>
 					<td align="right" style="width: 16%;">操作</td>
 				</tr>
 			</thead>
@@ -79,7 +79,7 @@
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
-								data-target="#modal_detail">详情</button>
+								data-target="#modal_subscribe_details">详情</button>
 							<button type="button" class="btn btn-default btn-xs"
 								th:attr="data-id=${subscribe.code}" data-toggle="modal"
 								data-target="#modal_modify">修改</button>
@@ -203,33 +203,81 @@
 		</div>
 	</div>
 
-	<!-- 预约详情 -->
-	<div class="modal fade" id="modal_detail" tabindex="-1" role="dialog"
-		aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content" id="modal-content"
-				style="margin-top: 100px">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-					</button>
-					<h4 class="modal-title"
-						style="margin-top: 0px; text-align: center;">活动预约详情</h4>
-				</div>
-				<div class="modal-body">
-					<form id="form_detail" class="form-horizontal">
-						<table border="1" id="ware_detail" style="border-collapse:collapse;  width: 100%; table-layout:fixed; word-break:break-all;">
-								<tbody>
-								</tbody>
-							</table>
-							<div class="col-sm-10">
-								<img class="form-control-static" id="detail_id"></img>
-							</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+	<!-- 课程预约详情 -->
+    <div class="modal fade" id="modal_subscribe_details" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
+						<strong>课程预约详情</strong>
+					</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="form_detail" method="POST" action="./user">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="code">预约编号:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="detail_subscribe_code" name="code" disabled="disabled"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">预约课程:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="detail_subscribe_courses" name="courses" disabled="disabled"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">预约课程时间:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="detail_subscribe_class" name="class" disabled="disabled"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">预约提交时间:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="detail_subscribe_time" name="createdTime" disabled="disabled"/>
+                            </div>
+                        </div>
+                       	<div class="form-group">
+                            <label class="col-sm-3 control-label" for="state">预约处理状态:</label>
+                            <div class="col-sm-9">
+                            	<select class="form-control" id="detail_subscribe_state" name="state" disabled="disabled">
+                            		<option value="HANDLING">正在处理</option>
+                            		<option value="ACCEPTED">已接受预约</option>
+                            		<option value="DECLINED">已拒绝</option>
+                            		<option value="CLOSED">已关闭</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">用户姓名:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="detail_subscribe_username" name="username" disabled="disabled"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="content">用户手机号:</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="detail_subscribe_mobile" name="mobile" disabled="disabled"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="remark">用户地址:</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="detail_subscribe_address" name="address" disabled="disabled"></textarea>
+                            </div>
+                        </div>
+                        <div align="center">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">确认</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 	
 	<!-- 课程详情 -->
     <div class="modal fade" id="modal_course_details" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
@@ -392,22 +440,6 @@
 		var defaultSize = 20;
 		var maxPage = Math.floor(($("#maxPage").val() - 1) / defaultSize);
 		
-		function PreviewImg(imgFile,id)
-	    {    
-	    	var url; 
-	    	if (navigator.userAgent.indexOf("MSIE")>=1) { // IE 
-	    	url = document.getElementById(imgFile.id).value; 
-	    	} else if(navigator.userAgent.indexOf("Firefox")>0) { // Firefox 
-	    	url = window.URL.createObjectURL(document.getElementById(imgFile.id).files.item(0)); 
-	    	} else if(navigator.userAgent.indexOf("Chrome")>0) { // Chrome 
-	    	url = window.URL.createObjectURL(document.getElementById(imgFile.id).files.item(0)); 
-	    	} 
-	     	var newPreview = document.getElementById(id);
-	     	newPreview.src = url;
-	     	newPreview.style.height = '150px';
-	     	newPreview.style.width = '200px';
-	    }
-		
 		//获取课程详情		  
 		$('#modal_course_details').on('show.bs.modal',function(event) {
 			var target = $(event.relatedTarget);
@@ -426,11 +458,37 @@
 			}, 'json');
 		});
 		
+		//获取预约详情 
+		$('#modal_subscribe_details').on('show.bs.modal',function(event) {
+			var target = $(event.relatedTarget);
+			$(this).data('id', target.data('id'));
+			var url = CONSTS.BASE_API + '/subscribe/' + target.data('id');
+			$.get(url,function(data, status) {
+				if (data.code == 0) {
+					var subscribe = data.result;
+					$('#detail_subscribe_code').val(subscribe.code);
+					$('#detail_subscribe_username').val(subscribe.user.username);
+					$('#detail_subscribe_mobile').val(subscribe.user.mobile);
+					$('#detail_subscribe_address').val(subscribe.user.address);
+					$('#detail_subscribe_class').val(subscribe.subscribeClass);
+					$('#detail_subscribe_state').val(subscribe.state);
+					$('#detail_subscribe_time').val(dateformat(subscribe.createTime));
+					var courses = "";
+					subscribe.courses.forEach(function(course){
+						courses = courses + course + "  ";
+					});
+					$('#detail_subscribe_courses').val(courses);
+		        }
+			}, 'json');
+		});
+		
 		$(function() {
-			if(document.getElementById('currentPage'))
+			if(document.getElementById('currentPage')){
 				document.getElementById('currentPage').innerText = Number(currentPage) + 1;
-			if(document.getElementById('totalPage'))
+			}
+			if(document.getElementById('totalPage')){
 				document.getElementById('totalPage').innerText = Number(maxPage) + 1;
+			}
 			
 			$("#filter_stock_state").val(
 					GetQueryString('state') == "" ? "default"
