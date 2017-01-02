@@ -135,6 +135,24 @@ public class UserController extends AbstractController{
 	}
 	
 	/**
+	 * delete user by id.
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public RestResponse<User> deleteUserById(@PathVariable("id") String id){
+		User user = getMongoTemplate().findOne(Query.query(Criteria.where("_id").is(id)), User.class);
+		if(user == null){
+			return RestResponse.bad(-1, "user not found!");
+		}
+		
+		user.setState(Const.STATE_DELETED);
+		user = userRepository.save(user);
+		
+		return RestResponse.good(user);
+	}
+	
+	/**
 	 * code = YYMM(年月)-用户数量序号(位数根据数据库中实际用户数量进行动态变更)
 	 * 
 	 * @return

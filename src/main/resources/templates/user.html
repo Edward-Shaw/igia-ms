@@ -43,12 +43,12 @@
 			style="margin-top: 10px;">
 			<thead>
 				<tr class="active">
-					<td style="text-align: left" class="cell">用户ID</td>
-					<td class="cell">用户姓名</td>
+					<td class="cell" style="text-align: left; width: 6%">用户ID</td>
+					<td class="cell" style="width: 6%">用户姓名</td>
 					<td class="cell">用户手机</td>
-					<td class="cell">用户地址</td>
+					<td class="cell" style="width: 6%">用户地址</td>
 					<td class="cell">邮箱地址</td>
-					<td class="cell">用户状态</td>
+					<td class="cell" style="width: 6%">用户状态</td>
 					<td class="cell">注册时间</td>
 					<td align="right" style="width: 8%;">操作</td>
 				</tr>
@@ -70,9 +70,9 @@
 					<td class="cell" th:if="${user.banned == false}" th:text="未注册"
 						data-toggle="tooltip" th:title="未注册">未注册</td>
 					<td class="cell"
-						th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}"
+						th:text="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm ')}"
 						data-toggle="tooltip"
-						th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm:ss ')}">待检测</td>
+						th:title="${#calendars.format(user.createdTime, 'yyyy-MM-dd HH:mm ')}">待检测</td>
 					<td align="right">
 						<div class="btn-group">
 							<button type="button" class="btn btn-success btn-xs"
@@ -88,7 +88,7 @@
 					</td>
 				</tr>
 				<tr th:if="${#lists.isEmpty(users)}">
-					<td colspan="6">
+					<td colspan="8">
 						<div class="alert alert-info" role="alert">
 							还没有用户信息, <a data-toggle="modal" data-target="#modal_create"><strong>点此新增用户</strong></a>?
 						</div>
@@ -424,13 +424,13 @@
 				};
 			});
 
-		$("#filter_state").val(GetQueryString('banned') == "" ? "true" : GetQueryString('banned'));
+		$("#filter_state").val(GetQueryString('state') == "" ? "true" : GetQueryString('state'));
 		$("#filter_time").val(GetQueryString('time') == "" ? "default" : GetQueryString('time'));
 		$("#btn_filter").click(
 			function() {
 				/*<![CDATA[*/
 				location.href = 'user?page=0' + ',' + defaultSize
-						+ "&time=" + $("#filter_time").val() + "&banned="
+						+ "&time=" + $("#filter_time").val() + "&state="
 						+ $("#filter_state").val()
 
 				/*]]>*/

@@ -17,6 +17,14 @@ public interface IUserService {
 	public List<User> listByPage(boolean banned, String type, String time, int[] page);
 	
 	/**
+	 * get user count by arguments.
+	 * @param state
+	 * @param time
+	 * @return
+	 */
+	public long countUser(String state, String time);
+	
+	/**
 	 * get user detail by id.
 	 * @param id
 	 * @return

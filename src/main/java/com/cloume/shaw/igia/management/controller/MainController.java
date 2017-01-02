@@ -56,8 +56,10 @@ public class MainController {
 			Model model){
 		
 		List<User> users = userService.listByPage(banned, state, time, page);
+		long count = userService.countUser(state, time);
 		
 		model.addAttribute("users", users);
+		model.addAttribute("maxPage", count);
 		
 		return "user";
 	}
