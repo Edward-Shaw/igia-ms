@@ -605,7 +605,7 @@
 				var id = $("#modal_modify").data('id');
 				$.ajax({
 					type : "POST",
-					url : CONSTS.BASE_API + 'course/' + id,
+					url : CONSTS.BASE_API + '/course/' + id,
 					async : false,
 					data : JSON.stringify(modified_data),
 					contentType : "application/json; charset=utf-8",

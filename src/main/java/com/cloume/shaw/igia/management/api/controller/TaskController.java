@@ -81,7 +81,42 @@ public class TaskController extends AbstractController{
 	}
 	
 	/**
-	 * code = YYMM(年月)-作业数量序号(位数根据数据库中实际用户数量进行动态变更)
+	 * delete task by code.
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping(value = "/{code}", method = RequestMethod.DELETE)
+	public RestResponse<Task> deleteTaskByCode(@PathVariable("code") String code){
+		
+		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("code").is(code)), Task.class);
+		if(task == null){
+			return RestResponse.bad(-1, "Task not found: " + code);
+		}
+		
+		task.setState(Const.STATE_DELETED);
+		
+		getMongoTemplate().save(task);
+		
+		return RestResponse.good(task);
+	}
+	
+	/**
+	 * get task detail by code.
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping(value = "/{code}", method = RequestMethod.GET)
+	public RestResponse<Task> getTaskDetailByCode(@PathVariable("code") String code){
+		Task task = getMongoTemplate().findOne(Query.query(Criteria.where("code").is(code)), Task.class);
+		if(task == null){
+			return RestResponse.bad(-1, "Task not found: " + code);
+		}
+		
+		return RestResponse.good(task);
+	}
+	
+	/**
+	 * code = YYMM(年月)-作业数量序号(位数根据数据库中实际用户数量进行动态变更).
 	 * 
 	 * @return
 	 */
@@ -94,7 +129,7 @@ public class TaskController extends AbstractController{
 		String code = "";
 		synchronized (this) {
 			long count = getMongoTemplate().count(
-					Query.query(Criteria.where("code").regex(pattern).and("state").ne(Const.STATE_DELETED)), Task.class,
+					Query.query(Criteria.where("code").regex(pattern)), Task.class,
 					"task") + 1;
 			code = prefix + "-" + count;
 		}

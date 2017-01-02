@@ -166,7 +166,7 @@ public class UserController extends AbstractController{
 		String code = "";
 		synchronized (this) {
 			long count = getMongoTemplate().count(
-					Query.query(Criteria.where("code").regex(pattern).and("state").ne(Const.STATE_DELETED)), User.class,
+					Query.query(Criteria.where("code").regex(pattern)), User.class,
 					"order") + 1;
 			code = prefix + "-" + count;
 		}

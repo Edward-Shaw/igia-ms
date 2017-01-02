@@ -219,7 +219,7 @@ public class CourseController extends AbstractController{
 		String code = "";
 		synchronized (this) {
 			long count = getMongoTemplate().count(
-					Query.query(Criteria.where("code").regex(pattern).and("state").ne(Const.STATE_DELETED)), Course.class,
+					Query.query(Criteria.where("code").regex(pattern)), Course.class,
 					"course") + 1;
 			code = prefix + "-" + count;
 		}
