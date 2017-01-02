@@ -160,7 +160,22 @@ public class CourseController extends AbstractController{
 	public RestResponse<Course> getCourseById(@PathVariable("id") String id){
 		Course course = courseService.findCourseById(id);
 		if(course == null){
-			return RestResponse.bad(-1, "course not found!");
+			return RestResponse.bad(-1, "course not found: " + id);
+		}
+		
+		return RestResponse.good(course);
+	}
+	
+	/**
+	 * get Course by code.
+	 * @param code
+	 * @return
+	 */
+	@RequestMapping(method = RequestMethod.GET, params = {"code"})
+	public RestResponse<Course> getCourseByCode(@RequestParam (value = "code", required = true) String code){
+		Course course = courseService.findCouseByCode(code);
+		if(course == null){
+			return RestResponse.bad(-1, "course not found: " + code);
 		}
 		
 		return RestResponse.good(course);

@@ -43,4 +43,11 @@ public interface ICourseService {
 	 * @return
 	 */
 	public List<Course> getCourseByClassification(String classification);
+
+	/**
+	 * get Course by code.
+	 * @param code
+	 * @return
+	 */
+	public Course findCouseByCode(String code);
 }

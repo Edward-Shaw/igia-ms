@@ -7,15 +7,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.cloume.shaw.igia.common.resource.Course;
-import com.cloume.shaw.igia.common.resource.Subscribe;
 import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
 import com.cloume.shaw.igia.management.iservice.ICourseService;
-import com.mongodb.WriteResult;
 
 @Service
 public class CourseService extends AbstractServiceBase implements ICourseService {
@@ -113,6 +110,13 @@ public class CourseService extends AbstractServiceBase implements ICourseService
 		List<Course> courseList = getMongoTemplate().find(Query.query(Criteria.where("classification").is(classification)), Course.class);
 		
 		return courseList;
+	}
+
+	@Override
+	public Course findCouseByCode(String code) {
+		Course course = getMongoTemplate().findOne(Query.query(Criteria.where("code").is(code)), Course.class);
+		
+		return course;
 	}
 
 }
