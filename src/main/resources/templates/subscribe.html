@@ -67,6 +67,7 @@
 					<td class="cell" th:if="${subscribe.state} == 'ACCEPTED'" th:text="已接受预约" data-toggle="tooltip" th:title="已接受预约">电阻器</td>
 					<td class="cell" th:if="${subscribe.state} == 'DECLINED'" th:text="已拒绝" data-toggle="tooltip" th:title="已拒绝">电阻器</td>
 					<td class="cell" th:if="${subscribe.state} == 'CLOSED'" th:text="已关闭" data-toggle="tooltip" th:title="已关闭">电阻器</td>
+					<td class="cell" th:if="${subscribe.state} == 'DELETED'" th:text="已删除" data-toggle="tooltip" th:title="已删除">电阻器</td>
 					<td class="cell" th:text="${subscribe.user.username}" data-toggle="tooltip" th:title="${subscribe.user.username}">在库</td>
 					<td class="cell" th:text="${subscribe.user.mobile}" data-toggle="tooltip" th:title="${subscribe.user.mobile}">待检测</td>
 					<td class="cell" th:text="${subscribe.user.address}" data-toggle="tooltip" th:title="${subscribe.user.address}">待检测</td>
@@ -249,6 +250,7 @@
                             		<option value="ACCEPTED">已接受预约</option>
                             		<option value="DECLINED">已拒绝</option>
                             		<option value="CLOSED">已关闭</option>
+                            		<option value="DELETED">已删除</option>
                             	</select>
                             </div>
                         </div>
@@ -420,6 +422,7 @@
                             		<option value="ACCEPTED">已接受预约</option>
                             		<option value="DECLINED">已拒绝</option>
                             		<option value="CLOSED">已关闭</option>
+                            		<option value="DELETED">已删除</option>
                             	</select>
                             </div>
                         </div>
