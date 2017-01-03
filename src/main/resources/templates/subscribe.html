@@ -648,7 +648,12 @@
 		 			url : CONSTS.BASE_API + '/subscribe/' + modal.data('id'),
 		 			contentType : "application/json; charset=utf-8",
 		 			success : function(data) {
-		 				location.reload();
+		 				if(data.code != 0){
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:" + data.message;
+	                        $("#modal_failure").modal("show");
+		 				}else{
+			 				location.reload();
+		 				}
 		 			},
 		 			error : function(data) {
 		 				modal.find(".warning-message").html('删除失败请稍后再试，或者联系管理员.').removeClass('hidden');

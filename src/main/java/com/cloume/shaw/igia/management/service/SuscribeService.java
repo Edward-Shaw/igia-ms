@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.cloume.shaw.igia.common.resource.Subscribe;
+import com.cloume.shaw.igia.common.utils.Const;
 import com.cloume.shaw.igia.management.iservice.AbstractServiceBase;
 import com.cloume.shaw.igia.management.iservice.ISubscribeService;
 
@@ -30,7 +31,9 @@ public class SuscribeService extends AbstractServiceBase implements ISubscribeSe
 		
 		Query query = new Query();
 		Criteria criterion = new Criteria();
-		if(state.compareToIgnoreCase("default") != 0){
+		if(state.compareToIgnoreCase("default") == 0){
+			criterion.and("state").ne(Const.STATE_DELETED);
+		}else{
 			criterion.and("state").is(state);
 		}
 		
