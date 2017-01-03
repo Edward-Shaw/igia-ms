@@ -38,7 +38,7 @@
 			<button type="button" class="btn btn-warning btn-sm" id="btn_filter">开始搜索</button>
 			<button class="btn btn-sm btn-success btn-primary" id="new"
 				style="float: right; position: relative;" data-toggle="modal"
-				data-target="#modal_create2">新增预约</button>
+				data-target="#modal_subscribe_create">新增预约</button>
 		</div>
 
 		<!-- 表格 -->
@@ -109,100 +109,79 @@
 		</div>
 	</div>
 
-	<!-- 新增预约 -->
-	<div class="modal fade" id="modal_create" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span>&times;</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel"
-						style="margin-top: 0px; text-align: center;">
-						<strong>新建货品</strong>
+	<!-- 新建课程预约 -->
+    <div class="modal fade" id="modal_subscribe_create" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal_createLabel" style="margin-top: 0px; text-align: center;">
+						<strong>新建课程预约</strong>
 					</h4>
-				</div>
-				<div class="modal-body">
-					<form class="form-horizontal" id="form_create" method="POST" action="./ware">
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="product_code">编码:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="product_code" name="product_code"
-									placeholder="请输入货品编码" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="name">名称:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="name" name="name"
-									placeholder="请输入货品名称" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="contract">批号:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="batch_number"
-									name="batch_number" placeholder="请输入货品批号" /> 
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="contract">堆码数:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="stack_number"
-									name="stack_number" placeholder="请输入货品堆码数" /> 
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="contract">重量:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="weight"
-									name="weight" placeholder="请输入货品重量，单位为kg" /> 
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="contract">单位名:</label>
-							<div class="col-sm-10">
-								<input class="form-control" type="text" id="unit_name"
-									name="unit_name" placeholder="请输入货品单位名" /> 
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="production_date">生产日期:</label>
-							<div class="col-sm-10">
-								<div class='input-group' id='datetimepicker'>
-									<input class="form-control" type="text" id="production_date"
-										name="production_date" placeholder="请选择货品生产日期" /> 
-									<span class="input-group-addon">
-									<span class="glyphicon glyphicon-calendar"></span></span> 
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label" for="picture">图片上传:</label>
-							<div class="col-sm-10">
-								<input class="form-control" id="fileupload" type="file" 
-								name="files[]" data-url="/upload" onchange="PreviewImg(this,'newPreview')" /> 	
-								<input type="hidden" name="picture" id="picture" />
-								<label class="label label-warning">请不要上传超过10M的图片</label>
-							</div>
-							<label class="col-sm-2 control-label"></label>
-							<div class="col-sm-10">
-								<img id="newPreview"></img>
-							</div>
-						</div>
-						<div align="right">
-							<button type="button" class="btn btn-default"
-								data-dismiss="modal">取消</button>
-							<button type="submit" class="btn btn-success" id="btn_create"
-								data-dismiss="modal" data-loading-text="提交中...">确定</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="form_create" method="POST" action="./user">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">预约课程:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="create_subscribe_courses" placeholder="请输入预约课程的编号，多个课程以空格分开" name="courses"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">预约课程时间:</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="create_class" name="subscribeClass">
+									<option value="monday">周一</option>
+									<option value="tuesday">周二</option>
+									<option value="wednesday">周三</option>
+									<option value="thursday">周四</option>
+									<option value="friday">周五</option>
+									<option value="saturday">周六</option>
+									<option value="sunday">周日</option>
+								</select>
+                            </div>
+                        </div>
+                       	<div class="form-group">
+                            <label class="col-sm-3 control-label" for="state">预约处理状态:</label>
+                            <div class="col-sm-9">
+                            	<select class="form-control" id="create_subscribe_state" name="state">
+                            		<option value="HANDLING">正在处理</option>
+                            		<option value="ACCEPTED">已接受预约</option>
+                            		<option value="DECLINED">已拒绝</option>
+                            		<option value="CLOSED">已关闭</option>
+                            		<option value="DELETED">已删除</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="name">用户姓名:</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" id="create_subscribe_username" placeholder="请输入用户姓名" name="username"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="content">用户手机号:</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="create_subscribe_mobile" placeholder="请输入用户手机号" name="mobile"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="remark">用户地址:</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="create_subscribe_address" placeholder="请输入用户地址" name="address"></textarea>
+                            </div>
+                        </div>
+                        <div align="center">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+							<button type="button" class="btn btn-success" id="btn_create">确认提交预约</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<!-- 课程预约详情 -->
     <div class="modal fade" id="modal_subscribe_details" tabindex="-1" role="dialog" aria-labelledby="modal_createLabel">
@@ -217,7 +196,7 @@
 					</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal" id="form_detail" method="POST" action="./user">
+                    <form class="form-horizontal" id="form_subscribe_detail" method="POST" action="./user">
                         <div class="form-group">
                             <label class="col-sm-3 control-label" for="code">预约编号:</label>
                             <div class="col-sm-9">
@@ -294,7 +273,7 @@
 					</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal" id="form_detail" method="POST" action="./user">
+                    <form class="form-horizontal" id="form_course_detail" method="POST" action="./user">
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="code">课程编号:</label>
                             <div class="col-sm-10">
@@ -476,6 +455,13 @@
 					$('#detail_course_remark').val(course.remark);
 					$('#detail_course_classification').val(course.classification);
 					$('#detail_course_state').val(course.state);
+		        }else{
+					$('#detail_course_code').val("课程编号错误，该课程不存在");
+					$('#detail_course_name').val("课程编号错误，该课程不存在");
+					$('#detail_course_content').val("课程编号错误，该课程不存在");
+					$('#detail_course_remark').val("课程编号错误，该课程不存在");
+					$('#detail_course_classification').val("课程编号错误，该课程不存在");
+					$('#detail_course_state').val("课程编号错误，该课程不存在");
 		        }
 			}, 'json');
 		});
@@ -554,46 +540,46 @@
 			});
 			
 			$("#btn_filter").click(
-					function() {
-						/*<![CDATA[*/
-						location.href = 'subscribe?page=0' + ',' + defaultSize + "&time="
-						+ $("#filter_time").val() + "&state="+ $("#filter_stock_state").val()
-								
-						/*]]>*/
-					});
+				function() {
+					/*<![CDATA[*/
+					location.href = 'subscribe?page=0' + ',' + defaultSize + "&time="
+					+ $("#filter_time").val() + "&state="+ $("#filter_stock_state").val()
+							
+					/*]]>*/
+				});
 			
-			//添加货品
+			//新增课程预约
 			$('#btn_create').click(function() {
 				/*<![CDATA[*/
 				/*使用inline js，否则thymeleaf无法解析'&'、'<'等运算符*/
-	               var data = $("#form_create").serializeObject();
-	               var $btn = $(this).button('loading');			
-					$.ajax({
-						type : "post",
-						url : CONSTS.BASE_API + '/ware/',
-						async : false,
-						data : JSON.stringify(data),
-						contentType : "application/json; charset=utf-8",
-						success : function(data) {
-							 if(data.message != "good"){
-									$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
-			                        $("#modal_failure").modal("show");
-								}
-								else {
-									$("#modal_success").modal('show');
-			                    	 $("#modal_success").on('hide.bs.modal', function() {
-			                         location.reload();
-			                     });
-								}
-						},
-						fail : function(data) {
-							$("#modal_failure").find("p")[0].innerHTML = "错误信息:"+data.message;
+	            var data = $("#form_create").serializeObject();
+	            var $btn = $(this).button('loading');			
+				$.ajax({
+					type : "put",
+					url : CONSTS.BASE_API + '/subscribe',
+					async : false,
+					data : JSON.stringify(data),
+					contentType : "application/json; charset=utf-8",
+					success : function(data) {
+						if(data.code != 0){
+							$("#modal_failure").find("p")[0].innerHTML = "错误信息:" + data.message;
 	                        $("#modal_failure").modal("show");
 						}
-					});
-	               $btn.button('reset');
-	               /*]]>*/
-	           });
+						else {
+							$("#modal_success").modal('show');
+	                    	$("#modal_success").on('hide.bs.modal', function() {
+	                        	location.reload();
+	                     	});
+						}
+					},
+					fail : function(data) {
+						$("#modal_failure").find("p")[0].innerHTML = "错误信息:" + data.message;
+                        $("#modal_failure").modal("show");
+					}
+				});
+	            $btn.button('reset');
+	            /*]]>*/
+	        });
 			
 		 	//修改课程预约信息
 		 	$('#modal_modify').on('show.bs.modal', function(event) {
@@ -613,7 +599,7 @@
 		 				$("#modify_class").val(subscribe.subscribeClass);
 		 				var courses = "";
 						subscribe.courses.forEach(function(course){
-							courses = courses + course + "  ";
+							courses = courses + course + " ";
 						});
 						$('#modify_courses').val(courses);
 		 			}

@@ -7,7 +7,7 @@ import com.cloume.shaw.igia.common.resource.Subscribe;
 public interface ISubscribeService {
 	
 	/**
-	 * get subscribe list by page
+	 * get subscribe list by page.
 	 * @param state
 	 * @param createTime
 	 * @param subscribeTime
@@ -15,4 +15,13 @@ public interface ISubscribeService {
 	 * @return
 	 */
 	public List<Subscribe> listByPage(String state, String createTime, String subscribeTime, int[] page);
+
+	/**
+	 * count Subscribe.
+	 * @param state
+	 * @param createTime
+	 * @param subscribeTime
+	 * @return
+	 */
+	public long countSubscribe(String state, String createTime, String subscribeTime);
 }

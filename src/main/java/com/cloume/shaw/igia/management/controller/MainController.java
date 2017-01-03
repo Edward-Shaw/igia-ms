@@ -73,8 +73,10 @@ public class MainController {
 			Model model){
 		
 		List<Subscribe> subscribes = subscribeService.listByPage(state, createTime, subscribeTime, page);
+		long count = subscribeService.countSubscribe(state, createTime, subscribeTime);
 		
 		model.addAttribute("subscribes", subscribes);
+		model.addAttribute("maxPage", count);
 		
 		return "subscribe";
 	}

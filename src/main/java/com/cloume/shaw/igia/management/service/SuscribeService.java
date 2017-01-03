@@ -76,4 +76,49 @@ public class SuscribeService extends AbstractServiceBase implements ISubscribeSe
 		return subscribeList;
 	}
 
+	@Override
+	public long countSubscribe(String state, String createTime, String subscribeTime) {
+		Query query = new Query();
+		Criteria criterion = new Criteria();
+		if(state.compareToIgnoreCase("default") != 0){
+			criterion.and("state").is(state);
+		}
+		
+		if (createTime.compareToIgnoreCase("default") != 0) {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.MILLISECOND, 0);
+			long datetime;
+			switch (createTime) {
+			case "today":
+				datetime = now.getTimeInMillis();
+				criterion = criterion.and("createTime").gte(datetime);
+				break;
+			case "yesterday":
+				datetime = now.getTimeInMillis();
+				now.add(Calendar.DATE, -1);
+				long datetime1 = now.getTimeInMillis();
+				criterion = criterion.and("createTime").gte(datetime1).lte(datetime);
+				break;
+			case "this_week":
+				now.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				datetime = now.getTimeInMillis();
+				criterion = criterion.and("createTime").gte(datetime);
+				break;
+			case "this_month":
+				now.set(Calendar.DAY_OF_MONTH, 1);
+				datetime = now.getTimeInMillis();
+				criterion = criterion.and("createTime").gte(datetime);
+				break;
+			}
+		}
+
+		// 根据预约id倒序排列
+		long count = getMongoTemplate().count(query.with(new Sort(Direction.DESC, "_id")), Subscribe.class);
+		
+		return count;
+	}
+
 }
